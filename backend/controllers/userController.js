@@ -19,7 +19,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     if (userExists) {
         res.status(400)
-        throw new Error("User all registered")
+        throw new Error("User already registered with this email")
     }
 
     const salt = await bcrypt.genSalt(10)
@@ -36,14 +36,13 @@ const registerUser = asyncHandler(async (req, res) => {
             _id: user.id,
             email: user.email,
             name: user.name,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            createdAt: user.createdAt
         })
     } else {
         res.status(400)
         throw new Error("Invalid user details")
     }
-
-    res.json({ message: "Register user" })
 })
 
 
@@ -59,16 +58,24 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email })
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-        res.status(201).json({
-            _id: user.id,
-            email: user.email,
-            name: user.name,
-            token: generateToken(user._id)
-        })
+
+    if (user) {
+        if (await bcrypt.compare(password, user.password)) {
+            res.status(201).json({
+                _id: user.id,
+                email: user.email,
+                name: user.name,
+                token: generateToken(user._id),
+                createdAt: user.createdAt
+            })
+        } else {
+            res.status(400)
+            throw new Error("Invalid credentials")
+        }
+
     } else {
         res.status(400)
-        throw new Error("Invalid credentials")
+        throw new Error("No user found with this email.")
     }
 })
 

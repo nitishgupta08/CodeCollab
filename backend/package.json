@@ -11,9 +11,8 @@
     "socket.io": "^4.5.4"
   },
   "scripts": {
-    "server:dev": "nodemon server2.js",
-    "server:pod": "node server2.js",
-    "server": "nodemon server.js"
+    "server:dev": "nodemon server.js",
+    "server:pod": "node server.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

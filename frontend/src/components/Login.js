@@ -48,23 +48,18 @@ function Login({ setLogin }) {
     const login = () => {
         if (user.email && user.password) {
             if (emailRegex.test(user.email)) {
-                axios.post("http://localhost:8000/api/users/login", user, {
-                    headers: {
-                        'Content-Type': 'application/json;charset=UTF-8',
-                        "Access-Control-Allow-Origin": "*",
-                    }
-                })
+                axios.post("http://localhost:8000/api/users/login", user)
                     .then((res) => {
-                        console.log(res);
-                        // if (res.data.status === "fail") {
-                        //     setMessage(res.data.message);
-                        //     setOpen(true);
-                        // } else {
-                        //     setCurrentUser(JSON.stringify(res.data.user));
-                        //     navigate("/dashboard", {
-                        //         replace: true
-                        //     });
-                        // }
+                        if (res.status === 201 || res.status === 200) {
+                            setCurrentUser(JSON.stringify(res.data));
+                            navigate("/dashboard", {
+                                replace: true
+                            });
+
+                        }
+                    }).catch((err) => {
+                        setMessage(err.response.data.message)
+                        setOpen(true)
                     });
             }
             else {

@@ -18,10 +18,9 @@ const getSpaces = asyncHandler(async (req, res) => {
 * @access Private
 * */
 const createSpaces = asyncHandler(async (req, res) => {
-
     if (!req.body.spaceId || !req.body.spaceName) {
         res.status(400)
-        throw new Error("Please add spaceId")
+        throw new Error("One or more fileds missing")
     }
 
     const space = await Spaces.create({
@@ -53,7 +52,6 @@ const updateSpaces = asyncHandler(async (req, res) => {
         throw new Error("User not authorized.")
     }
 
-    console.log(req.body)
 
     const updatedSpace = await Spaces.findByIdAndUpdate(req.params.id, req.body, { new: true })
     res.status(200).json(updatedSpace)
@@ -68,7 +66,7 @@ const updateSpaces = asyncHandler(async (req, res) => {
 * */
 const deleteSpaces = asyncHandler(async (req, res) => {
     const space = await Spaces.findById(req.params.id)
-
+    console.log(req.params.id)
     if (!space) {
         req.status(400)
         throw new Error("NO space found.")
@@ -83,7 +81,7 @@ const deleteSpaces = asyncHandler(async (req, res) => {
 
     await space.remove()
 
-    res.status(200).json({ message: `Space with id:${req.params.id} removed` })
+    res.status(200).json({ message: `Space Deleted` })
 })
 
 module.exports = {

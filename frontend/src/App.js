@@ -1,11 +1,11 @@
 import './App.css';
-import {useState,useMemo,useEffect} from "react";
-import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import CodeSpace from "./pages/CodeSpace";
 import { createTheme, ThemeProvider } from '@mui/material';
 import Dashboard from "./pages/Dashboard";
-import {UserContext} from "./UserContext";
+import { UserContext } from "./UserContext";
 
 function App() {
 
@@ -34,9 +34,10 @@ function App() {
             },
 
             background: {
-                default: "#21094E",
-                paper: "#724EA7",
-                alter: "#A68DCC"
+                default: "#11001c",
+                paper: "#3a015c",
+                secondary: "35012c",
+                alter: "#4f0147"
             },
             text: {
                 primary: "#EAE8EE",
@@ -64,28 +65,28 @@ function App() {
     }, [currentUser]);
 
     return (
-    <>
-        <ThemeProvider theme={theme}>
-            <UserContext.Provider value={providerValue}>
-                <BrowserRouter>
-                    <Routes>
-                        {!currentUser && <Route path="/" element={<Home/>}/>}
+        <>
+            <ThemeProvider theme={theme}>
+                <UserContext.Provider value={providerValue}>
+                    <BrowserRouter>
+                        <Routes>
+                            {!currentUser && <Route path="/" element={<Home />} />}
 
-                        {currentUser &&  <Route path="/dashboard" element={<Dashboard/>}/>}
+                            {currentUser && <Route path="/dashboard" element={<Dashboard />} />}
 
 
-                        <Route path="/codespace/:roomId" element={<CodeSpace/>}/>
-                        <Route
-                            path="*"
-                            element={<Navigate to={currentUser ? "/dashboard" : "/"} />}
-                        />
-                    </Routes>
-                </BrowserRouter>
-            </UserContext.Provider>
-        </ThemeProvider>
+                            <Route path="/codespace/:roomId" element={<CodeSpace />} />
+                            <Route
+                                path="*"
+                                element={<Navigate to={currentUser ? "/dashboard" : "/"} />}
+                            />
+                        </Routes>
+                    </BrowserRouter>
+                </UserContext.Provider>
+            </ThemeProvider>
 
-    </>
-  );
+        </>
+    );
 }
 
 export default App;
