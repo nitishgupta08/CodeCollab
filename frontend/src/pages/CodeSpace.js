@@ -78,7 +78,7 @@ function CodeSpace() {
 
     return (
         <>
-            <Grid container sx={{ backgroundColor: "background.default" }} >
+            <Grid container>
 
                 <Grid item xs={12} sx={{ p: 1 }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -97,10 +97,13 @@ function CodeSpace() {
                     </Box>
                 </Grid>
 
-                <Grid item xs={1.5} sx={{ backgroundColor: "background.default" }}>
+                <Grid item xs={1.5}>
                     <Box sx={{ p: 1 }}>
                         <Typography sx={{ fontWeight: 700, fontSize: 20, mb: 2 }}>
                             Space Name
+                        </Typography>
+                        <Typography sx={{ fontWeight: 700, fontSize: 12, mb: 2, opacity: 0.7 }}>
+                            Files in this space:
                         </Typography>
                         {data && data.map((item, id) => {
                             return (
@@ -128,30 +131,31 @@ function CodeSpace() {
                             onChange={handleChange}
                             variant="scrollable"
                             scrollButtons="auto"
-                            TabIndicatorProps={{
-                                style: {
-                                    backgroundColor: "red"
-                                }
-                            }}
                         >
                             {openTabs.map((item, id) => {
                                 return <Tab label={
-                                    < Box component="span" >
+                                    < Box component="span" sx={{ display: "flex", alignItems: "center" }}>
                                         {item.fileName}
-                                        <IconButton size="small" sx={{}} component="span" onClick={() => closeOpenTab(item.id)}>
-                                            <CloseIcon sx={{ fontSize: "20px" }} />
-                                        </IconButton>
+                                        <Box>
+                                            <IconButton size="small" component="span" onClick={() => closeOpenTab(item.id)}>
+                                                <CloseIcon sx={{ fontSize: "20px" }} />
+                                            </IconButton>
+                                        </Box>
+
                                     </Box>
                                 }
                                     key={id} />
                             })}
                         </Tabs>
-                        <IconButton onClick={newFile}>
-                            <AddIcon />
-                        </IconButton>
-                        <IconButton >
-                            <SettingsIcon />
-                        </IconButton>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <IconButton onClick={newFile}>
+                                <AddIcon />
+                            </IconButton>
+                            <IconButton >
+                                <SettingsIcon />
+                            </IconButton>
+                        </Box>
+
                     </Grid>
 
                     <Editor data={openTabs[value]} />

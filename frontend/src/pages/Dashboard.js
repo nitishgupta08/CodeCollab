@@ -61,6 +61,7 @@ function Dashboard() {
         }
     }, []);
 
+    const date = new Date(current.createdAt)
 
     return (
         <>
@@ -107,41 +108,49 @@ function Dashboard() {
                 </Button>
 
             </Box >
-            <Grid container sx={{ backgroundColor: "background.default", minHeight: "100vh" }}>
+            <Grid container sx={{ minHeight: "100vh" }}>
                 <Grid item xs={12} sx={{ height: "30vh" }}>
-                    <Box sx={{ height: "20vh", display: "flex", justifyContent: "center", pt: 2 }}>
-                        <Box sx={{ height: "inherit", minWidth: "50vw", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <Box sx={{ height: "inherit", boxShadow: "0px 10px 20px 0px rgba(0,0,0,0.3);" }}>
 
-                            <Box
-                                component="img"
-                                src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${current.name}?size=32`}
-                                alt="avatar"
-                                sx={{
-                                    height: "150px",
-                                    width: "150px",
-                                    mr: 5,
-                                    borderRadius: 2
-                                }}
-                            />
-                            <Box>
-                                <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700 }}>
-                                    {current.name}
-                                </Typography>
-                                <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 400 }}>
-                                    {current.email}
-                                </Typography>
+
+                        <Box sx={{ height: "20vh", display: "flex", justifyContent: "center", pt: 2 }}>
+                            <Box sx={{ height: "inherit", minWidth: "50vw", display: "flex", justifyContent: "center", alignItems: "center" }}>
+
+                                <Box
+                                    component="img"
+                                    src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${current.name}?size=32`}
+                                    alt="avatar"
+                                    sx={{
+                                        height: "150px",
+                                        width: "150px",
+                                        mr: 5,
+                                        borderRadius: 2
+                                    }}
+                                />
+                                <Box>
+                                    <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700 }}>
+                                        {current.name}
+                                    </Typography>
+                                    <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 400 }}>
+                                        {current.email}
+                                    </Typography>
+                                    <Typography variant="h1" sx={{ fontSize: 15, fontWeight: 400, mt: 2 }}>
+                                        With us since <strong>{date.toDateString()}</strong>
+                                    </Typography>
+
+
+                                </Box>
                             </Box>
                         </Box>
+                        <Box sx={{ display: "flex", justifyContent: "center", position: "relative", bottom: "6px" }}>
+                            <Tabs value={value} onChange={(event, value) => setValue(value)}>
+                                <Tab icon={<WorkspacesIcon />} iconPosition="start" label="Spaces" sx={{ pb: 1, pt: 3 }} />
+                                <Tab icon={<SettingsIcon />} iconPosition="start" label="Settings" sx={{ pb: 1, pt: 3 }} />
+                            </Tabs>
+                        </Box>
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "center", position: "relative", bottom: "6px" }}>
-                        <Tabs value={value} onChange={(event, value) => setValue(value)}>
-                            <Tab icon={<WorkspacesIcon />} iconPosition="start" label="Spaces" sx={{ pb: 1, pt: 3 }} />
-                            <Tab icon={<SettingsIcon />} iconPosition="start" label="Settings" sx={{ pb: 1, pt: 3 }} />
-                        </Tabs>
-                    </Box>
-
                 </Grid>
-                <Grid item xs={12} sx={{ backgroundColor: "background.paper", minHeight: "70vh" }}>
+                <Grid item xs={12} sx={{ minHeight: "70vh" }}>
 
                     <TabPanel value={value} index={0} >
                         <Spaces setMessage={setMessage} setOpen={setOpen} setEopen={setEopen} />

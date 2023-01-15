@@ -103,7 +103,9 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
 
     return (
 
-        <Card sx={{ backgroundColor: "background.alter", m: 1, display: "flex", justifyContent: "space-between", alignItems: "center", p: 1 }}>
+        <Card sx={{
+            backgroundColor: "background.alter", m: 1, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center", p: 1, boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.3)"
+        }}>
             <CardContent>
                 {edit ? <CustomTextField
                     autoFocus
