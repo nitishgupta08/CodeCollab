@@ -9,6 +9,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from "@mui/material/styles";
+import { useNavigate } from 'react-router-dom';
 
 const CustomTextField = styled(TextField)({
     '& .MuiOutlinedInput-root': {
@@ -88,6 +89,7 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
     const date = new Date(item.createdAt);
     const [edit, setEdit] = useState(false);
     const [name, setName] = useState(item.spaceName);
+    const navigate = useNavigate()
 
 
     const handleDelete = () => {
@@ -110,6 +112,16 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
         navigator.clipboard.writeText(item.spaceId);
         setOpen(true);
         setMessage({ title: "Copied!", data: "Spaceid copied to clipboard." })
+    }
+
+
+    const goToSpace = () => {
+        navigate(`/codespace/${item.spaceName}`, {
+            state: {
+                spaceId: item.spaceName,
+                name: user.name,
+            }
+        });
     }
 
     const handleEdit = () => {
@@ -166,7 +178,7 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
             </CardActions>
             <Box>
                 {!edit && <IconButton>
-                    <RocketLaunchIcon />
+                    <RocketLaunchIcon onClick={goToSpace} />
                 </IconButton>}
 
             </Box>
