@@ -1,40 +1,14 @@
 import React, { useState } from 'react';
-import { Box, Typography, Slide, TextField, Button, Snackbar, Alert, AlertTitle } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { Box, Typography, Slide, Button, Snackbar, Alert, AlertTitle } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Login";
 import Register from "../components/Register";
+import { CustomTextField } from '../reuseable';
 
 function SlideTransition(props) {
     return <Slide {...props} direction="down" />;
 }
-
-const CustomTextField = styled(TextField)({
-    '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-            borderColor: 'white',
-            color: "black"
-        },
-        '&:hover fieldset': {
-            borderColor: 'white',
-        },
-        '&.Mui-focused fieldset': {
-            borderColor: 'white',
-        },
-    },
-
-    '& .MuiInputBase-input': {
-        borderRadius: 2,
-        backgroundColor: '#fcfcfb',
-        fontSize: 16,
-        padding: '10px 12px',
-        color: "black",
-        '&:hover': {
-            border: "none"
-        },
-    }
-});
 
 function Home(props) {
 
@@ -119,7 +93,7 @@ function Home(props) {
                             p: 3,
                             boxShadow: "12px 12px 0px 3px #B4FE98"
                         }}>
-                        <Typography variant="h1" sx={{ color: "white", fontSize: 50, fontWeight: 700, mb: 3 }}>
+                        <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, mb: 3 }}>
                             CodeCollab.
                         </Typography>
                         <Box>
@@ -127,7 +101,7 @@ function Home(props) {
                             {register && <Register setRegister={setRegister} />}
                             {!login && !register && (
                                 <>
-                                    <Typography variant="h2" sx={{ color: "white", fontSize: 25, fontWeight: 700, mb: 2, width: "90%" }}>
+                                    <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%" }}>
                                         Join a space.
                                     </Typography>
                                     <Box>
@@ -154,7 +128,7 @@ function Home(props) {
                                         <Button variant="contained" sx={{ height: "43px", display: "block" }} onClick={handlejoin}>Join</Button>
 
                                         <Box sx={{ mt: 5 }}>
-                                            <Typography variant="h2" sx={{ color: "white", fontSize: 25, fontWeight: 700, mb: 2, width: "90%" }}>
+                                            <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%" }}>
                                                 Create a space.
                                             </Typography>
                                             <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -180,7 +154,7 @@ function Home(props) {
 
             {/*Footer*/}
             <Box sx={{ position: "fixed", bottom: "0", width: "100vw" }}>
-                <Typography sx={{ textAlign: "center", color: "white" }}>
+                <Typography sx={{ textAlign: "center" }}>
                     Author
                 </Typography>
             </Box>

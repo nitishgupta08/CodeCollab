@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, CardActions, Typography, TextField, IconButton } from '@mui/material'
+import { Box, Card, CardContent, CardActions, Typography, IconButton } from '@mui/material'
 import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react'
 import { UserContext } from '../UserContext';
@@ -8,35 +8,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import { styled } from "@mui/material/styles";
 import { useNavigate } from 'react-router-dom';
-
-const CustomTextField = styled(TextField)({
-    '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-            borderColor: 'white',
-            color: "black"
-        },
-        '&:hover fieldset': {
-            borderColor: 'white',
-        },
-        '&.Mui-focused fieldset': {
-            borderColor: 'white',
-        },
-    },
-
-    '& .MuiInputBase-input': {
-        borderRadius: 2,
-        backgroundColor: '#fcfcfb',
-        fontSize: 16,
-        padding: '10px 12px',
-        color: "black",
-        '&:hover': {
-            border: "none"
-        },
-    }
-});
-
+import { CustomTextField } from '../reuseable';
 
 function YourSpaces({ setMessage, setOpen, setEopen }) {
 
@@ -116,9 +89,9 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
 
 
     const goToSpace = () => {
-        navigate(`/codespace/${item.spaceName}`, {
+        navigate(`/codespace/${item.spaceId}`, {
             state: {
-                spaceId: item.spaceName,
+                spaceId: item.spaceId,
                 name: user.name,
             }
         });

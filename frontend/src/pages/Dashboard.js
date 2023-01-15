@@ -99,7 +99,7 @@ function Dashboard() {
                 backdropFilter: !top && "blur(50px)",
                 color: !top && "transparent"
             }}>
-                <Typography variant="h1" sx={{ color: "white", fontSize: 50, fontWeight: 700, p: 1 }}>
+                <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, p: 1 }}>
                     CodeCollab.
                 </Typography>
                 <Button variant="contained" sx={{ m: 3 }} startIcon={<LogoutIcon />} onClick={handleLogout}>
@@ -124,10 +124,10 @@ function Dashboard() {
                                 }}
                             />
                             <Box>
-                                <Typography variant="h1" sx={{ color: "white", fontSize: 50, fontWeight: 700 }}>
+                                <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700 }}>
                                     {current.name}
                                 </Typography>
-                                <Typography variant="h1" sx={{ color: "white", fontSize: 30, fontWeight: 400 }}>
+                                <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 400 }}>
                                     {current.email}
                                 </Typography>
                             </Box>

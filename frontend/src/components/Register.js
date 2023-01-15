@@ -1,42 +1,16 @@
 import React, { useContext, useState } from 'react';
-import { Box, IconButton, TextField, Button, Alert, AlertTitle, Snackbar, Slide } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { Box, IconButton, Button, Alert, AlertTitle, Snackbar, Slide } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import { CustomTextField } from '../reuseable';
 
 
 function SlideTransition(props) {
     return <Slide {...props} direction="down" />;
 }
 
-
-const CustomTextField = styled(TextField)({
-    '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-            borderColor: 'white',
-            color: "black"
-        },
-        '&:hover fieldset': {
-            borderColor: 'white',
-        },
-        '&.Mui-focused fieldset': {
-            borderColor: 'white',
-        },
-    },
-
-    '& .MuiInputBase-input': {
-        borderRadius: 2,
-        backgroundColor: '#fcfcfb',
-        fontSize: 16,
-        padding: '10px 12px',
-        color: "black",
-        '&:hover': {
-            border: "none"
-        },
-    }
-});
 function Register({ setRegister }) {
     const [user, setUser] = useState({ name: "", email: "", password: "" });
     const [open, setOpen] = useState(false);
@@ -90,7 +64,7 @@ function Register({ setRegister }) {
             </Snackbar>
             <Box>
                 <IconButton sx={{ mb: 2 }} onClick={() => setRegister(false)}>
-                    <ArrowBackIcon fontSize="large" sx={{ color: "white" }} />
+                    <ArrowBackIcon fontSize="large" />
                 </IconButton>
                 <CustomTextField
                     autoFocus

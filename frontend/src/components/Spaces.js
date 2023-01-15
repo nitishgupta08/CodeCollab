@@ -1,40 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { Box, Typography, Slide, TextField, Button, Snackbar, Alert, AlertTitle, Grid, Backdrop } from "@mui/material";
+import { Box, Typography, Slide, Button, Backdrop } from "@mui/material";
 import { UserContext } from "../UserContext";
 import AddIcon from '@mui/icons-material/Add';
 import { v4 as uuidv4 } from "uuid";
-import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import axios from "axios"
 import YourSpaces from './YourSpaces';
 
-
-const CustomTextField = styled(TextField)({
-    '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-            borderColor: 'white',
-            color: "black"
-        },
-        '&:hover fieldset': {
-            borderColor: 'white',
-        },
-        '&.Mui-focused fieldset': {
-            borderColor: 'white',
-        },
-    },
-
-    '& .MuiInputBase-input': {
-        borderRadius: 2,
-        backgroundColor: '#fcfcfb',
-        fontSize: 16,
-        padding: '10px 12px',
-        color: "black",
-        '&:hover': {
-            border: "none"
-        },
-    }
-});
+import { CustomTextField } from '../reuseable';
 
 function Spaces({ setMessage, setOpen, setEopen }) {
 
@@ -132,7 +106,7 @@ function Spaces({ setMessage, setOpen, setEopen }) {
             <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Box sx={{ minWidth: "50vw", minHeight: "70vh", mb: 10 }}>
                     <Box sx={{ p: 2, pt: 5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography sx={{ fontSize: 40, fontWeight: 700, color: "white" }}>
+                        <Typography sx={{ fontSize: 40, fontWeight: 700 }}>
                             Your spaces.
                         </Typography>
 

@@ -43,7 +43,7 @@ function App() {
                 primary: "#EAE8EE",
                 secondary: "#fff",
             },
-        }
+        },
     });
 
     // #EAE8EE,#ABCEB6,#72BC92,#A68DCC,#724EA7,#21094E
@@ -66,25 +66,23 @@ function App() {
 
     return (
         <>
-            <ThemeProvider theme={theme}>
-                <UserContext.Provider value={providerValue}>
-                    <BrowserRouter>
-                        <Routes>
-                            {!currentUser && <Route path="/" element={<Home />} />}
 
-                            {currentUser && <Route path="/dashboard" element={<Dashboard />} />}
+            <UserContext.Provider value={providerValue}>
+                <BrowserRouter>
+                    <Routes>
+                        {!currentUser && <Route path="/" element={<Home />} />}
+
+                        {currentUser && <Route path="/dashboard" element={<Dashboard />} />}
 
 
-                            <Route path="/codespace/:roomId" element={<CodeSpace />} />
-                            <Route
-                                path="*"
-                                element={<Navigate to={currentUser ? "/dashboard" : "/"} />}
-                            />
-                        </Routes>
-                    </BrowserRouter>
-                </UserContext.Provider>
-            </ThemeProvider>
-
+                        <Route path="/codespace/:roomId" element={<CodeSpace />} />
+                        <Route
+                            path="*"
+                            element={<Navigate to={currentUser ? "/dashboard" : "/"} />}
+                        />
+                    </Routes>
+                </BrowserRouter>
+            </UserContext.Provider>
         </>
     );
 }
