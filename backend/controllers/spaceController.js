@@ -18,6 +18,8 @@ const getSpaces = asyncHandler(async (req, res) => {
 * @access Private
 * */
 const createSpaces = asyncHandler(async (req, res) => {
+    console.log(req.body);
+
     if (!req.body.spaceId || !req.body.spaceName) {
         res.status(400)
         throw new Error("One or more fileds missing")
@@ -26,7 +28,9 @@ const createSpaces = asyncHandler(async (req, res) => {
     const space = await Spaces.create({
         spaceId: req.body.spaceId,
         spaceName: req.body.spaceName,
-        user: req.user.id
+        user: req.user.id,
+        activeUsers: req.body.activeUsers,
+        spaceData: req.body.spaceData
     })
 
     res.status(200).json(space)

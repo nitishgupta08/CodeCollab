@@ -15,6 +15,16 @@ const spaceSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please add a space name']
     },
+
+    activeUsers: [String],
+
+    spaceData: [{
+        fileName: String,
+        fileData: String,
+        lang: String
+    }]
+
+
 }, {
     timestamps: true
 })
