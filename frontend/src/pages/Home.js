@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Typography, Slide, Button, Snackbar, Alert, AlertTitle } from "@mui/material";
-import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Login";
 import Register from "../components/Register";
@@ -12,7 +11,7 @@ function SlideTransition(props) {
 
 function Home(props) {
 
-    const [roomId, setRoomId] = useState("");
+    const [spaceId, setSpaceId] = useState("");
     const [name, setName] = useState("");
     const [login, setLogin] = useState(false);
     const [register, setRegister] = useState(false);
@@ -21,14 +20,14 @@ function Home(props) {
     const navigate = useNavigate();
 
     const handlejoin = () => {
-        if (!roomId || !name) {
+        if (!spaceId || !name) {
             setEopen(true);
             return;
         }
         setOpen(true);
-        navigate(`/codespace/${roomId}`, {
+        navigate(`/codespace/${spaceId}`, {
             state: {
-                roomId,
+                spaceId,
                 name,
             }
         });
@@ -38,12 +37,6 @@ function Home(props) {
         if (e.code === 'Enter') {
             handlejoin();
         }
-    }
-
-    const generateSpace = (e) => {
-        e.preventDefault();
-        const id = uuidv4();
-        setRoomId(id);
     }
 
     return (
@@ -110,9 +103,9 @@ function Home(props) {
                                             name="spaceid"
                                             placeholder="Paste Invite ID"
                                             sx={{ width: "500px", maxWidth: "100%", mb: 1 }}
-                                            value={roomId}
+                                            value={spaceId}
                                             onKeyUp={handleKey}
-                                            onChange={(e) => setRoomId(e.target.value)}
+                                            onChange={(e) => setSpaceId(e.target.value)}
                                         />
 
                                         <CustomTextField
@@ -135,7 +128,7 @@ function Home(props) {
 
                                                 <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => { setLogin(true); setRegister(false); }}>Login</Button>
                                                 <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => { setLogin(false); setRegister(true); }}>Signup</Button>
-                                                <Button variant="contained" sx={{ height: "50px" }} onClick={generateSpace}>Generate Space</Button>
+
                                             </Box>
                                         </Box>
                                     </Box>

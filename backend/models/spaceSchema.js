@@ -16,7 +16,13 @@ const spaceSchema = mongoose.Schema({
         required: [true, 'Please add a space name']
     },
 
-    activeUsers: [String],
+    activeUsers: {
+        type: [{
+            id: String,
+            name: String,
+            incoming: Boolean
+        }]
+    },
 
     spaceData: {
         type: [{

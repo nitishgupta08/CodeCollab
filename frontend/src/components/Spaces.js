@@ -9,12 +9,14 @@ import axios from "axios"
 import YourSpaces from './YourSpaces';
 import uniqid from 'uniqid';
 import { CustomTextField } from '../reuseable';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 function Spaces({ setMessage, setOpen, setEopen }) {
 
     const [spaceId, setSpaceId] = useState("");
     const [spaceName, setSpaceName] = useState("");
     const [bdo, setBdo] = useState(false);
+    const [bdo1, setBdo1] = useState(false);
     const navigate = useNavigate();
     const { currentUser } = useContext(UserContext)
     const user = JSON.parse(currentUser)
@@ -38,8 +40,6 @@ function Spaces({ setMessage, setOpen, setEopen }) {
             headers: { Authorization: `Bearer ${user.token}` }
         }).then((res) => {
             if (res.status === 200) {
-
-                console.log(res)
                 setBdo(false);
                 navigate(`/codespace/${spaceId}`, {
                     state: {
@@ -49,6 +49,16 @@ function Spaces({ setMessage, setOpen, setEopen }) {
                 });
             }
         })
+    }
+
+    const handleJoin = () => {
+        navigate(`/codespace/${spaceId}`, {
+            state: {
+                spaceId,
+                name: user.name,
+            }
+        });
+        setBdo1(false);
     }
 
     const copySpaceId = () => {
@@ -105,16 +115,57 @@ function Spaces({ setMessage, setOpen, setEopen }) {
                     </Box>
                 </Slide>
             </Backdrop>
+
+            <Backdrop
+                sx={{ color: '#fff', zIndex: 2, backdropFilter: "blur(4px)" }}
+                open={bdo1}
+            >
+                <Slide direction="up" in={bdo1} mountOnEnter unmountOnExit>
+                    <Box
+                        sx={{
+                            width: "25vw",
+                            backgroundColor: "background.alter",
+                            borderRadius: 2,
+                            display: "flex",
+                            flexDirection: "column",
+                            p: 3,
+                        }}>
+                        <Typography variant="h2" sx={{ color: "black", fontSize: 30, fontWeight: 700, mb: 4 }}>
+                            Enter Space ID.
+                        </Typography>
+                        <CustomTextField
+                            name="spaceid"
+                            placeholder="Paste Invite ID"
+                            sx={{ width: "500px", maxWidth: "100%", mb: 1 }}
+                            value={spaceId}
+                            onChange={(e) => setSpaceId(e.target.value)}
+                        />
+
+
+                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                            <Box sx={{ display: "flex" }}>
+                                <Button variant="contained" sx={{ height: "43px", mr: 2 }} onClick={handleJoin}>Join</Button>
+                                <Button variant="contained" sx={{ height: "43px" }} onClick={() => setBdo1(false)}>Cancel</Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Slide>
+            </Backdrop>
             <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Box sx={{ minWidth: "50vw", minHeight: "70vh", mb: 10 }}>
                     <Box sx={{ p: 2, pt: 5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <Typography sx={{ fontSize: 40, fontWeight: 700 }}>
                             Your spaces.
                         </Typography>
+                        <Box>
+                            <Button variant="contained" startIcon={<RocketLaunchIcon />} sx={{ mr: 2 }} onClick={() => setBdo1(true)}>
+                                Join a space
+                            </Button>
+                            <Button variant="contained" startIcon={<AddIcon />} onClick={handleNew}>
+                                Create a new space
+                            </Button>
+                        </Box>
 
-                        <Button variant="contained" startIcon={<AddIcon />} onClick={handleNew}>
-                            Create a new space
-                        </Button>
                     </Box>
 
 

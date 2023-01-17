@@ -3,10 +3,12 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 
 
-function Editor({ data }) {
+function Editor({ data, setChangeData }) {
     const onChange = React.useCallback((value, viewUpdate) => {
-        console.log('value:', value);
+        setChangeData(value);
+        // console.log(value);
     }, []);
+
     return (
         <CodeMirror
             value={data ? data.fileData : ""}

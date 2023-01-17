@@ -42,8 +42,8 @@ const createSpaces = asyncHandler(async (req, res) => {
 * @access Private
 * */
 const updateSpaces = asyncHandler(async (req, res) => {
-    const space = await Spaces.findById(req.params.id)
-
+    const space = await Spaces.findOne({ spaceId: req.params.id })
+    console.log(req.body);
     if (!space) {
         req.status(400)
         throw new Error("NO space found.")
@@ -56,8 +56,8 @@ const updateSpaces = asyncHandler(async (req, res) => {
     }
 
 
-    const updatedSpace = await Spaces.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    res.status(200).json(updatedSpace)
+    const updatedSpace = await Spaces.findOneAndUpdate({ spaceId: req.params.id }, req.body, { new: true })
+
     res.status(200).json({ message: "successfull array update" })
 })
 
@@ -94,19 +94,30 @@ const deleteSpaces = asyncHandler(async (req, res) => {
 * @access Private
 * */
 const getSpaceData = asyncHandler(async (req, res) => {
-
     const space = await Spaces.findOne({ spaceId: req.params.id })
     res.status(200).json(space);
 })
 
 
 /*
-* @desc Join particular space
-* @route GET /api/spaces/join/:id
+* @desc update Activeusers in particular space
+* @route GET /api/spaces/updateActive/:id
 * @access Public
 * */
-const joinSpace = asyncHandler(async (req, res) => {
+const updateActive = asyncHandler(async (req, res) => {
+    const space = await Spaces.findOne({ spaceId: req.params.id })
 
+    if (!space) {
+        req.status(400)
+        throw new Error("NO space found.")
+    }
+    console.log(req.body)
+
+    req.body.incoming ?
+        await Spaces.findOneAndUpdate({ spaceId: req.params.id }, { $push: { activeUsers: req.body } }, { new: true }) :
+        await Spaces.findOneAndUpdate({ spaceId: req.params.id }, { $pullAll: { activeUsers: req.body } }, { new: true })
+
+    res.status(200).json({ message: "User added to active users" })
 })
 
 
@@ -116,5 +127,5 @@ module.exports = {
     updateSpaces,
     deleteSpaces,
     getSpaceData,
-    joinSpace
+    updateActive
 }

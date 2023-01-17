@@ -75,7 +75,7 @@ function App() {
                         {currentUser && <Route path="/dashboard" element={<Dashboard />} />}
 
 
-                        <Route path="/codespace/:roomId" element={<CodeSpace />} />
+                        <Route path="/codespace/:spaceId" element={<CodeSpace />} />
                         <Route
                             path="*"
                             element={<Navigate to={currentUser ? "/dashboard" : "/"} />}

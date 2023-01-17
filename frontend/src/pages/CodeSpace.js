@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Box, Button, Grid, Typography, Avatar, AvatarGroup, Tabs, Tab, IconButton, Backdrop, CircularProgress } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Grid, Typography, Avatar, AvatarGroup, Tabs, Tab, IconButton, Backdrop, CircularProgress, Tooltip } from "@mui/material";
 import Editor from "../components/Editor";
 // import { initSocket } from "../scoket";
 // import ACTIONS from "../Actions"
@@ -11,8 +11,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import uniqid from 'uniqid';
 import axios from 'axios'
-import { UserContext } from "../UserContext";
+import { styled } from '@mui/material/styles';
+import { tooltipClasses } from '@mui/material/Tooltip';
 
+const HtmlTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} arrow />
+))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        backgroundColor: '#f5f5f9',
+        color: 'rgba(0, 0, 0, 0.87)',
+        maxWidth: 220,
+        fontSize: theme.typography.pxToRem(12),
+        border: '1px solid #dadde9',
+    },
+}));
 
 function CodeSpace() {
     const navigate = useNavigate();
@@ -22,20 +34,23 @@ function CodeSpace() {
     const [value, setValue] = useState(0); //Tabs 
     const [active, setActive] = useState(null); //active users
     const [load, setLoad] = useState(false); //loading screen
-    const [spaceName, setSpaceName] = useState("");
-    const { currentUser } = useContext(UserContext)
-    const user = JSON.parse(currentUser)
+    const [spaceName, setSpaceName] = useState(""); // Name of space to be shown
+    const [changeData, setChangeData] = useState("");
+    const [activeId, setActiveId] = useState(uniqid());
     const location = useLocation();
 
 
     useEffect(() => {
         setLoad(true);
+        console.log(location.state.name);
+        axios.put(`http://localhost:8000/api/spaces/updateActive/${location.state.spaceId}`,
+            {
+                name: location.state.name,
+                incoming: true,
+                id: activeId
+            })
 
-        axios.get(`http://localhost:8000/api/spaces/${location.state.spaceId}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`
-            }
-        }).then((res) => {
+        axios.get(`http://localhost:8000/api/spaces/${location.state.spaceId}`).then((res) => {
             if (res.status === 200) {
                 setData(res.data.spaceData);
                 setActive(res.data.activeUsers);
@@ -46,6 +61,37 @@ function CodeSpace() {
             }
         })
     }, [])
+
+
+    // useEffect(() => {
+    //     window.addEventListener('beforeunload', alertUser)
+    //     window.addEventListener('unload', handleTabClosing)
+    //     return () => {
+    //         window.removeEventListener('beforeunload', alertUser)
+    //         window.removeEventListener('unload', handleTabClosing)
+    //     }
+    // })
+
+    // const handleTabClosing = () => {
+    //     axios.put(`http://localhost:8000/api/spaces/updateActive/${location.state.spaceId}`,
+    //         {
+    //             name: location.state.name,
+    //             incoming: false,
+    //             id: activeId
+    //         })
+    // }
+
+    // const alertUser = (event) => {
+    //     event.preventDefault()
+    //     event.returnValue = ''
+    //     axios.put(`http://localhost:8000/api/spaces/updateActive/${location.state.spaceId}`,
+    //         {
+    //             name: location.state.name,
+    //             incoming: false,
+    //             id: activeId
+    //         })
+    // }
+
 
 
     //change tab
@@ -95,11 +141,29 @@ function CodeSpace() {
 
     }
 
-
     const closeOpenTab = (id) => {
         const i = openTabs.findIndex(x => x.id === id);
         setValue(i === 0 ? i : i - 1)
         setOpenTabs(openTabs.filter((item) => item.id !== id));
+    }
+
+    // save data
+    const handleSave = () => {
+        const index = data.findIndex(x => openTabs[value].id === x.id);
+        let newData = [...data];
+        newData[index].fileData = changeData
+        setData(newData);
+
+        const user = JSON.parse(localStorage.getItem("user"))
+        axios.put(`http://localhost:8000/api/spaces/${location.state.spaceId}`,
+
+            {
+                spaceData: data,
+                activeUsers: active
+            }
+            , {
+                headers: { Authorization: `Bearer ${user.token}` }
+            })
     }
 
     return (
@@ -119,14 +183,26 @@ function CodeSpace() {
                         <Typography variant="h1" sx={{ fontSize: 35, fontWeight: 700 }}>
                             CodeCollab.
                         </Typography>
+                        <HtmlTooltip
+                            title={
+                                <React.Fragment>
+                                    {active && active.map((client, id) => {
+                                        return (<Typography key={id} color="inherit">{client.name}</Typography>)
+                                    })}
+                                </React.Fragment>
+                            }
+                        >
+                            <AvatarGroup max={4}>
+                                {active && active.map((client, id) => {
+                                    return (<Avatar key={id}>{client.name[0]}</Avatar>)
+                                })}
+                            </AvatarGroup>
+                        </HtmlTooltip>
 
 
-                        <AvatarGroup max={4}>
-                            {active && active.map((client, id) => {
-                                return (<Avatar key={id}>{client[0]}</Avatar>)
-                            })}
-                        </AvatarGroup>
+
                         <Button variant="contained" onClick={() => navigate("/")}>Leave Space</Button>
+                        <Button variant="contained" onClick={handleSave}>Save</Button>
 
                     </Box>
                 </Grid>
@@ -192,7 +268,7 @@ function CodeSpace() {
 
                     </Grid>
 
-                    <Editor data={openTabs && openTabs[value]} />
+                    <Editor data={openTabs && openTabs[value]} setChangeData={setChangeData} />
                 </Grid>
             </Grid>
         </>
