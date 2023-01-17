@@ -1,25 +1,51 @@
-import React, { useState } from 'react';
-import { Box, Button, Grid, Typography, Avatar, AvatarGroup, Tabs, Tab, IconButton } from "@mui/material";
+import React, { useContext, useEffect, useState } from 'react';
+import { Box, Button, Grid, Typography, Avatar, AvatarGroup, Tabs, Tab, IconButton, Backdrop, CircularProgress } from "@mui/material";
 import Editor from "../components/Editor";
 // import { initSocket } from "../scoket";
 // import ACTIONS from "../Actions"
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import uniqid from 'uniqid';
+import axios from 'axios'
+import { UserContext } from "../UserContext";
+
 
 function CodeSpace() {
     const navigate = useNavigate();
 
-
-    const [data, setData] = useState([{ id: uniqid(), fileName: "Untitled-1", lang: "js", fileData: `console.log('Hello Nitish')` }]); //opened files
-    const [openTabs, setOpenTabs] = useState(data); // All files
+    const [data, setData] = useState(null); //opened files
+    const [openTabs, setOpenTabs] = useState(null); // All files
     const [value, setValue] = useState(0); //Tabs 
+    const [active, setActive] = useState(null); //active users
+    const [load, setLoad] = useState(false); //loading screen
+    const [spaceName, setSpaceName] = useState("");
+    const { currentUser } = useContext(UserContext)
+    const user = JSON.parse(currentUser)
+    const location = useLocation();
 
-    const [active, setActive] = useState(null);
+
+    useEffect(() => {
+        setLoad(true);
+
+        axios.get(`http://localhost:8000/api/spaces/${location.state.id}`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`
+            }
+        }).then((res) => {
+            if (res.status === 200) {
+                setData(res.data.spaceData);
+                setActive(res.data.activeUsers);
+                setOpenTabs([res.data.spaceData[0]]);
+                setSpaceName(res.data.spaceName);
+                setLoad(false);
+                console.log(res);
+            }
+        })
+    }, [])
 
 
     //change tab
@@ -78,8 +104,16 @@ function CodeSpace() {
 
     return (
         <>
+            <Backdrop
+                sx={{ backgroundColor: 'white', zIndex: 2, display: "flex", flexDirection: "column" }}
+                open={load}
+            >
+                <CircularProgress size={100} />
+                <Typography variant="h1" sx={{ fontSize: 35, fontWeight: 700, mt: 5 }}>
+                    Loading Space.
+                </Typography>
+            </Backdrop>
             <Grid container>
-
                 <Grid item xs={12} sx={{ p: 1 }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <Typography variant="h1" sx={{ fontSize: 35, fontWeight: 700 }}>
@@ -88,8 +122,8 @@ function CodeSpace() {
 
 
                         <AvatarGroup max={4}>
-                            {active && active.map((client) => {
-                                return (<Avatar key={client.id} alt={client.name} />)
+                            {active && active.map((client, id) => {
+                                return (<Avatar key={id}>{client[0]}</Avatar>)
                             })}
                         </AvatarGroup>
                         <Button variant="contained" onClick={() => navigate("/")}>Leave Space</Button>
@@ -100,7 +134,7 @@ function CodeSpace() {
                 <Grid item xs={1.5}>
                     <Box sx={{ p: 1 }}>
                         <Typography sx={{ fontWeight: 700, fontSize: 20, mb: 2 }}>
-                            Space Name
+                            {spaceName}
                         </Typography>
                         <Typography sx={{ fontWeight: 700, fontSize: 12, mb: 2, opacity: 0.7 }}>
                             Files in this space:
@@ -132,7 +166,7 @@ function CodeSpace() {
                             variant="scrollable"
                             scrollButtons="auto"
                         >
-                            {openTabs.map((item, id) => {
+                            {openTabs && openTabs.map((item, id) => {
                                 return <Tab label={
                                     < Box component="span" sx={{ display: "flex", alignItems: "center" }}>
                                         {item.fileName}
@@ -158,7 +192,7 @@ function CodeSpace() {
 
                     </Grid>
 
-                    <Editor data={openTabs[value]} />
+                    <Editor data={openTabs && openTabs[value]} />
                 </Grid>
             </Grid>
         </>

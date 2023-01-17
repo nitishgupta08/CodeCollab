@@ -93,6 +93,7 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
             state: {
                 spaceId: item.spaceId,
                 name: user.name,
+                id: item._id
             }
         });
     }
@@ -138,8 +139,8 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
                     </>
                 ) :
                     <>
-                        <IconButton>
-                            <ContentCopyIcon onClick={copySpaceId} />
+                        <IconButton onClick={copySpaceId}>
+                            <ContentCopyIcon />
                         </IconButton>
                         <IconButton onClick={() => setEdit(true)}>
                             <EditIcon />
@@ -152,8 +153,8 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
 
             </CardActions>
             <Box>
-                {!edit && <IconButton>
-                    <RocketLaunchIcon onClick={goToSpace} />
+                {!edit && <IconButton onClick={goToSpace}>
+                    <RocketLaunchIcon />
                 </IconButton>}
 
             </Box>

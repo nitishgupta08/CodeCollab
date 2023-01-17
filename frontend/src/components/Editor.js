@@ -9,7 +9,7 @@ function Editor({ data }) {
     }, []);
     return (
         <CodeMirror
-            value={data.fileData}
+            value={data ? data.fileData : ""}
             height="90vh"
             extensions={[javascript({ jsx: true })]}
             onChange={onChange}
