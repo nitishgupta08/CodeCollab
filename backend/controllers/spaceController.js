@@ -88,9 +88,33 @@ const deleteSpaces = asyncHandler(async (req, res) => {
     res.status(200).json({ message: `Space Deleted` })
 })
 
+
+/*
+* @desc Get data of a particular space
+* @route GET /api/spaces/:id
+* @access Private
+* */
+const getSpaceData = asyncHandler(async (req, res) => {
+    const space = await Spaces.findById(req.params.id);
+    res.status(200).json(space);
+})
+
+
+/*
+* @desc Join particular space
+* @route GET /api/spaces/join/:id
+* @access Public
+* */
+const joinSpace = asyncHandler(async (req, res) => {
+
+})
+
+
 module.exports = {
     getSpaces,
     createSpaces,
     updateSpaces,
-    deleteSpaces
+    deleteSpaces,
+    getSpaceData,
+    joinSpace
 }

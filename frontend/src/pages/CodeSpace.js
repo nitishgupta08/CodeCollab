@@ -14,12 +14,12 @@ import uniqid from 'uniqid';
 function CodeSpace() {
     const navigate = useNavigate();
 
-    const [clients, setClients] = useState([{ id: 1, name: "Nitish K" }, { id: 2, name: "Ram A" }, { id: 3, name: "Tam A" }, { id: 4, name: "Bam A" }, { id: 5, name: "Sam A" }, { id: 6, name: "Jam A" }]);
-
 
     const [data, setData] = useState([{ id: uniqid(), fileName: "Untitled-1", lang: "js", fileData: `console.log('Hello Nitish')` }]); //opened files
     const [openTabs, setOpenTabs] = useState(data); // All files
     const [value, setValue] = useState(0); //Tabs 
+
+    const [active, setActive] = useState(null);
 
 
     //change tab
@@ -88,7 +88,7 @@ function CodeSpace() {
 
 
                         <AvatarGroup max={4}>
-                            {clients.map((client) => {
+                            {active && active.map((client) => {
                                 return (<Avatar key={client.id} alt={client.name} />)
                             })}
                         </AvatarGroup>
