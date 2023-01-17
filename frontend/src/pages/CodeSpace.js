@@ -31,7 +31,7 @@ function CodeSpace() {
     useEffect(() => {
         setLoad(true);
 
-        axios.get(`http://localhost:8000/api/spaces/${location.state.id}`, {
+        axios.get(`http://localhost:8000/api/spaces/${location.state.spaceId}`, {
             headers: {
                 Authorization: `Bearer ${user.token}`
             }

@@ -8,7 +8,8 @@ const User = require('../models/userSchema')
 * */
 const getSpaces = asyncHandler(async (req, res) => {
     const spaces = await Spaces.find({ user: req.user.id })
-    res.status(200).json(spaces)
+    const newSpace = spaces.map(({ spaceId, spaceName, createdAt }) => ({ spaceId, spaceName, createdAt }))
+    res.status(200).json(newSpace);
 })
 
 
@@ -18,8 +19,6 @@ const getSpaces = asyncHandler(async (req, res) => {
 * @access Private
 * */
 const createSpaces = asyncHandler(async (req, res) => {
-    console.log(req.body);
-
     if (!req.body.spaceId || !req.body.spaceName) {
         res.status(400)
         throw new Error("One or more fileds missing")
@@ -33,7 +32,7 @@ const createSpaces = asyncHandler(async (req, res) => {
         spaceData: req.body.spaceData
     })
 
-    res.status(200).json(space)
+    res.status(200).json({ message: "Space Created" })
 })
 
 
@@ -69,8 +68,8 @@ const updateSpaces = asyncHandler(async (req, res) => {
 * @access Private
 * */
 const deleteSpaces = asyncHandler(async (req, res) => {
-    const space = await Spaces.findById(req.params.id)
-    console.log(req.params.id)
+    const space = await Spaces.findOne({ spaceId: req.params.id })
+
     if (!space) {
         req.status(400)
         throw new Error("NO space found.")
@@ -95,7 +94,8 @@ const deleteSpaces = asyncHandler(async (req, res) => {
 * @access Private
 * */
 const getSpaceData = asyncHandler(async (req, res) => {
-    const space = await Spaces.findById(req.params.id);
+
+    const space = await Spaces.findOne({ spaceId: req.params.id })
     res.status(200).json(space);
 })
 

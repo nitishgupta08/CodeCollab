@@ -66,7 +66,7 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
 
 
     const handleDelete = () => {
-        axios.delete(`http://localhost:8000/api/spaces/${item._id}`, {
+        axios.delete(`http://localhost:8000/api/spaces/${item.spaceId}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then((res) => {
@@ -93,7 +93,6 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
             state: {
                 spaceId: item.spaceId,
                 name: user.name,
-                id: item._id
             }
         });
     }

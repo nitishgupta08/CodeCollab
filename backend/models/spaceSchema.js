@@ -18,12 +18,14 @@ const spaceSchema = mongoose.Schema({
 
     activeUsers: [String],
 
-    spaceData: [{
-        id: String,
-        fileName: String,
-        fileData: String,
-        lang: String
-    }]
+    spaceData: {
+        type: [{
+            id: String,
+            fileName: String,
+            fileData: String,
+            lang: String
+        }]
+    }
 
 
 }, {

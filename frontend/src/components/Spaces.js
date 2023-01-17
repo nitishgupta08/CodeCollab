@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import axios from "axios"
 import YourSpaces from './YourSpaces';
-
+import uniqid from 'uniqid';
 import { CustomTextField } from '../reuseable';
 
 function Spaces({ setMessage, setOpen, setEopen }) {
@@ -18,6 +18,8 @@ function Spaces({ setMessage, setOpen, setEopen }) {
     const navigate = useNavigate();
     const { currentUser } = useContext(UserContext)
     const user = JSON.parse(currentUser)
+    const spaceData = [{ id: uniqid(), fileName: "Untitled-1", fileData: "Hello", lang: "js" }]
+    const activeUsers = []
 
     const handleNew = () => {
         const id = uuidv4();
@@ -32,19 +34,19 @@ function Spaces({ setMessage, setOpen, setEopen }) {
             return;
         }
 
-        axios.post("http://localhost:8000/api/spaces", { spaceId, spaceName }, {
+        axios.post("http://localhost:8000/api/spaces", { spaceId, spaceName, spaceData, activeUsers }, {
             headers: { Authorization: `Bearer ${user.token}` }
         }).then((res) => {
             if (res.status === 200) {
 
                 console.log(res)
                 setBdo(false);
-                // navigate(`/codespace/${spaceId}`, {
-                //     state: {
-                //         spaceId,
-                //         name: user.name,
-                //     }
-                // });
+                navigate(`/codespace/${spaceId}`, {
+                    state: {
+                        spaceId,
+                        name: user.name,
+                    }
+                });
             }
         })
     }
