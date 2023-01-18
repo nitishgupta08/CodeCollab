@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, Grid, Typography, Avatar, AvatarGroup, Tabs, Tab, IconButton, Backdrop, CircularProgress, Tooltip } from "@mui/material";
 import Editor from "../components/Editor";
 // import { initSocket } from "../scoket";
 // import ACTIONS from "../Actions"
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
@@ -13,6 +13,8 @@ import uniqid from 'uniqid';
 import axios from 'axios'
 import { styled } from '@mui/material/styles';
 import { tooltipClasses } from '@mui/material/Tooltip';
+import { UserContext } from "../UserContext";
+
 
 const HtmlTooltip = styled(({ className, ...props }) => (
     <Tooltip {...props} classes={{ popper: className }} arrow />
@@ -38,6 +40,8 @@ function CodeSpace() {
     const [changeData, setChangeData] = useState("");
     const [activeId, setActiveId] = useState(uniqid());
     const location = useLocation();
+    const { currentUser } = useContext(UserContext);
+    const loggedInUser = currentUser ? JSON.parse(currentUser) : null;
 
 
     useEffect(() => {
@@ -199,7 +203,11 @@ function CodeSpace() {
                             </AvatarGroup>
                         </HtmlTooltip>
 
-
+                        {loggedInUser ? null : (
+                            <Typography variant="h1" sx={{ fontSize: 15, fontWeight: 500 }}>
+                                To edit this page please <Link to="/login">Login</Link>.
+                            </Typography>
+                        )}
 
                         <Button variant="contained" onClick={() => navigate("/")}>Leave Space</Button>
                         <Button variant="contained" onClick={handleSave}>Save</Button>
@@ -221,14 +229,14 @@ function CodeSpace() {
                                     <Typography sx={{ fontSize: 15, cursor: "pointer" }} onClick={() => goToFile(item.id)}>
                                         {item.fileName}
                                     </Typography>
-                                    <Box>
+                                    {loggedInUser ? (<Box>
                                         <IconButton sx={{ color: "inherit" }} onClick={editFile}>
                                             <EditIcon />
                                         </IconButton>
                                         <IconButton sx={{ color: "inherit" }} onClick={() => deleteFile(item.id)}>
                                             <DeleteIcon />
                                         </IconButton>
-                                    </Box>
+                                    </Box>) : null}
                                 </Box>
                             )
                         })}
@@ -251,16 +259,15 @@ function CodeSpace() {
                                                 <CloseIcon sx={{ fontSize: "20px" }} />
                                             </IconButton>
                                         </Box>
-
                                     </Box>
                                 }
                                     key={id} />
                             })}
                         </Tabs>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <IconButton onClick={newFile}>
+                            {loggedInUser ? (<IconButton onClick={newFile}>
                                 <AddIcon />
-                            </IconButton>
+                            </IconButton>) : null}
                             <IconButton >
                                 <SettingsIcon />
                             </IconButton>
@@ -268,7 +275,7 @@ function CodeSpace() {
 
                     </Grid>
 
-                    <Editor data={openTabs && openTabs[value]} setChangeData={setChangeData} />
+                    <Editor data={openTabs && openTabs[value]} loggedInUser={loggedInUser} setChangeData={setChangeData} />
                 </Grid>
             </Grid>
         </>

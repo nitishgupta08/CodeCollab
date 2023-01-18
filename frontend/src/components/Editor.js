@@ -3,7 +3,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 
 
-function Editor({ data, setChangeData }) {
+function Editor({ data, setChangeData, loggedInUser }) {
     const onChange = React.useCallback((value, viewUpdate) => {
         setChangeData(value);
         // console.log(value);
@@ -11,6 +11,7 @@ function Editor({ data, setChangeData }) {
 
     return (
         <CodeMirror
+            readOnly={loggedInUser ? null : 'nocursor'}
             value={data ? data.fileData : ""}
             height="90vh"
             extensions={[javascript({ jsx: true })]}

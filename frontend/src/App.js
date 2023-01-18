@@ -6,6 +6,8 @@ import CodeSpace from "./pages/CodeSpace";
 import { createTheme, ThemeProvider } from '@mui/material';
 import Dashboard from "./pages/Dashboard";
 import { UserContext } from "./UserContext";
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
 
@@ -70,7 +72,13 @@ function App() {
             <UserContext.Provider value={providerValue}>
                 <BrowserRouter>
                     <Routes>
-                        {!currentUser && <Route path="/" element={<Home />} />}
+                        {!currentUser && (
+                            <>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                            </>
+                        )}
 
                         {currentUser && <Route path="/dashboard" element={<Dashboard />} />}
 
