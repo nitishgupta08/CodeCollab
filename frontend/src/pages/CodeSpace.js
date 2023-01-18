@@ -14,17 +14,16 @@ import axios from 'axios'
 import { styled } from '@mui/material/styles';
 import { tooltipClasses } from '@mui/material/Tooltip';
 import { UserContext } from "../UserContext";
-
+import uniqolor from 'uniqolor';
 
 const HtmlTooltip = styled(({ className, ...props }) => (
     <Tooltip {...props} classes={{ popper: className }} arrow />
 ))(({ theme }) => ({
     [`& .${tooltipClasses.tooltip}`]: {
-        backgroundColor: '#f5f5f9',
-        color: 'rgba(0, 0, 0, 0.87)',
-        maxWidth: 220,
-        fontSize: theme.typography.pxToRem(12),
-        border: '1px solid #dadde9',
+        backgroundColor: 'background.secondary',
+        color: 'text.primary',
+        width: 220,
+        fontSize: 15,
     },
 }));
 
@@ -47,12 +46,12 @@ function CodeSpace() {
     useEffect(() => {
         setLoad(true);
         console.log(location.state.name);
-        axios.put(`http://localhost:8000/api/spaces/updateActive/${location.state.spaceId}`,
-            {
-                name: location.state.name,
-                incoming: true,
-                id: activeId
-            })
+        // axios.put(`http://localhost:8000/api/spaces/updateActive/${location.state.spaceId}`,
+        //     {
+        //         name: location.state.name,
+        //         incoming: true,
+        //         id: activeId
+        //     })
 
         axios.get(`http://localhost:8000/api/spaces/${location.state.spaceId}`).then((res) => {
             if (res.status === 200) {
@@ -173,38 +172,38 @@ function CodeSpace() {
     return (
         <>
             <Backdrop
-                sx={{ backgroundColor: 'white', zIndex: 2, display: "flex", flexDirection: "column" }}
+                sx={{ backgroundColor: 'background.default', zIndex: 2, display: "flex", flexDirection: "column" }}
                 open={load}
             >
                 <CircularProgress size={100} />
-                <Typography variant="h1" sx={{ fontSize: 35, fontWeight: 700, mt: 5 }}>
-                    Loading Space.
+                <Typography variant="h1" sx={{ color: 'text.primary', fontSize: 35, fontWeight: 700, mt: 5 }}>
+                    Loading Space...
                 </Typography>
             </Backdrop>
-            <Grid container>
+            <Grid container sx={{ backgroundColor: 'background.default' }}>
                 <Grid item xs={12} sx={{ p: 1 }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="h1" sx={{ fontSize: 35, fontWeight: 700 }}>
+                        <Typography variant="h1" sx={{ color: 'text.primary', fontSize: 35, fontWeight: 700 }}>
                             CodeCollab.
                         </Typography>
                         <HtmlTooltip
                             title={
                                 <React.Fragment>
                                     {active && active.map((client, id) => {
-                                        return (<Typography key={id} color="inherit">{client.name}</Typography>)
+                                        return (<Typography key={id} color='text.primary'>{client.name}</Typography>)
                                     })}
                                 </React.Fragment>
                             }
                         >
-                            <AvatarGroup max={4}>
+                            <AvatarGroup max={6}>
                                 {active && active.map((client, id) => {
-                                    return (<Avatar key={id}>{client.name[0]}</Avatar>)
+                                    return (<Avatar key={id} sx={{ bgcolor: uniqolor(client.name).color }}>{client.name[0]}</Avatar>)
                                 })}
                             </AvatarGroup>
                         </HtmlTooltip>
 
                         {loggedInUser ? null : (
-                            <Typography variant="h1" sx={{ fontSize: 15, fontWeight: 500 }}>
+                            <Typography variant="h1" sx={{ color: 'text.primary', fontSize: 15, fontWeight: 500 }}>
                                 To edit this page please <Link to="/login">Login</Link>.
                             </Typography>
                         )}
@@ -217,23 +216,23 @@ function CodeSpace() {
 
                 <Grid item xs={1.5}>
                     <Box sx={{ p: 1 }}>
-                        <Typography sx={{ fontWeight: 700, fontSize: 20, mb: 2 }}>
+                        <Typography sx={{ color: 'text.primary', fontWeight: 700, fontSize: 20, mb: 2 }}>
                             {spaceName}
                         </Typography>
-                        <Typography sx={{ fontWeight: 700, fontSize: 12, mb: 2, opacity: 0.7 }}>
+                        <Typography sx={{ color: 'text.primary', fontWeight: 700, fontSize: 12, mb: 2, opacity: 0.7 }}>
                             Files in this space:
                         </Typography>
                         {data && data.map((item, id) => {
                             return (
                                 <Box sx={{ display: 'flex', alignItems: "center", justifyContent: "space-between" }} key={id}>
-                                    <Typography sx={{ fontSize: 15, cursor: "pointer" }} onClick={() => goToFile(item.id)}>
+                                    <Typography sx={{ color: 'text.primary', fontSize: 15, cursor: "pointer" }} onClick={() => goToFile(item.id)}>
                                         {item.fileName}
                                     </Typography>
                                     {loggedInUser ? (<Box>
-                                        <IconButton sx={{ color: "inherit" }} onClick={editFile}>
+                                        <IconButton sx={{ color: "text.primary" }} onClick={editFile}>
                                             <EditIcon />
                                         </IconButton>
-                                        <IconButton sx={{ color: "inherit" }} onClick={() => deleteFile(item.id)}>
+                                        <IconButton sx={{ color: "text.primary" }} onClick={() => deleteFile(item.id)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </Box>) : null}
@@ -251,11 +250,11 @@ function CodeSpace() {
                             scrollButtons="auto"
                         >
                             {openTabs && openTabs.map((item, id) => {
-                                return <Tab label={
-                                    < Box component="span" sx={{ display: "flex", alignItems: "center" }}>
+                                return <Tab disableRipple label={
+                                    <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
                                         {item.fileName}
                                         <Box>
-                                            <IconButton size="small" component="span" onClick={() => closeOpenTab(item.id)}>
+                                            <IconButton size="small" component="span" sx={{ color: "text.primary" }} onClick={() => closeOpenTab(item.id)}>
                                                 <CloseIcon sx={{ fontSize: "20px" }} />
                                             </IconButton>
                                         </Box>
@@ -265,10 +264,10 @@ function CodeSpace() {
                             })}
                         </Tabs>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                            {loggedInUser ? (<IconButton onClick={newFile}>
+                            {loggedInUser ? (<IconButton sx={{ color: "text.primary" }} onClick={newFile}>
                                 <AddIcon />
                             </IconButton>) : null}
-                            <IconButton >
+                            <IconButton sx={{ color: "text.primary" }} >
                                 <SettingsIcon />
                             </IconButton>
                         </Box>

@@ -98,9 +98,9 @@ function Dashboard() {
                 zIndex: 1,
                 justifyContent: 'space-between',
                 backdropFilter: !top && "blur(50px)",
-                color: !top && "transparent"
+                color: !top && "transparent",
             }}>
-                <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, p: 1 }}>
+                <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, p: 1, color: 'text.primary' }}>
                     CodeCollab.
                 </Typography>
                 <Button variant="contained" sx={{ m: 3 }} startIcon={<LogoutIcon />} onClick={handleLogout}>
@@ -110,9 +110,7 @@ function Dashboard() {
             </Box >
             <Grid container sx={{ minHeight: "100vh" }}>
                 <Grid item xs={12} sx={{ height: "30vh" }}>
-                    <Box sx={{ height: "inherit", boxShadow: "0px 10px 20px 0px rgba(0,0,0,0.3);" }}>
-
-
+                    <Box sx={{ height: "inherit", backgroundColor: "background.default" }}>
                         <Box sx={{ height: "20vh", display: "flex", justifyContent: "center", pt: 2 }}>
                             <Box sx={{ height: "inherit", minWidth: "50vw", display: "flex", justifyContent: "center", alignItems: "center" }}>
 
@@ -128,13 +126,13 @@ function Dashboard() {
                                     }}
                                 />
                                 <Box>
-                                    <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700 }}>
+                                    <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, color: 'text.primary' }}>
                                         {current.name}
                                     </Typography>
-                                    <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 400 }}>
+                                    <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 400, color: 'text.primary' }}>
                                         {current.email}
                                     </Typography>
-                                    <Typography variant="h1" sx={{ fontSize: 15, fontWeight: 400, mt: 2 }}>
+                                    <Typography variant="h1" sx={{ fontSize: 15, fontWeight: 400, mt: 2, color: 'text.primary' }}>
                                         With us since <strong>{date.toDateString()}</strong>
                                     </Typography>
 
@@ -142,7 +140,7 @@ function Dashboard() {
                                 </Box>
                             </Box>
                         </Box>
-                        <Box sx={{ display: "flex", justifyContent: "center", position: "relative", bottom: "6px" }}>
+                        <Box sx={{ display: "flex", justifyContent: "center", position: "relative", bottom: '-10px' }}>
                             <Tabs value={value} onChange={(event, value) => setValue(value)}>
                                 <Tab icon={<WorkspacesIcon />} iconPosition="start" label="Spaces" sx={{ pb: 1, pt: 3 }} />
                                 <Tab icon={<SettingsIcon />} iconPosition="start" label="Settings" sx={{ pb: 1, pt: 3 }} />
@@ -150,7 +148,7 @@ function Dashboard() {
                         </Box>
                     </Box>
                 </Grid>
-                <Grid item xs={12} sx={{ minHeight: "70vh" }}>
+                <Grid item xs={12} sx={{ minHeight: "70vh", backgroundColor: "background.paper", }}>
 
                     <TabPanel value={value} index={0} >
                         <Spaces setMessage={setMessage} setOpen={setOpen} setEopen={setEopen} />

@@ -28,7 +28,7 @@ function App() {
         },
         palette: {
             primary: {
-                main: "#72BC92",
+                main: "#00E5B5",
             },
 
             secondary: {
@@ -36,9 +36,9 @@ function App() {
             },
 
             background: {
-                default: "#11001c",
-                paper: "#3a015c",
-                secondary: "35012c",
+                default: "#090b28",
+                paper: "#0e103d",
+                secondary: "#181b66",
                 alter: "#4f0147"
             },
             text: {
@@ -48,7 +48,7 @@ function App() {
         },
     });
 
-    // #EAE8EE,#ABCEB6,#72BC92,#A68DCC,#724EA7,#21094E
+
 
     const [currentUser, setCurrentUser] = useState(null);
     const providerValue = useMemo(() => ({ currentUser, setCurrentUser }), [currentUser, setCurrentUser]);
@@ -68,29 +68,32 @@ function App() {
 
     return (
         <>
+            <ThemeProvider theme={theme}>
+                <UserContext.Provider value={providerValue}>
+                    <BrowserRouter>
+                        <Routes>
+                            {!currentUser && (
+                                <>
+                                    <Route path="/" element={<Home />} />
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/register" element={<Register />} />
+                                </>
+                            )}
 
-            <UserContext.Provider value={providerValue}>
-                <BrowserRouter>
-                    <Routes>
-                        {!currentUser && (
-                            <>
-                                <Route path="/" element={<Home />} />
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/register" element={<Register />} />
-                            </>
-                        )}
-
-                        {currentUser && <Route path="/dashboard" element={<Dashboard />} />}
+                            {currentUser && <Route path="/dashboard" element={<Dashboard />} />}
 
 
-                        <Route path="/codespace/:spaceId" element={<CodeSpace />} />
-                        <Route
-                            path="*"
-                            element={<Navigate to={currentUser ? "/dashboard" : "/"} />}
-                        />
-                    </Routes>
-                </BrowserRouter>
-            </UserContext.Provider>
+                            <Route path="/codespace/:spaceId" element={<CodeSpace />} />
+                            <Route
+                                path="*"
+                                element={<Navigate to={currentUser ? "/dashboard" : "/"} />}
+                            />
+                        </Routes>
+                    </BrowserRouter>
+                </UserContext.Provider>
+
+            </ThemeProvider>
+
         </>
     );
 }

@@ -20,7 +20,7 @@ function Settings(props) {
     return (
         <Box sx={{ display: "flex", flexDirection: "column", mt: 5, ml: 30 }}>
             <Box sx={{ mb: 5 }}>
-                <Typography variant="h2" sx={{ color: "black", fontSize: 20, fontWeight: 700, mb: 1 }}>
+                <Typography variant="h2" sx={{ color: "text.primary", fontSize: 20, fontWeight: 700, mb: 1 }}>
                     email.
                 </Typography>
                 <CustomTextField
@@ -32,7 +32,7 @@ function Settings(props) {
             </Box>
 
             <Box sx={{ mb: 5 }}>
-                <Typography variant="h2" sx={{ color: "black", fontSize: 20, fontWeight: 700, mb: 1 }}>
+                <Typography variant="h2" sx={{ color: "text.primary", fontSize: 20, fontWeight: 700, mb: 1 }}>
                     name.
                 </Typography>
                 <Box sx={{ display: "flex" }}>
@@ -51,7 +51,7 @@ function Settings(props) {
             </Box>
 
             <Box >
-                <Typography variant="h2" sx={{ color: "black", fontSize: 20, fontWeight: 700, mb: 1 }}>
+                <Typography variant="h2" sx={{ color: "text.primary", fontSize: 20, fontWeight: 700, mb: 1 }}>
                     change password.
                 </Typography>
                 {editPass ? (
@@ -75,6 +75,10 @@ function Settings(props) {
                 ) : (
                     <Button variant="contained" sx={{ height: "43px" }} onClick={() => setEditPass(true)}>Change password</Button>
                 )}
+
+                <Typography variant="h2" sx={{ color: "text.primary", fontSize: 20, fontWeight: 700, mt: 5 }}>
+                    favourite language.
+                </Typography>
 
 
             </Box>

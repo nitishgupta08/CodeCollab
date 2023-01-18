@@ -71,68 +71,63 @@ function Home(props) {
                     justifyContent: "center",
                     alignItems: "center",
                 }}>
-                <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-                    <Box
-                        sx={{
-                            width: "25vw",
-                            backgroundColor: "background.paper",
-                            // borderRadius:1,
-                            display: "flex",
-                            flexDirection: "column",
-                            p: 3,
-                            boxShadow: "12px 12px 0px 3px #B4FE98"
-                        }}>
-                        <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, mb: 3 }}>
-                            CodeCollab.
+                <Box
+                    sx={{
+                        width: "25vw",
+                        backgroundColor: "background.paper",
+                        borderRadius: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        p: 3,
+                        boxShadow: "0px 0px 5px 5px #00E5B5"
+                    }}>
+                    <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, mb: 3, color: "text.primary" }}>
+                        CodeCollab.
+                    </Typography>
+                    <Box>
+
+                        <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%", color: "text.primary" }}>
+                            Join a space.
                         </Typography>
                         <Box>
+                            <CustomTextField
+                                autoFocus
+                                name="spaceid"
+                                placeholder="Paste Invite ID"
+                                sx={{ width: "500px", maxWidth: "100%", mb: 1 }}
+                                value={spaceId}
+                                onKeyUp={handleKey}
+                                onChange={(e) => setSpaceId(e.target.value)}
+                            />
 
-                            <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%" }}>
-                                Join a space.
-                            </Typography>
-                            <Box>
-                                <CustomTextField
-                                    autoFocus
-                                    name="spaceid"
-                                    placeholder="Paste Invite ID"
-                                    sx={{ width: "500px", maxWidth: "100%", mb: 1 }}
-                                    value={spaceId}
-                                    onKeyUp={handleKey}
-                                    onChange={(e) => setSpaceId(e.target.value)}
-                                />
-
-                                <CustomTextField
-                                    name="name"
-                                    placeholder="Enter name"
-                                    sx={{ width: "500px", maxWidth: "100%", mb: 2 }}
-                                    value={name}
-                                    onKeyUp={handleKey}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
+                            <CustomTextField
+                                name="name"
+                                placeholder="Enter name"
+                                sx={{ width: "500px", maxWidth: "100%", mb: 2 }}
+                                value={name}
+                                onKeyUp={handleKey}
+                                onChange={(e) => setName(e.target.value)}
+                            />
 
 
-                                <Button variant="contained" sx={{ height: "43px", display: "block" }} onClick={handlejoin}>Join</Button>
+                            <Button variant="contained" sx={{ height: "43px", display: "block" }} onClick={handlejoin}>Join</Button>
 
-                                <Box sx={{ mt: 5 }}>
-                                    <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%" }}>
-                                        Create a space.
-                                    </Typography>
-                                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                            <Box sx={{ mt: 5 }}>
+                                <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%", color: "text.primary" }}>
+                                    Create a space.
+                                </Typography>
+                                <Box sx={{ display: "flex", justifyContent: "center" }}>
 
-                                        <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => navigate('/login')}>Login</Button>
-                                        <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => navigate('/register')}>Signup</Button>
+                                    <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => navigate('/login')}>Login</Button>
+                                    <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => navigate('/register')}>Signup</Button>
 
-                                    </Box>
                                 </Box>
                             </Box>
-
                         </Box>
 
                     </Box>
-                </Slide>
 
-
-
+                </Box>
 
             </Box>
 

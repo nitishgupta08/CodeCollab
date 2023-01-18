@@ -69,49 +69,47 @@ function Login() {
                 justifyContent: "center",
                 alignItems: "center",
             }}>
-                <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-                    <Box
-                        sx={{
-                            width: "25vw",
-                            backgroundColor: "background.paper",
-                            // borderRadius:1,
-                            display: "flex",
-                            flexDirection: "column",
-                            p: 3,
-                            boxShadow: "12px 12px 0px 3px #B4FE98"
-                        }}>
-                        <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, mb: 3 }}>
-                            CodeCollab.
-                        </Typography>
-                        <Box>
-                            <IconButton sx={{ mb: 4 }} onClick={() => navigate('/')}>
-                                <ArrowBackIcon fontSize="large" />
-                            </IconButton>
-                        </Box>
-
-                        <CustomTextField
-                            autoFocus
-                            name="email"
-                            placeholder="Enter email"
-                            sx={{ width: "500px", maxWidth: "100%", mb: 3 }}
-                            value={user.email}
-
-                            onChange={(e) => setUser({ ...user, email: e.target.value })}
-                        />
-                        <CustomTextField
-                            type="password"
-                            name="password"
-                            placeholder="Enter password"
-                            sx={{ width: "500px", maxWidth: "100%", mb: 5 }}
-                            value={user.password}
-
-                            onChange={(e) => setUser({ ...user, password: e.target.value })}
-                        />
-
-                        <Button variant="contained" sx={{ height: "50px" }} onClick={login}>Login</Button>
-
+                <Box
+                    sx={{
+                        width: "25vw",
+                        backgroundColor: "background.paper",
+                        borderRadius: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        p: 3,
+                        boxShadow: "0px 0px 5px 5px #00E5B5"
+                    }}>
+                    <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, mb: 3, color: "text.primary" }}>
+                        CodeCollab.
+                    </Typography>
+                    <Box>
+                        <IconButton sx={{ mb: 4, color: "text.primary" }} onClick={() => navigate('/')}>
+                            <ArrowBackIcon fontSize="large" />
+                        </IconButton>
                     </Box>
-                </Slide>
+
+                    <CustomTextField
+                        autoFocus
+                        name="email"
+                        placeholder="Enter email"
+                        sx={{ width: "500px", maxWidth: "100%", mb: 3 }}
+                        value={user.email}
+
+                        onChange={(e) => setUser({ ...user, email: e.target.value })}
+                    />
+                    <CustomTextField
+                        type="password"
+                        name="password"
+                        placeholder="Enter password"
+                        sx={{ width: "500px", maxWidth: "100%", mb: 5 }}
+                        value={user.password}
+
+                        onChange={(e) => setUser({ ...user, password: e.target.value })}
+                    />
+                    <Box>
+                        <Button variant="contained" sx={{ height: "50px" }} onClick={login}>Login</Button>
+                    </Box>
+                </Box>
             </Box>
         </>
 

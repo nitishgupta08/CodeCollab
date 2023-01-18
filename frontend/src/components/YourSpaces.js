@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, CardActions, Typography, IconButton } from '@mui/material'
+import { Box, Card, CardContent, CardActions, Typography, IconButton, Skeleton } from '@mui/material'
 import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react'
 import { UserContext } from '../UserContext';
@@ -39,7 +39,22 @@ function YourSpaces({ setMessage, setOpen, setEopen }) {
         <>
 
             <Box>
-                {listSpace && listSpace.map((item, id) => {
+                {listSpace ? (listSpace.length === 0 ? (
+                    <>
+                        <Box
+                            component="img"
+                            sx={{
+                                height: 500,
+                                display: "block",
+                                ml: "auto",
+                                mr: "auto",
+                                width: "50%"
+                            }}
+                            alt="The house from the offer."
+                            src="/no_data.png"
+                        />
+                    </>
+                ) : listSpace.map((item, id) => {
                     return (
                         <SpaceCard
                             key={id}
@@ -51,7 +66,29 @@ function YourSpaces({ setMessage, setOpen, setEopen }) {
                             setEopen={setEopen}
                         />
                     )
-                })}
+                })) : (
+                    <>
+                        <Card sx={{
+                            backgroundColor: "background.secondary", m: 1, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center", p: 1, boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.3)"
+                        }}>
+                            <CardContent >
+                                <Skeleton animation="wave" variant="text" width={500} sx={{ fontSize: 20, fontWeight: 700, mb: 1 }} />
+                                <Skeleton animation="wave" variant="text" width={400} sx={{ fontSize: 15, mb: 1 }} />
+                                <Skeleton animation="wave" variant="text" width={300} sx={{ fontSize: 11 }} />
+
+                            </CardContent>
+                            <CardActions>
+                                <Skeleton animation="wave" variant="circular" width={40} height={40} />
+                                <Skeleton animation="wave" variant="circular" width={40} height={40} />
+                                <Skeleton animation="wave" variant="circular" width={40} height={40} />
+                            </CardActions>
+                            <Box>
+                                <Skeleton variant="circular" width={40} height={40} />
+                            </Box>
+                        </Card>
+
+                    </>
+                )}
             </Box>
         </>
     )
@@ -104,7 +141,7 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
     return (
 
         <Card sx={{
-            backgroundColor: "background.alter", m: 1, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center", p: 1, boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.3)"
+            backgroundColor: "background.secondary", m: 1, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center", p: 1, boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.3)"
         }}>
             <CardContent>
                 {edit ? <CustomTextField
@@ -113,15 +150,15 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     sx={{ width: "400px", mb: 1 }}
-                /> : <Typography variant="h4" sx={{ fontSize: 20, fontWeight: 700, mb: 1 }}>
+                /> : <Typography variant="h4" sx={{ fontSize: 20, fontWeight: 700, mb: 1, color: "text.primary" }}>
                     {item.spaceName}
                 </Typography>}
 
-                <Typography variant="h5" sx={{ fontSize: 15, opacity: "0.5", mb: 1 }}>
+                <Typography variant="h5" sx={{ fontSize: 15, opacity: "0.5", mb: 1, color: "text.primary" }}>
                     {item.spaceId}
                 </Typography>
 
-                <Typography variant="p" sx={{ fontSize: 11 }}>
+                <Typography variant="p" sx={{ fontSize: 11, color: "text.primary" }}>
                     Created at: {date.toDateString()} {date.toLocaleTimeString()}
                 </Typography>
 
@@ -129,22 +166,22 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
             <CardActions>
                 {edit ? (
                     <>
-                        <IconButton onClick={handleEdit}>
+                        <IconButton sx={{ color: "green" }} onClick={handleEdit}>
                             <CheckIcon />
                         </IconButton>
-                        <IconButton onClick={() => setEdit(false)}>
+                        <IconButton sx={{ color: "red" }} onClick={() => setEdit(false)}>
                             <CloseIcon />
                         </IconButton>
                     </>
                 ) :
                     <>
-                        <IconButton onClick={copySpaceId}>
+                        <IconButton sx={{ color: "text.primary" }} onClick={copySpaceId}>
                             <ContentCopyIcon />
                         </IconButton>
-                        <IconButton onClick={() => setEdit(true)}>
+                        <IconButton sx={{ color: "text.primary" }} onClick={() => setEdit(true)}>
                             <EditIcon />
                         </IconButton>
-                        <IconButton onClick={handleDelete}>
+                        <IconButton sx={{ color: "text.primary" }} onClick={handleDelete}>
                             <DeleteIcon />
                         </IconButton>
                     </>
@@ -152,7 +189,7 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
 
             </CardActions>
             <Box>
-                {!edit && <IconButton onClick={goToSpace}>
+                {!edit && <IconButton sx={{ color: "text.primary" }} onClick={goToSpace}>
                     <RocketLaunchIcon />
                 </IconButton>}
 

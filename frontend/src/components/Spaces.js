@@ -77,13 +77,13 @@ function Spaces({ setMessage, setOpen, setEopen }) {
                     <Box
                         sx={{
                             width: "25vw",
-                            backgroundColor: "background.alter",
+                            backgroundColor: "background.secondary",
                             borderRadius: 2,
                             display: "flex",
                             flexDirection: "column",
                             p: 3,
                         }}>
-                        <Typography variant="h2" sx={{ color: "black", fontSize: 30, fontWeight: 700, mb: 4 }}>
+                        <Typography variant="h2" sx={{ color: "text.primary", fontSize: 30, fontWeight: 700, mb: 4 }}>
                             Give your space a name.
                         </Typography>
                         <CustomTextField
@@ -124,13 +124,13 @@ function Spaces({ setMessage, setOpen, setEopen }) {
                     <Box
                         sx={{
                             width: "25vw",
-                            backgroundColor: "background.alter",
+                            backgroundColor: "background.secondary",
                             borderRadius: 2,
                             display: "flex",
                             flexDirection: "column",
-                            p: 3,
+                            p: 2,
                         }}>
-                        <Typography variant="h2" sx={{ color: "black", fontSize: 30, fontWeight: 700, mb: 4 }}>
+                        <Typography variant="h2" sx={{ color: "text.primary", fontSize: 30, fontWeight: 700, mb: 2 }}>
                             Enter Space ID.
                         </Typography>
                         <CustomTextField
@@ -142,7 +142,7 @@ function Spaces({ setMessage, setOpen, setEopen }) {
                         />
 
 
-                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
                             <Box sx={{ display: "flex" }}>
                                 <Button variant="contained" sx={{ height: "43px", mr: 2 }} onClick={handleJoin}>Join</Button>
                                 <Button variant="contained" sx={{ height: "43px" }} onClick={() => setBdo1(false)}>Cancel</Button>
@@ -154,7 +154,7 @@ function Spaces({ setMessage, setOpen, setEopen }) {
             <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Box sx={{ minWidth: "50vw", minHeight: "70vh", mb: 10 }}>
                     <Box sx={{ p: 2, pt: 5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography sx={{ fontSize: 40, fontWeight: 700 }}>
+                        <Typography sx={{ fontSize: 40, fontWeight: 700, color: "text.primary" }}>
                             Your spaces.
                         </Typography>
                         <Box>
