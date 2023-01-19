@@ -29,7 +29,7 @@ const spaceSchema = mongoose.Schema({
             id: String,
             fileName: String,
             fileData: String,
-            lang: String
+            lang: Number
         }]
     }
 

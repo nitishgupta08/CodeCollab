@@ -20,7 +20,7 @@ function Spaces({ setMessage, setOpen, setEopen }) {
     const navigate = useNavigate();
     const { currentUser } = useContext(UserContext)
     const user = JSON.parse(currentUser)
-    const spaceData = [{ id: uniqid(), fileName: "Untitled-1", fileData: "Hello", lang: "js" }]
+    const spaceData = [{ id: uniqid(), fileName: "Untitled-1", fileData: "Write your code here", lang: 0 }]
     const activeUsers = []
 
     const handleNew = () => {
