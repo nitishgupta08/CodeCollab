@@ -22,7 +22,7 @@ import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { xcodeLight, xcodeDark } from '@uiw/codemirror-theme-xcode';
 
 
-const editorTheme = [
+const editorThemes = [
     { name: 'Abcdef', value: abcdef },
     { name: 'Androidstudio', value: androidstudio },
     { name: 'Atomone', value: atomone },
@@ -52,4 +52,4 @@ const editorTheme = [
     { name: 'Xcode Dark', value: xcodeDark }
 ]
 
-export { editorTheme }
+export { editorThemes }

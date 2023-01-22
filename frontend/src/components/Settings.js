@@ -9,14 +9,8 @@ function Settings(props) {
     const [editName, setEditName] = useState(false);
     const [editPass, setEditPass] = useState(false);
     const [newPass, setNewPass] = useState("");
+    const [newName, setNewName] = useState(user.name);
 
-    const handeChangeName = () => {
-        setEditName(false);
-    }
-
-    const handleChangePass = () => {
-        setEditPass(false);
-    }
     return (
         <Box sx={{ display: "flex", flexDirection: "column", mt: 5, ml: 30 }}>
             <Box sx={{ mb: 5 }}>
@@ -39,11 +33,12 @@ function Settings(props) {
                     <CustomTextField
                         disabled={editName ? false : true}
                         name="name"
-                        value={user.name}
+                        value={editName ? newName : user.name}
+                        onChange={(e) => setNewName(e.target.value)}
                         sx={{ width: "400px", mr: 2 }}
                     />
                     {!editName ? (
-                        <Button variant="contained" sx={{ height: "43px" }} onClick={handeChangeName}>Edit</Button>
+                        <Button variant="contained" sx={{ height: "43px" }} onClick={() => setEditName(true)}>Edit</Button>
                     ) : (
                         <Button variant="contained" sx={{ height: "43px" }} onClick={() => setEditName(false)}>Submit</Button>
                     )}
@@ -58,7 +53,7 @@ function Settings(props) {
                     <>
                         <Box sx={{ display: "flex" }}>
                             <CustomTextField
-                                type="password"
+                                // type="password"
                                 name="password"
                                 value={newPass}
                                 onChange={(e) => setNewPass(e.target.value)}
@@ -66,7 +61,7 @@ function Settings(props) {
                                 sx={{ width: "400px", mr: 2 }}
                             />
 
-                            <Button variant="contained" sx={{ height: "43px", mr: 2 }} onClick={handleChangePass}>Submit</Button>
+                            <Button variant="contained" sx={{ height: "43px", mr: 2 }} onClick={() => setEditPass(true)}>Submit</Button>
 
                             <Button variant="contained" sx={{ height: "43px" }} onClick={() => setEditPass(false)}>Cancel</Button>
 
@@ -78,6 +73,10 @@ function Settings(props) {
 
                 <Typography variant="h2" sx={{ color: "text.primary", fontSize: 20, fontWeight: 700, mt: 5 }}>
                     favourite language.
+                </Typography>
+
+                <Typography variant="h2" sx={{ color: "text.primary", fontSize: 20, fontWeight: 700, mt: 5 }}>
+                    favourite theme.
                 </Typography>
 
 

@@ -43,7 +43,6 @@ const createSpaces = asyncHandler(async (req, res) => {
 * */
 const updateSpaces = asyncHandler(async (req, res) => {
     const space = await Spaces.findOne({ spaceId: req.params.id })
-    console.log(req.body);
     if (!space) {
         req.status(400)
         throw new Error("NO space found.")
@@ -111,7 +110,6 @@ const updateActive = asyncHandler(async (req, res) => {
         req.status(400)
         throw new Error("NO space found.")
     }
-    console.log(req.body)
 
     req.body.incoming ?
         await Spaces.findOneAndUpdate({ spaceId: req.params.id }, { $push: { activeUsers: req.body } }, { new: true }) :

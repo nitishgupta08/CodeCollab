@@ -3,19 +3,21 @@ import CodeMirror from '@uiw/react-codemirror';
 import { editorLang } from '../editorLang';
 
 
-function Editor({ data, setChangeData, loggedInUser, etheme, langIndex }) {
+function Editor({ data, loggedInUser, theme, language, dispatch }) {
+
     const onChange = React.useCallback((value, viewUpdate) => {
-        setChangeData(value);
+        dispatch({type: 'updateCurrentFileData',payload: value});
+
     }, []);
 
     return (
         <CodeMirror
             readOnly={loggedInUser ? null : 'nocursor'}
             value={data ? data.fileData : ""}
-            height="88.5vh"
-            theme={etheme}
+            height="90vh"
+            theme={theme}
 
-            extensions={[editorLang[langIndex].func()]}
+            extensions={[editorLang[language].func()]}
             onChange={onChange}
         />
     );
