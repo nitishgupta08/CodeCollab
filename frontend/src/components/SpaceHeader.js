@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Button, Avatar, AvatarGroup, Typography, IconButton } from '@mui/material'
+import { Box, Button, Avatar, AvatarGroup, Typography, IconButton, Divider } from '@mui/material'
 import SaveIcon from '@mui/icons-material/Save'
 import uniqolor from 'uniqolor';
 import { Link, useNavigate } from "react-router-dom";
@@ -21,14 +21,28 @@ function SpaceHeader({ active, loggedInUser, handleSave }) {
                     title={
                         <React.Fragment>
                             {active && active.map((client, id) => {
-                                return (<Typography key={id} color='text.primary'>{client.name}</Typography>)
+
+                                return client.userData.email ?
+                                    (<Box sx={{mb:1}} key={id}>
+                                            <Typography  color='text.primary' sx={{fontSize:20, fontWeight:700}}>{client.userData.name}</Typography>
+                                            <Typography color='text.primary' sx={{opacity: 0.7}}>can edit this space.</Typography>
+                                            <Divider sx={{backgroundColor: 'text.primary'}}/>
+                                    </Box>
+                                       ) :
+                                    (<Box sx={{mb:1}} key={id} >
+                                            <Typography  color='text.primary' sx={{fontSize:20, fontWeight:700}}>{client.userData.name}</Typography>
+                                            <Typography color='text.primary' sx={{opacity: 0.7}}>can only view this space.</Typography>
+                                            <Divider sx={{backgroundColor: 'text.primary'}}/>
+                                    </Box>
+
+                                    )
                             })}
                         </React.Fragment>
                     }
                 >
                     <AvatarGroup max={6} sx={{ mr: 5 }}>
                         {active && active.map((client, id) => {
-                            return (<Avatar key={id} sx={{ bgcolor: uniqolor(client.name).color }}>{client.name[0]}</Avatar>)
+                            return (<Avatar key={id} sx={{ bgcolor: uniqolor(client.userData.name).color }}>{client.userData.name[0]}</Avatar>)
                         })}
                     </AvatarGroup>
                 </HtmlTooltip>

@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState, useReducer } from 'react';
-import { Grid, Typography, Backdrop, CircularProgress } from "@mui/material";
-import { useLocation } from "react-router-dom";
-import uniqid from 'uniqid';
+import React, {useContext, useEffect, useReducer, useRef} from 'react';
+import {Grid, Typography, Backdrop, CircularProgress, Alert, AlertTitle, Snackbar, Slide} from "@mui/material";
+import {useLocation, useNavigate} from "react-router-dom";
 import axios from 'axios'
 import Editor from "../components/Editor";
 import { UserContext } from "../UserContext";
@@ -10,10 +9,16 @@ import SpaceHeader from '../components/SpaceHeader';
 import SpaceSidebar from "../components/SpaceSidebar";
 import SpaceTabs from "../components/SpaceTabs";
 import SpaceSettings from "../components/SpaceSettings";
+import {initSocket} from "../scoket";
+import ACTIONS from '../Actions'
+
+function SlideTransition(props) {
+    return <Slide {...props} direction="down" />;
+}
 
 const initialState = {
     spaceData : null,
-    tabsData: null,
+    tabsData: [],
     loadingScreen: true,
     spaceName: "",
     currentFileData: "",
@@ -22,6 +27,9 @@ const initialState = {
     editorLanguageIndex: 0,
     sideTabValue: 0,
     topTabValue: 0,
+    successSnackbar: false,
+    failSnackbar: false,
+    message: {title: '', data:''}
 }
 
 function reducer(state, action) {
@@ -44,6 +52,14 @@ function reducer(state, action) {
             return { ...state, editorLanguageIndex: action.payload };
         case "updateCurrentFileData":
             return { ...state, currentFileData: action.payload };
+        case "updateSuccess":
+            return { ...state, successSnackbar: action.payload };
+        case "updateFail":
+            return { ...state, failSnackbar: action.payload };
+        case "updateMessage":
+            return { ...state, message: action.payload };
+        case "updateActiveUsers":
+            return { ...state, activeUsers: action.payload };
         default:
             throw new Error();
     }
@@ -58,8 +74,10 @@ function CodeSpace() {
     const loggedInUser = currentUser ? JSON.parse(currentUser) : null;
 
 
+    const socketRef = useRef(null);
+    const navigate = useNavigate();
 
-    useEffect(() => {
+    useEffect(()=> {
         axios.get(`http://localhost:8000/api/spaces/${location.state.spaceId}`).then((res) => {
             if (res.status === 200) {
                 dispatch({type: 'updateSpaceData', payload: res.data.spaceData});
@@ -68,6 +86,66 @@ function CodeSpace() {
                 dispatch({type: 'removeLoadingScreen'});
             }
         })
+    },[])
+
+
+    useEffect(() => {
+
+        const init = async () => {
+            socketRef.current = await initSocket();
+            socketRef.current.on('connect_server', (err) => handleErrors(err));
+            socketRef.current.on('connect_failed', (err) => handleErrors(err));
+
+            const handleErrors = (e) => {
+                console.log('socked error',e);
+                // error snackbar
+                navigate('/');
+            }
+
+            socketRef.current.emit(ACTIONS.JOIN, {
+                spaceId: location.state.spaceId,
+                name: location.state.name,
+                email: location.state.email
+            })
+
+
+            socketRef.current.on(ACTIONS.JOINED, ({clients,name, email, socketId}) => {
+                console.log(`${name} has joined`);
+                if(name !== location.state.name) {
+                    if(email)
+                        dispatch({type: 'updateMessage', payload: {title: `${name} has joined this space`, data: 'They can edit this space.'}});
+                    else
+                        dispatch({type: 'updateMessage', payload: {title: `${name} has joined this space`, data: 'They can only view this space.'}});
+
+                    dispatch({type: 'updateSuccess', payload: true});
+                }
+                dispatch({type: 'updateActiveUsers', payload: clients});
+            })
+
+            socketRef.current.on(ACTIONS.DISCONNECTED, ({userData, socketId}) => {
+                console.log(`${userData.name} has left`);
+                dispatch({type: 'updateMessage', payload: {title: `${userData.name} has left this space`, data: null}});
+                dispatch({type: 'updateActiveUsers', payload: state.activeUsers.filter(user => user.userData.email !== userData.email)});
+                dispatch({type: 'updateSuccess', payload: true});
+            })
+
+            socketRef.current.on(ACTIONS.SPACEDATA_CHANGE, ({spaceData,message}) => {
+                dispatch({type: 'updateSpaceData', payload: spaceData});
+                dispatch({type: 'updateMessage', payload: {title: message, data: null}});
+                dispatch({type: 'updateSuccess', payload: true});
+            })
+        }
+
+        init();
+
+        return () => {
+            socketRef.current.off(ACTIONS.JOINED);
+            socketRef.current.off(ACTIONS.DISCONNECTED);
+            socketRef.current.disconnect();
+        }
+
+
+
     }, [])
 
 
@@ -95,6 +173,19 @@ function CodeSpace() {
 
     return (
         <>
+            <Snackbar
+                open={state.successSnackbar}
+                onClose={() =>  dispatch({type: 'updateSuccess', payload: false})}
+                TransitionComponent={SlideTransition}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                autoHideDuration={2500}
+            >
+                <Alert onClose={() => dispatch({type: 'updateSuccess', payload: false})} severity="success" sx={{ width: '100%' }}>
+                    <AlertTitle>{state.message.title}</AlertTitle>
+                    {state.message.data}
+                </Alert>
+
+            </Snackbar>
             <Backdrop
                 sx={{ backgroundColor: 'background.default', zIndex: 2, display: "flex", flexDirection: "column" }}
                 open={state.loadingScreen}
@@ -122,6 +213,7 @@ function CodeSpace() {
                         value={state.sideTabValue}
                         spaceId={location.state.spaceId}
                         dispatch={dispatch}
+                        socketRef={socketRef}
                     />
                 </Grid>
                 <Grid item xs={10.5} sx={{height: '95vh'}}>

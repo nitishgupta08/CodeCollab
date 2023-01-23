@@ -25,6 +25,7 @@ function Home(props) {
             state: {
                 spaceId,
                 name,
+                email:null,
             }
         });
     }

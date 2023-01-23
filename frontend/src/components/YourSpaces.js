@@ -130,6 +130,7 @@ const SpaceCard = ({ item, user, getSpaces, setMessage, setEopen, setOpen }) => 
             state: {
                 spaceId: item.spaceId,
                 name: user.name,
+                email: user.email
             }
         });
     }

@@ -1,9 +1,14 @@
 const express = require('express')
 const cors = require('cors')
 const colors = require('colors')
+const {Server} = require('socket.io');
+const ACTIONS = require('./Actions')
 const dotenv = require('dotenv').config()
 const { errorHandler } = require('./middleware/errorMiddleware')
+
+
 const connectDB = require('./config/db')
+const Spaces = require("./models/spaceSchema");
 connectDB()
 
 const port = process.env.PORT || 5000
@@ -14,18 +19,87 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 app.options('*', cors())
 
-// app.use(function (req, res, next) {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type', 'authorization');
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//     next();
-// });
-
-
-app.use('/api/spaces', require('./routes/spaceRoutes'))
-app.use('/api/users', require('./routes/userRoutes'))
+app.use('/api/spaces', require('./routes/spaceRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
 
 app.use(errorHandler)
 
-app.listen(port, () => console.log(`Server started at port ${port}`))
+
+
+const httpServer = app.listen(port, () => {console.log(`Server listening on port ${port}`)});
+const io = new Server(httpServer);
+
+const userSocketMap = {} //convert it to db
+
+const getAllConnectedClients = (spaceId) => {
+    return Array.from(io.sockets.adapter.rooms.get(spaceId) || []).map((socketId)=> {
+        return {
+            socketId,
+            userData: userSocketMap[socketId]
+        }
+    })
+}
+
+
+
+io.on('connection', (socket) => {
+    console.log('Socket.connected', socket.id);
+
+    socket.on(ACTIONS.JOIN, ({spaceId,name,email}) => {
+        userSocketMap[socket.id] = {name,email};
+        socket.join(spaceId);
+        const clients = getAllConnectedClients(spaceId);
+        clients.forEach(({socketId})=> {
+            io.to(socketId).emit(ACTIONS.JOINED, {
+                clients,
+                name,
+                email,
+                socketId: socket.id
+            })
+        })
+    })
+
+
+    socket.on('disconnecting', () => {
+        const spaces = [...socket.rooms];
+        spaces.forEach((spaceId)=> {
+            socket.to(spaceId).emit(ACTIONS.DISCONNECTED, {
+                socketId: socket.id,
+                userData: userSocketMap[socket.id],
+            })
+        })
+
+        delete userSocketMap[socket.id];
+        socket.leave();
+    })
+
+    socket.on(ACTIONS.SPACEDATA_CHANGE, ({spaceData, type, name, spaceId}) => {
+        Spaces.findOneAndUpdate({ spaceId: spaceId }, spaceData, { new: true }) //not working
+        const clients = getAllConnectedClients(spaceId);
+        clients.forEach(({socketId})=> {
+            if(type === 1) {
+                io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
+                    message: `${name} has added a new file.`,
+                    spaceData,
+                })
+            } else if(type === 0) {
+                io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
+                    message: `${name} has edited a file name`,
+                    spaceData,
+                })
+            } else {
+                io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
+                    message: `${name} has deleted a file`,
+                    spaceData,
+                })
+            }
+
+        })
+    })
+})
+
+
+
+
+
+

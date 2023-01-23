@@ -5,6 +5,7 @@ const ACTIONS = {
     CODE_CHANGE: 'code-change',
     SYNC_CODE: 'sync-code',
     LEAVE:'leave',
+    SPACEDATA_CHANGE: 'spaceData-change',
 }
 
 module.exports = ACTIONS;

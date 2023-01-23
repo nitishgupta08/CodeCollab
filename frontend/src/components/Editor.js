@@ -7,7 +7,7 @@ function Editor({ data, loggedInUser, theme, language, dispatch }) {
 
     const onChange = React.useCallback((value, viewUpdate) => {
         dispatch({type: 'updateCurrentFileData',payload: value});
-
+        console.log(viewUpdate)
     }, []);
 
     return (

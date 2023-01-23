@@ -18,6 +18,8 @@ import AddIcon from "@mui/icons-material/Add";
 import uniqid from "uniqid";
 import {editorLang} from "../editorLang";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import ACTIONS from '../Actions'
+import {useLocation} from "react-router-dom";
 
 function SlideTransition(props) {
     return <Slide {...props} direction="down" />;
@@ -25,13 +27,14 @@ function SlideTransition(props) {
 
 
 
-function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topTabsData, spaceId}) {
+function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topTabsData, spaceId, socketRef}) {
     const [bdo, setBdo] = useState(false);
     const [bdo1, setBdo1] = useState(false);
     const [editid, setEditid] = useState('');
     const [file,setFile] = useState({name: "", langIndex: 0});
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState({ title: "", data: "" });
+    const location = useLocation()
 
     const newFile = () => {
         let fileobj = {
@@ -55,6 +58,13 @@ function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topT
 
         setFile({name:'',langIndex: 0});
         setBdo(false);
+
+        socketRef.current.emit(ACTIONS.SPACEDATA_CHANGE, {
+            spaceData: copyarr,
+            type: 1,
+            name: location.state.name,
+            spaceId: location.state.spaceId,
+        })
     }
 
 
@@ -261,14 +271,15 @@ function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topT
                             return (
                                 <DataStyledTab disableRipple
                                                onClick={() => goToFile(item.id)}
-
+                                               sx={{width:'100%',minWidth: '200px'}}
                                                label={
-                                                   <Box component="span" sx={{display:'flex',justifyContent:'space-between',alignItems:'center'}} >
-                                                       <Typography sx={{ color: 'text.primary', fontWeight: 700, fontSize: 15}}>
+                                                   <Box component="span" sx={{}} >
+                                                       <Typography sx={{ color: 'text.primary', fontWeight: 700, fontSize: 15, position: 'absolute' ,left:5,top:15}}>
                                                            {item.fileName}
                                                        </Typography>
 
-                                                       {loggedInUser && id===value ? (<Box sx={{ ml: 5 }}>
+                                                       {loggedInUser && id===value ? (
+                                                           <Box sx={{ position: 'absolute' ,right:2,top:5 }}>
                                                            <IconButton sx={{ color: "text.primary" }} onClick={() => {
                                                                setFile({name: item.fileName, langIndex: item.lang});
                                                                setEditid(item.id);
