@@ -45,10 +45,11 @@ const getAllConnectedClients = (spaceId) => {
 io.on('connection', (socket) => {
     console.log('Socket.connected', socket.id);
 
-    socket.on(ACTIONS.JOIN, ({spaceId,name,email}) => {
+    socket.on(ACTIONS.JOIN, async ( {spaceId,name,email}) => {
         userSocketMap[socket.id] = {name,email};
         socket.join(spaceId);
         const clients = getAllConnectedClients(spaceId);
+        await Spaces.findOneAndUpdate({ spaceId: spaceId }, {activeUsers: clients}, { new: true })
         clients.forEach(({socketId})=> {
             io.to(socketId).emit(ACTIONS.JOINED, {
                 clients,
@@ -60,7 +61,7 @@ io.on('connection', (socket) => {
     })
 
 
-    socket.on('disconnecting', () => {
+    socket.on('disconnecting', async () => {
         const spaces = [...socket.rooms];
         spaces.forEach((spaceId)=> {
             socket.to(spaceId).emit(ACTIONS.DISCONNECTED, {
@@ -68,32 +69,40 @@ io.on('connection', (socket) => {
                 userData: userSocketMap[socket.id],
             })
         })
-
         delete userSocketMap[socket.id];
         socket.leave();
     })
 
-    socket.on(ACTIONS.SPACEDATA_CHANGE, ({spaceData, type, name, spaceId}) => {
-        Spaces.findOneAndUpdate({ spaceId: spaceId }, spaceData, { new: true }) //not working
+    socket.on(ACTIONS.SPACEDATA_CHANGE, async ({spaceData, type, name, spaceId}) => {
+        await Spaces.findOneAndUpdate({ spaceId: spaceId }, {spaceData: spaceData}, { new: true })
         const clients = getAllConnectedClients(spaceId);
         clients.forEach(({socketId})=> {
             if(type === 1) {
                 io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
                     message: `${name} has added a new file.`,
                     spaceData,
+                    name,
                 })
             } else if(type === 0) {
                 io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
                     message: `${name} has edited a file name`,
                     spaceData,
+                    name,
                 })
             } else {
                 io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
                     message: `${name} has deleted a file`,
                     spaceData,
+                    name,
                 })
             }
 
+        })
+    })
+
+    socket.on(ACTIONS.CODE_CHANGE, ({spaceId, code, name}) => {
+        socket.in(spaceId).emit(ACTIONS.CODE_CHANGE, {
+            code
         })
     })
 })

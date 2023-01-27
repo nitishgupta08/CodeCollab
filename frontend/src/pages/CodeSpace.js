@@ -7,10 +7,9 @@ import { UserContext } from "../UserContext";
 import { editorThemes } from '../editorThemes';
 import SpaceHeader from '../components/SpaceHeader';
 import SpaceSidebar from "../components/SpaceSidebar";
-import SpaceTabs from "../components/SpaceTabs";
-import SpaceSettings from "../components/SpaceSettings";
 import {initSocket} from "../scoket";
 import ACTIONS from '../Actions'
+import Editor5 from "../components/Editor5";
 
 function SlideTransition(props) {
     return <Slide {...props} direction="down" />;
@@ -18,17 +17,15 @@ function SlideTransition(props) {
 
 const initialState = {
     spaceData : null,
-    tabsData: [],
     loadingScreen: true,
     spaceName: "",
     currentFileData: "",
     activeUsers: null,
     editorTheme: editorThemes[0].value,
     editorLanguageIndex: 0,
-    sideTabValue: 0,
-    topTabValue: 0,
     successSnackbar: false,
     failSnackbar: false,
+    sideTabValue:0,
     message: {title: '', data:''}
 }
 
@@ -36,16 +33,12 @@ function reducer(state, action) {
     switch (action.type) {
         case "updateSpaceData":
             return { ...state, spaceData: action.payload };
-        case "updateTabsData":
-            return { ...state, tabsData: action.payload };
         case "removeLoadingScreen":
             return { ...state, loadingScreen: false };
         case "updateSpaceName":
             return { ...state, spaceName: action.payload };
         case "updateSideTab":
             return { ...state, sideTabValue: action.payload };
-        case "updateTopTab":
-            return { ...state, topTabValue: action.payload };
         case "updateEditorTheme":
             return { ...state, editorTheme: action.payload };
         case "updateEditorLanguage":
@@ -81,8 +74,9 @@ function CodeSpace() {
         axios.get(`http://localhost:8000/api/spaces/${location.state.spaceId}`).then((res) => {
             if (res.status === 200) {
                 dispatch({type: 'updateSpaceData', payload: res.data.spaceData});
-                dispatch({type: 'updateTabsData', payload: [res.data.spaceData[0]]});
+                dispatch({type: 'updateCurrentFileData', payload: res.data.spaceData[0].fileData});
                 dispatch({type: 'updateSpaceName', payload: res.data.spaceName});
+                dispatch({type: 'updateActiveUsers', payload: res.data.activeUsers});
                 dispatch({type: 'removeLoadingScreen'});
             }
         })
@@ -96,12 +90,14 @@ function CodeSpace() {
             socketRef.current.on('connect_server', (err) => handleErrors(err));
             socketRef.current.on('connect_failed', (err) => handleErrors(err));
 
+
             const handleErrors = (e) => {
                 console.log('socked error',e);
                 // error snackbar
                 navigate('/');
             }
 
+            // Join user to space
             socketRef.current.emit(ACTIONS.JOIN, {
                 spaceId: location.state.spaceId,
                 name: location.state.name,
@@ -110,7 +106,6 @@ function CodeSpace() {
 
 
             socketRef.current.on(ACTIONS.JOINED, ({clients,name, email, socketId}) => {
-                console.log(`${name} has joined`);
                 if(name !== location.state.name) {
                     if(email)
                         dispatch({type: 'updateMessage', payload: {title: `${name} has joined this space`, data: 'They can edit this space.'}});
@@ -129,10 +124,12 @@ function CodeSpace() {
                 dispatch({type: 'updateSuccess', payload: true});
             })
 
-            socketRef.current.on(ACTIONS.SPACEDATA_CHANGE, ({spaceData,message}) => {
-                dispatch({type: 'updateSpaceData', payload: spaceData});
-                dispatch({type: 'updateMessage', payload: {title: message, data: null}});
-                dispatch({type: 'updateSuccess', payload: true});
+            socketRef.current.on(ACTIONS.SPACEDATA_CHANGE, ({spaceData,message,name}) => {
+                if(name !== location.state.name) {
+                    dispatch({type: 'updateSpaceData', payload: spaceData});
+                    dispatch({type: 'updateMessage', payload: {title: message, data: null}});
+                    dispatch({type: 'updateSuccess', payload: true});
+                }
             })
         }
 
@@ -141,11 +138,9 @@ function CodeSpace() {
         return () => {
             socketRef.current.off(ACTIONS.JOINED);
             socketRef.current.off(ACTIONS.DISCONNECTED);
+            socketRef.current.off(ACTIONS.SPACEDATA_CHANGE);
             socketRef.current.disconnect();
         }
-
-
-
     }, [])
 
 
@@ -201,6 +196,8 @@ function CodeSpace() {
                         active={state.activeUsers}
                         handleSave={handleSave}
                         loggedInUser={loggedInUser}
+                        theme={state.editorTheme}
+                        dispatch={dispatch}
                     />
                 </Grid>
 
@@ -209,40 +206,19 @@ function CodeSpace() {
                         loggedInUser={loggedInUser}
                         spaceName={state.spaceName}
                         spaceData={state.spaceData}
-                        topTabsData={state.tabsData}
                         value={state.sideTabValue}
                         spaceId={location.state.spaceId}
                         dispatch={dispatch}
                         socketRef={socketRef}
                     />
                 </Grid>
-                <Grid item xs={10.5} sx={{height: '95vh'}}>
-                    <Grid item xs={12} sx={{pt:1,height: '5vh', display: 'flex'}}>
-                        <Grid item xs={10}>
-                            <SpaceTabs
-                                topTabsData={state.tabsData}
-                                value={state.topTabValue}
-                                spaceData={state.spaceData}
-                                dispatch={dispatch}
-                                loggedInUser={loggedInUser}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <SpaceSettings
-                                theme={state.editorTheme}
-                                dispatch={dispatch}
-                            />
-                        </Grid>
-                    </Grid>
-
-
-                    <Grid item xs={12}>
-                        <Editor
-                            data={state.tabsData && state.tabsData[state.topTabValue]}
-                            loggedInUser={loggedInUser}
+                <Grid item xs={10.5}>
+                    <Grid item xs={12} sx={{pt:1}}>
+                        <Editor5
                             theme={state.editorTheme}
-                            language={state.editorLanguageIndex}
-                            dispatch={dispatch}
+                            socketRef={socketRef}
+                            codeData={state.currentFileData}
+                            loggedInUser={loggedInUser}
                         />
                     </Grid>
 

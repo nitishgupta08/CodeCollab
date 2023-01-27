@@ -18,9 +18,11 @@ const spaceSchema = mongoose.Schema({
 
     activeUsers: {
         type: [{
-            id: String,
-            name: String,
-            incoming: Boolean
+            socketId: String,
+            userData: {
+                name: String,
+                email: String,
+            }
         }]
     },
 

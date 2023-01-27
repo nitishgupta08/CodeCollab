@@ -54,7 +54,6 @@ const updateSpaces = asyncHandler(async (req, res) => {
         throw new Error("User not authorized.")
     }
 
-
     const updatedSpace = await Spaces.findOneAndUpdate({ spaceId: req.params.id }, req.body, { new: true })
 
     res.status(200).json({ message: "successfull array update" })

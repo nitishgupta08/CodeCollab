@@ -5,7 +5,7 @@ import {editorThemes} from "../editorThemes";
 
 function SpaceSettings({theme, dispatch}) {
     return (
-        <FormControl sx={{ minWidth: 80}}>
+        <FormControl sx={{ minWidth: 80,mr:10}}>
             <InputLabel>Theme</InputLabel>
             <Select
                 value={theme}

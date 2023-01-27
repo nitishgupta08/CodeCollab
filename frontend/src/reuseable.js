@@ -35,7 +35,7 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
         position: 'relative',
         backgroundColor: theme.palette.background.secondary,
         fontSize: 16,
-        padding: '10px 26px 10px 12px',
+        padding: 13,
         transition: theme.transitions.create(['border-color', 'box-shadow']),
         '&:focus': {
             borderRadius: 4,
@@ -54,6 +54,9 @@ const HtmlTooltip = styled(({ className, ...props }) => (
         minWidth: 220,
         fontSize: 15,
         p:1,
+    },
+    [`& .${tooltipClasses.arrow}`]: {
+        color: '#181b66',
     },
 }));
 
@@ -119,8 +122,6 @@ const DataStyledTabs = styled((props) => (
 const DataStyledTab = styled((props) => <Tab disableRipple {...props} />)(
     ({ theme }) => ({
         textTransform: 'none',
-        marginBottom: theme.spacing(1),
-        marginLeft: theme.spacing(1),
         color: 'rgba(255, 255, 255, 0.7)',
         '&.Mui-selected': {
             color: '#EAE8EE',

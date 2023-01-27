@@ -45,6 +45,7 @@ function Spaces({ setMessage, setOpen, setEopen }) {
                     state: {
                         spaceId,
                         name: user.name,
+                        email:user.email
                     }
                 });
             }
@@ -56,6 +57,7 @@ function Spaces({ setMessage, setOpen, setEopen }) {
             state: {
                 spaceId,
                 name: user.name,
+                email:user.email
             }
         });
         setBdo1(false);

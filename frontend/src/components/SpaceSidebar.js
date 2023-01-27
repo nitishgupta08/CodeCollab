@@ -27,7 +27,7 @@ function SlideTransition(props) {
 
 
 
-function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topTabsData, spaceId, socketRef}) {
+function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, spaceId, socketRef}) {
     const [bdo, setBdo] = useState(false);
     const [bdo1, setBdo1] = useState(false);
     const [editid, setEditid] = useState('');
@@ -44,13 +44,7 @@ function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topT
             fileData: ''
         };
 
-        let copyarr = topTabsData;
-        copyarr.push(fileobj);
-        dispatch({type:'updateTabsData',payload:copyarr});
-        dispatch({type:'updateTopTab',payload:topTabsData.length-1});
-        dispatch({type:'updateEditorLanguage',payload:fileobj.lang});
-
-        copyarr = spaceData;
+        let copyarr = spaceData;
         copyarr.push(fileobj);
 
         dispatch({type:'updateSpaceData',payload:copyarr});
@@ -70,29 +64,27 @@ function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topT
 
     // check function on edge cases
     const deleteFile = (id) => {
-        const topIndex = topTabsData.findIndex(item => item.id === id);
         const sideTabIndex = spaceData.findIndex(item => item.id === id);
-
         let newspacearr = spaceData.filter(item => item.id !== id);
-        let newtoparr = topTabsData.filter(item => item.id !== id);
-        dispatch({type:'updateSpaceData',payload:newspacearr});
-        dispatch({type:'updateTabsData',payload:newtoparr});
 
-        if(topIndex !== -1)   dispatch({type:'updateTopTab',payload: topIndex === 0 ? topIndex : topIndex-1});
+        dispatch({type:'updateSpaceData',payload:newspacearr});
+
         if(sideTabIndex !== -1) dispatch({type:'updateSideTab',payload: sideTabIndex === 0 ? sideTabIndex :  sideTabIndex-1});
+
+        socketRef.current.emit(ACTIONS.SPACEDATA_CHANGE, {
+            spaceData: newspacearr,
+            type: -1,
+            name: location.state.name,
+            spaceId: location.state.spaceId,
+        })
     }
 
+
+    // code this shit
     const goToFile = (id) => {
         let i = spaceData.findIndex(x => x.id === id);
-        if (topTabsData.find((item) => item.id === id)) {
-            const topIndex = topTabsData.findIndex(x => x.id === id);
-            dispatch({type:'updateTopTab',payload: topIndex})
-        } else {
-            let newTopArr = topTabsData;
-            newTopArr.push(spaceData[i]);
-            dispatch({type:'updateTabsData',payload:newTopArr});
-            dispatch({type:'updateTopTab',payload: topTabsData.length-1})
-        }
+        dispatch({type:'updateCurrentFileData', payload: spaceData[i].fileData})
+
     }
 
 
@@ -104,15 +96,15 @@ function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topT
 
         dispatch({type:'updateSpaceData',payload:newarr});
 
-        const oi = topTabsData.findIndex(item => item.id === editid);
-        newarr = topTabsData;
-        newarr[oi].fileName = file.name;
-        newarr[oi].lang = file.langIndex;
-
-        dispatch({type:'updateTabsData',payload:newarr});
-
         setFile({name:'',langIndex: 0});
         setBdo1(false);
+
+        socketRef.current.emit(ACTIONS.SPACEDATA_CHANGE, {
+            spaceData: newarr,
+            type: 0,
+            name: location.state.name,
+            spaceId: location.state.spaceId,
+        })
     }
 
     const copySpaceId = () => {
@@ -259,7 +251,7 @@ function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topT
                     </Box>
                 </Box>
 
-                <Box sx={{flexGrow: 1, display: 'flex',height: '80vh'}}>
+                <Box sx={{flexGrow: 1, display: 'flex',height: '80vh',mt:2}}>
                     <DataStyledTabs
                         value={value}
                         onChange={(event,newValue) => dispatch({type: 'updateSideTab', payload: newValue})}
@@ -271,7 +263,7 @@ function SpaceSidebar({spaceName, spaceData, loggedInUser, value, dispatch, topT
                             return (
                                 <DataStyledTab disableRipple
                                                onClick={() => goToFile(item.id)}
-                                               sx={{width:'100%',minWidth: '200px'}}
+                                               sx={{minWidth: '200px'}} //check width
                                                label={
                                                    <Box component="span" sx={{}} >
                                                        <Typography sx={{ color: 'text.primary', fontWeight: 700, fontSize: 15, position: 'absolute' ,left:5,top:15}}>
