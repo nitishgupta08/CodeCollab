@@ -15,23 +15,23 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/closebrackets';
-import 'codemirror/theme/dracula.css';
+import 'codemirror/theme/material-ocean.css';
 import ACTIONS from '../Actions'
 import {useLocation, useNavigate} from "react-router-dom";
-import {CustomInput, CustomTextField} from "../reuseable";
-import {editorLang} from "../editorLang";
 
-function Editor5({theme, socketRef, codeData, loggedInUser}) {
+
+function Editor5({socketRef, codeData,currentFile}) {
     const editorRef = useRef(null)
     const location = useLocation();
     const [bdo, setBdo] = useState(false)
     const navigate = useNavigate()
+    console.log(currentFile)
 
     useEffect(()=> {
        async function init () {
             editorRef.current = Codemirror.fromTextArea(document.getElementById('realTimeEditor'), {
                 mode: {name: 'javascript', json: true},
-                theme: 'dracula',
+                theme: 'material-ocean',
                 autoCloseTags: true,
                 autoCloseBrackets: true,
                 lineNumbers: true,
@@ -51,7 +51,6 @@ function Editor5({theme, socketRef, codeData, loggedInUser}) {
 
                         })
                     }
-
 
             })
 

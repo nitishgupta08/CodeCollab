@@ -2,7 +2,6 @@ import React, {useContext, useEffect, useReducer, useRef} from 'react';
 import {Grid, Typography, Backdrop, CircularProgress, Alert, AlertTitle, Snackbar, Slide} from "@mui/material";
 import {useLocation, useNavigate} from "react-router-dom";
 import axios from 'axios'
-import Editor from "../components/Editor";
 import { UserContext } from "../UserContext";
 import { editorThemes } from '../editorThemes';
 import SpaceHeader from '../components/SpaceHeader';
@@ -219,6 +218,7 @@ function CodeSpace() {
                             socketRef={socketRef}
                             codeData={state.currentFileData}
                             loggedInUser={loggedInUser}
+                            currentFile={state.spaceData[state.sideTabValue]}
                         />
                     </Grid>
 

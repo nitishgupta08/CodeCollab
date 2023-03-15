@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const spaceSchema = mongoose.Schema({
-    user: {
+    owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User',
@@ -9,35 +9,38 @@ const spaceSchema = mongoose.Schema({
     spaceId: {
         type: String,
         unique: true,
-        required: [true, 'Please add a spaceId']
+        required: true
     },
     spaceName: {
         type: String,
-        required: [true, 'Please add a space name']
+        required: true
     },
 
-    activeUsers: {
-        type: [{
-            socketId: String,
-            userData: {
-                name: String,
-                email: String,
-            }
-        }]
-    },
-
-    spaceData: {
-        type: [{
+    spaceData: [
+        {
             id: String,
             fileName: String,
             fileData: String,
-            lang: Number
-        }]
-    }
+            fileLang: String,
+        }
+    ]
 
 
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model('Spaces', spaceSchema)
+spaceSchema.methods.publicSpaceData = function () {
+    const space = this
+
+    return {
+        spaceId: space.spaceId,
+        spaceName: space.spaceName,
+        spaceData: space.spaceData,
+        createdAtL: space.createdAt
+    }
+}
+
+const Space = mongoose.model('Space', spaceSchema)
+
+module.exports = Space

@@ -2,13 +2,13 @@ const express = require('express')
 const router = express.Router()
 const { getSpaces, createSpaces, updateSpaces, deleteSpaces, getSpaceData, updateActive } = require('../controllers/spaceController')
 
-const { protect } = require('../middleware/authMiddleware')
+const auth = require('../middleware/authMiddleware')
 
-router.get('/', protect, getSpaces)
-router.post('/', protect, createSpaces)
-router.get('/:id', getSpaceData)
-router.put('/:id', protect, updateSpaces)
-router.delete('/:id', protect, deleteSpaces)
+router.get('/', auth, getSpaces)
+router.post('/', auth, createSpaces)
+router.get('/:id', auth, getSpaceData)
+router.put('/:id', auth, updateSpaces)
+router.delete('/:id', auth, deleteSpaces)
 router.put('/updateActive/:id', updateActive)
 
 

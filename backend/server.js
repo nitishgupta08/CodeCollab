@@ -4,7 +4,7 @@ const colors = require('colors')
 const {Server} = require('socket.io');
 const ACTIONS = require('./Actions')
 const dotenv = require('dotenv').config()
-const { errorHandler } = require('./middleware/errorMiddleware')
+const  errorHandler  = require('./middleware/errorMiddleware')
 
 
 const connectDB = require('./config/db')
@@ -19,8 +19,8 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 app.options('*', cors())
 
-app.use('/api/spaces', require('./routes/spaceRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/spaces', require('./routes/spaceRoutes'));
+app.use('/users', require('./routes/userRoutes'));
 
 app.use(errorHandler)
 

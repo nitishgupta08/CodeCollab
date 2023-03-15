@@ -4,10 +4,10 @@ import SaveIcon from '@mui/icons-material/Save'
 import uniqolor from 'uniqolor';
 import { Link, useNavigate } from "react-router-dom";
 import { HtmlTooltip } from '../reuseable'
-import SpaceSettings from "./SpaceSettings";
 
 
-function SpaceHeader({ active, loggedInUser, handleSave, theme,dispatch }) {
+
+function SpaceHeader({ active, loggedInUser, handleSave }) {
     const navigate = useNavigate();
 
     return (
@@ -16,11 +16,6 @@ function SpaceHeader({ active, loggedInUser, handleSave, theme,dispatch }) {
                 <Typography variant="h1" sx={{ color: 'text.primary', fontSize: 35, fontWeight: 700, mr: 4 }}>
                     CodeCollab.
                 </Typography>
-
-                <SpaceSettings
-                    theme={theme}
-                    dispatch={dispatch}
-                />
             </Box>
 
             <HtmlTooltip

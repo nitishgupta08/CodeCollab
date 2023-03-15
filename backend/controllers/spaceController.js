@@ -1,16 +1,34 @@
-const asyncHandler = require('express-async-handler')
-const Spaces = require('../models/spaceSchema')
+const Space = require('../models/spaceSchema')
 const User = require('../models/userSchema')
+
 /*
 * @desc GET spaces
 * @route GET /api/spaces
 * @access Private
 * */
-const getSpaces = asyncHandler(async (req, res) => {
-    const spaces = await Spaces.find({ user: req.user.id })
-    const newSpace = spaces.map(({ spaceId, spaceName, createdAt }) => ({ spaceId, spaceName, createdAt }))
-    res.status(200).json(newSpace);
-})
+const getSpaces = async (req, res) => {
+    //Find returns a cursor(empty array or always truthy)
+    const spaces = await Space.find({ owner: req.user._id }).select('spaceId spaceName createdAt -_id')
+    res.status(200).send(spaces);
+}
+
+/*
+* @desc Get data of a particular space
+* @route GET /api/spaces/:id
+* @access Private
+* */
+const getSpaceData = async (req, res) => {
+    try {
+        const space = await Space.findOne({owner: req.user._id, spaceId: req.params.id }).select('-owner -_id -__v -updatedAt')
+        if(!space) {
+            throw new Error("No space found with this spaceId!")
+        }
+        res.status(200).send(space)
+    } catch (e) {
+        res.status(400).send({'error': e.message})
+    }
+
+}
 
 
 /*
@@ -18,22 +36,29 @@ const getSpaces = asyncHandler(async (req, res) => {
 * @route POST /api/spaces
 * @access Private
 * */
-const createSpaces = asyncHandler(async (req, res) => {
-    if (!req.body.spaceId || !req.body.spaceName) {
-        res.status(400)
-        throw new Error("One or more fileds missing")
+const createSpaces = async (req, res) => {
+    try {
+        if (!req.body.spaceId || !req.body.spaceName) {
+            throw new Error("One or more fields missing")
+        }
+
+        const space = new Space({
+            spaceId: req.body.spaceId,
+            spaceName: req.body.spaceName,
+            owner: req.user._id,
+            spaceData: req.body.spaceData
+        })
+
+        const exposedSpace = space.publicSpaceData()
+        await space.save()
+
+
+        res.status(200).send(exposedSpace)
+
+    } catch (e) {
+        res.status(400).send({"error":e.message})
     }
-
-    const space = await Spaces.create({
-        spaceId: req.body.spaceId,
-        spaceName: req.body.spaceName,
-        user: req.user.id,
-        activeUsers: req.body.activeUsers,
-        spaceData: req.body.spaceData
-    })
-
-    res.status(200).json({ message: "Space Created" })
-})
+}
 
 
 /*
@@ -41,23 +66,20 @@ const createSpaces = asyncHandler(async (req, res) => {
 * @route PUT /api/spaces/:id
 * @access Private
 * */
-const updateSpaces = asyncHandler(async (req, res) => {
-    const space = await Spaces.findOne({ spaceId: req.params.id })
-    if (!space) {
-        req.status(400)
-        throw new Error("NO space found.")
+const updateSpaces = async (req, res) => {
+    try {
+        const space = await Space.findOne({ owner: req.user._id, spaceId: req.params.id })
+        if(!space) {
+            throw new Error("No space found with this spaceId!")
+        }
+
+        const updatedSpace = await Space.findOneAndUpdate({ spaceId: req.params.id }, req.body, { new: true }).select('-owner -_id -__v -updatedAt')
+        res.status(200).json(updatedSpace)
+
+    } catch (e) {
+        res.status(400).send({"error":e.message})
     }
-    const user = await User.findById(req.user.id)
-
-    if (space.user.toString() !== user.id) {
-        res.status(401)
-        throw new Error("User not authorized.")
-    }
-
-    const updatedSpace = await Spaces.findOneAndUpdate({ spaceId: req.params.id }, req.body, { new: true })
-
-    res.status(200).json({ message: "successfull array update" })
-})
+}
 
 
 /*
@@ -65,36 +87,20 @@ const updateSpaces = asyncHandler(async (req, res) => {
 * @route DELETE /api/spaces/:id
 * @access Private
 * */
-const deleteSpaces = asyncHandler(async (req, res) => {
-    const space = await Spaces.findOne({ spaceId: req.params.id })
+const deleteSpaces = async (req, res) => {
+    try {
+        const space = await Space.findOne({ owner:req.user._id, spaceId: req.params.id });
+        if(!space) {
+            throw new Error("No space found with this spaceId!")
+        }
 
-    if (!space) {
-        req.status(400)
-        throw new Error("NO space found.")
+        await space.remove()
+        res.status(200).json({ message: `Space Deleted` })
+
+    } catch (e) {
+        res.status(400).send({"error":e.message})
     }
-
-    const user = await User.findById(req.user.id)
-
-    if (space.user.toString() !== user.id) {
-        res.status(401)
-        throw new Error("User not authorized.")
-    }
-
-    await space.remove()
-
-    res.status(200).json({ message: `Space Deleted` })
-})
-
-
-/*
-* @desc Get data of a particular space
-* @route GET /api/spaces/:id
-* @access Private
-* */
-const getSpaceData = asyncHandler(async (req, res) => {
-    const space = await Spaces.findOne({ spaceId: req.params.id })
-    res.status(200).json(space);
-})
+}
 
 
 /*
@@ -102,7 +108,7 @@ const getSpaceData = asyncHandler(async (req, res) => {
 * @route GET /api/spaces/updateActive/:id
 * @access Public
 * */
-const updateActive = asyncHandler(async (req, res) => {
+const updateActive = async (req, res) => {
     const space = await Spaces.findOne({ spaceId: req.params.id })
 
     if (!space) {
@@ -115,7 +121,7 @@ const updateActive = asyncHandler(async (req, res) => {
         await Spaces.findOneAndUpdate({ spaceId: req.params.id }, { $pullAll: { activeUsers: req.body } }, { new: true })
 
     res.status(200).json({ message: "User added to active users" })
-})
+}
 
 
 module.exports = {
