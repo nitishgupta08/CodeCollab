@@ -1,146 +1,151 @@
-import React, { useState } from 'react';
-import { Box, Typography, Slide, Button, Snackbar, Alert, AlertTitle } from "@mui/material";
+import React, { useState, useRef } from "react";
+import { Box, Typography, Slide, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { CustomTextField } from '../reuseable';
-
-function SlideTransition(props) {
-    return <Slide {...props} direction="down" />;
-}
+import ErrorSnackbar from "../components/ErrorSnackbar";
+import { CustomTextField } from "../reuseable";
+import LoginIcon from "@mui/icons-material/Login";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import Footer from "../components/Footer";
 
 function Home(props) {
+  const spaceIdInput = useRef(null);
+  const usernameInput = useRef(null);
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
-    const [spaceId, setSpaceId] = useState("");
-    const [name, setName] = useState("");
-    const [open, setOpen] = useState(false);
-    const [eopen, setEopen] = useState(false);
-    const navigate = useNavigate();
-
-    const handlejoin = () => {
-        if (!spaceId || !name) {
-            setEopen(true);
-            return;
-        }
-        setOpen(true);
-        navigate(`/codespace/${spaceId}`, {
-            state: {
-                spaceId,
-                name,
-                email:null,
-            }
-        });
+  const handleJoin = () => {
+    if (!spaceIdInput.current?.value || !usernameInput.current?.value) {
+      setError(false);
+      return;
     }
 
-    const handleKey = (e) => {
-        if (e.code === 'Enter') {
-            handlejoin();
-        }
+    navigate(`/space/${spaceIdInput.current?.value}`, {
+      state: {
+        spaceId: spaceIdInput.current?.value,
+        username: usernameInput.current?.value,
+        email: null,
+      },
+    });
+  };
+
+  const handleKey = (e) => {
+    if (e.code === "Enter") {
+      handleJoin();
     }
+  };
 
-    return (
-        <>
-            <Snackbar
-                open={eopen}
-                onClose={() => setEopen(false)}
-                TransitionComponent={SlideTransition}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                autoHideDuration={3500}
+  return (
+    <>
+      <ErrorSnackbar
+        open={error}
+        close={setError}
+        title="All fields Required"
+        message="One or more fields missing."
+      />
+
+      <Box
+        sx={{
+          backgroundColor: "background.default",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          sx={{
+            minWidth: "40vw",
+            backgroundColor: "background.paper",
+            borderRadius: 1,
+            display: "flex",
+            flexDirection: "column",
+            p: 3,
+            boxShadow: "0px 0px 5px 5px #00E5B5",
+          }}
+        >
+          <Typography
+            variant="h1"
+            sx={{ fontSize: 50, fontWeight: 700, mb: 3, color: "text.primary" }}
+          >
+            CodeCollab.
+          </Typography>
+          <Box>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: 25,
+                fontWeight: 700,
+                mb: 2,
+                width: "90%",
+                color: "text.primary",
+              }}
             >
+              Join a space.
+            </Typography>
 
-                <Alert onClose={() => setEopen(false)} severity="error" sx={{ width: '100%' }}>
-                    <AlertTitle>All fields Required</AlertTitle>
-                    One or more fields missing.
-                </Alert>
-            </Snackbar>
-            <Snackbar
-                open={open}
-                onClose={() => setOpen(false)}
-                TransitionComponent={SlideTransition}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                autoHideDuration={2500}
-            >
-                <Alert onClose={() => setOpen(false)} severity="success" sx={{ width: '100%' }}>
-                    <AlertTitle>Space Created</AlertTitle>
-                    You will now be redirected to space.
-                </Alert>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <CustomTextField
+                autoFocus
+                name="spaceId"
+                placeholder="Paste Invite ID"
+                sx={{ width: "100%", mb: 1 }}
+                inputRef={spaceIdInput}
+              />
 
-            </Snackbar>
-            <Box
-                sx={{
-                    backgroundColor: "background.default",
-                    height: "100vh",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}>
-                <Box
-                    sx={{
-                        width: "25vw",
-                        backgroundColor: "background.paper",
-                        borderRadius: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                        p: 3,
-                        boxShadow: "0px 0px 5px 5px #00E5B5"
-                    }}>
-                    <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, mb: 3, color: "text.primary" }}>
-                        CodeCollab.
-                    </Typography>
-                    <Box>
-
-                        <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%", color: "text.primary" }}>
-                            Join a space.
-                        </Typography>
-                        <Box>
-                            <CustomTextField
-                                autoFocus
-                                name="spaceid"
-                                placeholder="Paste Invite ID"
-                                sx={{ width: "500px", maxWidth: "100%", mb: 1 }}
-                                value={spaceId}
-                                onKeyUp={handleKey}
-                                onChange={(e) => setSpaceId(e.target.value)}
-                            />
-
-                            <CustomTextField
-                                name="name"
-                                placeholder="Enter name"
-                                sx={{ width: "500px", maxWidth: "100%", mb: 2 }}
-                                value={name}
-                                onKeyUp={handleKey}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-
-
-                            <Button variant="contained" sx={{ height: "43px", display: "block" }} onClick={handlejoin}>Join</Button>
-
-                            <Box sx={{ mt: 5 }}>
-                                <Typography variant="h2" sx={{ fontSize: 25, fontWeight: 700, mb: 2, width: "90%", color: "text.primary" }}>
-                                    Create a space.
-                                </Typography>
-                                <Box sx={{ display: "flex", justifyContent: "center" }}>
-
-                                    <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => navigate('/login')}>Login</Button>
-                                    <Button variant="contained" sx={{ height: "50px", mr: 5 }} onClick={() => navigate('/register')}>Signup</Button>
-
-                                </Box>
-                            </Box>
-                        </Box>
-
-                    </Box>
-
-                </Box>
-
+              <CustomTextField
+                name="name"
+                placeholder="Enter name"
+                sx={{ width: "100%", maxWidth: "100%", mb: 2 }}
+                inputRef={usernameInput}
+              />
             </Box>
 
-            {/*Footer*/}
-            <Box sx={{ position: "fixed", bottom: "0", width: "100vw" }}>
-                <Typography sx={{ textAlign: "center" }}>
-                    Author
-                </Typography>
-            </Box>
-        </>
+            <Button
+              variant="contained"
+              sx={{ height: "45px", display: "block" }}
+              onClick={handleJoin}
+            >
+              Join
+            </Button>
+          </Box>
 
-    );
+          <Box sx={{ mt: 2 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: 25,
+                fontWeight: 700,
+                mb: 2,
+                color: "text.primary",
+              }}
+            >
+              Create a space.
+            </Typography>
+            <Box sx={{ display: "flex" }}>
+              <Button
+                variant="contained"
+                sx={{ height: "45px", mr: 3 }}
+                startIcon={<LoginIcon />}
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ height: "45px" }}
+                startIcon={<PersonAddIcon />}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+
+      <Footer />
+    </>
+  );
 }
 
 export default Home;

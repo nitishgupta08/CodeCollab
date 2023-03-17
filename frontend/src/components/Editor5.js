@@ -16,7 +16,7 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/theme/material-ocean.css';
-import ACTIONS from '../Actions'
+import ACTIONS from '../utils/Actions'
 import {useLocation, useNavigate} from "react-router-dom";
 
 

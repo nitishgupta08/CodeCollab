@@ -1,166 +1,185 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Box, Typography, Slide, Button, Snackbar, Alert, AlertTitle, Grid, Tabs, Tab } from "@mui/material";
-import { UserContext } from "../UserContext";
-import SettingsIcon from '@mui/icons-material/Settings';
-import WorkspacesIcon from '@mui/icons-material/Workspaces';
-import LogoutIcon from '@mui/icons-material/Logout';
+import React, { useContext, useState, useEffect, useReducer } from "react";
+import { Box, Typography, Button, Grid, Tabs, Tab } from "@mui/material";
+import { UserContext } from "../context/UserContext";
+import SettingsIcon from "@mui/icons-material/Settings";
+import WorkspacesIcon from "@mui/icons-material/Workspaces";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
-import Spaces from "../components/Spaces"
-import Settings from "../components/Settings"
-
-
-function SlideTransition(props) {
-    return <Slide {...props} direction="down" />;
-}
-
+import UserSpaces from "../components/dashboard/UserSpaces";
+import UserSettings from "../components/dashboard/UserSettings";
+import ErrorSnackbar from "../components/ErrorSnackbar";
+import SuccessSnackbar from "../components/SuccessSnackbar";
+import Profile from "../components/dashboard/Profile";
+import { useAxios } from "../hooks/useAxios";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const TabPanel = (props) => {
-    const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props;
 
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`tabpanel-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box>
-                    {children}
-                </Box>
-            )}
-        </div>
-    );
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      {...other}
+    >
+      {value === index && <Box>{children}</Box>}
+    </div>
+  );
+};
+
+const initialState = {
+  value: 0,
+  listSpace: undefined,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "updateValue":
+      return { ...state, value: action.payload };
+    case "updateListSpaces":
+      return { ...state, listSpaces: action.payload };
+    default:
+      throw new Error();
+  }
 }
 
 function Dashboard() {
-    const { currentUser, setCurrentUser } = useContext(UserContext);
-    const current = JSON.parse(currentUser);
-    const navigate = useNavigate()
-    const [value, setValue] = useState(0);
-    const [top, setTop] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [eopen, setEopen] = useState(false);
-    const [message, setMessage] = useState({ title: "", data: "" });
+  const [loggedInUser, setLoggedInUser] = useLocalStorage("user", null);
+  const navigate = useNavigate();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const [message, setMessage] = useState({ title: "", data: "" });
+  const { response, error: responseError } = useAxios({
+    method: "GET",
+    url: "/spaces",
+    headers: { Authorization: `Bearer ${loggedInUser.token}` },
+  });
 
-    const handleLogout = () => {
-        localStorage.clear();
-        setCurrentUser(null);
-        navigate("/", { replace: true });
+  useEffect(() => {
+    if (responseError !== undefined) {
+      setMessage({
+        title: "error!",
+        data: "Can't get your spaces. Try again later!",
+      });
+      setError(true);
+      return;
     }
 
-    useEffect(() => {
-        const scrollHandler = () => {
-            window.pageYOffset > 5 ? setTop(false) : setTop(true)
-        };
-        window.addEventListener('scroll', scrollHandler);
-        scrollHandler();
+    if (response === undefined) return;
 
-        return () => {
-            window.removeEventListener('scroll', scrollHandler);
-        }
-    }, []);
+    dispatch({ type: "updateListSpaces", payload: response.data });
+  }, [response]);
 
-    const date = new Date(current.createdAt)
+  const handleLogout = () => {
+    setLoggedInUser(null);
+    navigate("/", { replace: true });
+  };
 
-    return (
-        <>
-            <Snackbar
-                open={eopen}
-                onClose={() => setEopen(false)}
-                TransitionComponent={SlideTransition}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                autoHideDuration={3500}
+  return (
+    <>
+      <ErrorSnackbar
+        open={error}
+        close={setError}
+        title={message.title}
+        message={message.data}
+      />
+      <SuccessSnackbar
+        open={success}
+        close={setSuccess}
+        title={message.title}
+        message={message.data}
+      />
+
+      <Box
+        sx={{
+          position: "fixed",
+          width: "100vw",
+          display: "flex",
+          zIndex: 1,
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography
+          variant="h1"
+          sx={{ fontSize: 50, fontWeight: 700, p: 1, color: "text.primary" }}
+        >
+          CodeCollab.
+        </Typography>
+        <Button
+          variant="contained"
+          sx={{ m: 3 }}
+          startIcon={<LogoutIcon />}
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </Box>
+      <Grid container sx={{ minHeight: "100vh" }}>
+        <Grid item xs={12} sx={{ height: "30vh" }}>
+          <Box
+            sx={{
+              height: "inherit",
+              backgroundColor: "background.default",
+              position: "relative",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Profile loggedInUser={loggedInUser} />
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                ml: "auto",
+                mr: "auto",
+              }}
             >
-
-                <Alert onClose={() => setEopen(false)} severity="error" sx={{ width: '100%' }}>
-                    <AlertTitle>{message.title}</AlertTitle>
-                    {message.data}
-                </Alert>
-            </Snackbar>
-            <Snackbar
-                open={open}
-                onClose={() => setOpen(false)}
-                TransitionComponent={SlideTransition}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                autoHideDuration={2500}
-            >
-                <Alert onClose={() => setOpen(false)} severity="success" sx={{ width: '100%' }}>
-                    <AlertTitle>{message.title}</AlertTitle>
-                    {message.data}
-                </Alert>
-
-            </Snackbar>
-            <Box sx={{
-                position: "fixed",
-                width: "100vw",
-                display: "flex",
-                zIndex: 1,
-                justifyContent: 'space-between',
-                backdropFilter: !top && "blur(50px)",
-                color: !top && "transparent",
-            }}>
-                <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, p: 1, color: 'text.primary' }}>
-                    CodeCollab.
-                </Typography>
-                <Button variant="contained" sx={{ m: 3 }} startIcon={<LogoutIcon />} onClick={handleLogout}>
-                    Logout
-                </Button>
-
-            </Box >
-            <Grid container sx={{ minHeight: "100vh" }}>
-                <Grid item xs={12} sx={{ height: "30vh" }}>
-                    <Box sx={{ height: "inherit", backgroundColor: "background.default" }}>
-                        <Box sx={{ height: "20vh", display: "flex", justifyContent: "center", pt: 2 }}>
-                            <Box sx={{ height: "inherit", minWidth: "50vw", display: "flex", justifyContent: "center", alignItems: "center" }}>
-
-                                <Box
-                                    component="img"
-                                    src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${current.name}?size=32`}
-                                    alt="avatar"
-                                    sx={{
-                                        height: "150px",
-                                        width: "150px",
-                                        mr: 5,
-                                        borderRadius: 2
-                                    }}
-                                />
-                                <Box>
-                                    <Typography variant="h1" sx={{ fontSize: 50, fontWeight: 700, color: 'text.primary' }}>
-                                        {current.name}
-                                    </Typography>
-                                    <Typography variant="h1" sx={{ fontSize: 30, fontWeight: 400, color: 'text.primary' }}>
-                                        {current.email}
-                                    </Typography>
-                                    <Typography variant="h1" sx={{ fontSize: 15, fontWeight: 400, mt: 2, color: 'text.primary' }}>
-                                        With us since <strong>{date.toDateString()}</strong>
-                                    </Typography>
-
-
-                                </Box>
-                            </Box>
-                        </Box>
-                        <Box sx={{ display: "flex", justifyContent: "center", position: "relative", bottom: '-10px' }}>
-                            <Tabs value={value} onChange={(event, value) => setValue(value)}>
-                                <Tab icon={<WorkspacesIcon />} iconPosition="start" label="Spaces" sx={{ pb: 1, pt: 3 }} />
-                                <Tab icon={<SettingsIcon />} iconPosition="start" label="Settings" sx={{ pb: 1, pt: 3 }} />
-                            </Tabs>
-                        </Box>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} sx={{ minHeight: "70vh", backgroundColor: "background.paper", }}>
-
-                    <TabPanel value={value} index={0} >
-                        <Spaces setMessage={setMessage} setOpen={setOpen} setEopen={setEopen} />
-                    </TabPanel>
-                    <TabPanel value={value} index={1}>
-                        <Settings />
-                    </TabPanel>
-
-                </Grid>
-            </Grid>
-        </>
-    );
+              <Tabs
+                value={state.value}
+                onChange={(event, value) =>
+                  dispatch({ type: "updateValue", payload: value })
+                }
+              >
+                <Tab
+                  icon={<WorkspacesIcon />}
+                  iconPosition="start"
+                  label="Spaces"
+                  sx={{ pb: 1, pt: 3 }}
+                />
+                <Tab
+                  icon={<SettingsIcon />}
+                  iconPosition="start"
+                  label="Settings"
+                  sx={{ pb: 1, pt: 3 }}
+                />
+              </Tabs>
+            </Box>
+          </Box>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sx={{ minHeight: "70vh", backgroundColor: "background.paper" }}
+        >
+          <TabPanel value={state.value} index={0}>
+            <UserSpaces
+              setMessage={setMessage}
+              setSuccess={setSuccess}
+              setError={setError}
+              loggedInUser={loggedInUser}
+              listSpaces={state.listSpaces}
+              dashboardDispatch={dispatch}
+            />
+          </TabPanel>
+          <TabPanel value={state.value} index={1}>
+            <UserSettings loggedInUser={loggedInUser} />
+          </TabPanel>
+        </Grid>
+      </Grid>
+    </>
+  );
 }
 
 export default Dashboard;
