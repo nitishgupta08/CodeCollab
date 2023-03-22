@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Button, Typography, IconButton } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate } from "react-router-dom";
+import ActiveUsers from "./ActiveUsers";
 
 function SpaceHeader({ loggedInUser }) {
   const navigate = useNavigate();
@@ -10,25 +11,22 @@ function SpaceHeader({ loggedInUser }) {
   return (
     <Box
       sx={{
-        height: "inherit",
-        backgroundColor: "background.default",
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center",
-        pl: 2,
-        pr: 2,
+        pl: 1,
+        pr: 1,
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-        <Typography
-          variant="h1"
-          sx={{ color: "text.primary", fontSize: 35, fontWeight: 700 }}
-        >
-          CodeCollab.
-        </Typography>
-      </Box>
+      <Typography
+        variant="h1"
+        sx={{ color: "text.primary", fontSize: 35, fontWeight: 700 }}
+      >
+        CodeCollab.
+      </Typography>
 
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+      {/*<ActiveUsers activeUsers={activeUsers} />*/}
+
+      <Box sx={{ display: "flex" }}>
         {loggedInUser && (
           <IconButton onClick={handleSave} sx={{ color: "text.primary" }}>
             <SaveIcon />

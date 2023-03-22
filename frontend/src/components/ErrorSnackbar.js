@@ -1,6 +1,6 @@
 import { Alert, AlertTitle, Snackbar } from "@mui/material";
 
-const ErrorSnackbar = ({ open, close, title, message }) => {
+const ErrorSnackbar = ({ open, close, title, data }) => {
   return (
     <Snackbar
       open={open}
@@ -11,7 +11,7 @@ const ErrorSnackbar = ({ open, close, title, message }) => {
     >
       <Alert severity="error" sx={{ width: "100%" }}>
         <AlertTitle>{title}</AlertTitle>
-        {message}
+        {data}
       </Alert>
     </Snackbar>
   );

@@ -71,13 +71,14 @@ export default function SpaceCard({
   return (
     <Card
       sx={{
-        backgroundColor: "background.secondary",
         mb: 2,
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         p: 1,
-        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.3)",
+        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.87)",
+        backgroundColor: "grey.900",
+        borderRadius: 4,
       }}
     >
       <CardContent>
@@ -90,7 +91,7 @@ export default function SpaceCard({
 
         <Typography
           variant="h5"
-          sx={{ fontSize: 15, opacity: "0.5", mb: 1, color: "text.primary" }}
+          sx={{ fontSize: 15, opacity: "0.8", mb: 2, color: "text.primary" }}
         >
           {item.spaceId}
         </Typography>
@@ -103,7 +104,7 @@ export default function SpaceCard({
         <IconButton sx={{ color: "text.primary" }} onClick={handleEdit}>
           <EditIcon />
         </IconButton>
-        <IconButton sx={{ color: "text.primary" }} onClick={handleDelete}>
+        <IconButton sx={{ color: "error.main" }} onClick={handleDelete}>
           <DeleteIcon />
         </IconButton>
 
@@ -111,7 +112,7 @@ export default function SpaceCard({
           <ContentCopyIcon />
         </IconButton>
 
-        <IconButton sx={{ color: "primary.main" }} onClick={goToSpace}>
+        <IconButton sx={{ color: "success.main" }} onClick={goToSpace}>
           <RocketLaunchIcon />
         </IconButton>
       </CardActions>

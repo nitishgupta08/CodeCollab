@@ -1,5 +1,4 @@
-import { Box, Button, IconButton, Typography } from "@mui/material";
-import { CustomTextField } from "../../reuseable";
+import { Box, Button, IconButton, Typography, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect } from "react";
@@ -33,11 +32,11 @@ export default function JoinSpace({
     <Box
       sx={{
         width: "30vw",
-        backgroundColor: "background.secondary",
-        borderRadius: 2,
+        backgroundColor: "grey.900",
+        borderRadius: 4,
         display: "flex",
         flexDirection: "column",
-        p: 2,
+        p: 3,
       }}
     >
       <Box
@@ -65,11 +64,11 @@ export default function JoinSpace({
             dispatch({ type: "handleJoinBackdrop", payload: false })
           }
         >
-          <CloseIcon />
+          <CloseIcon sx={{ color: "error.main" }} />
         </IconButton>
       </Box>
 
-      <CustomTextField
+      <TextField
         name="spaceId"
         placeholder="Paste Invite ID"
         sx={{ width: "100%", mb: 2 }}

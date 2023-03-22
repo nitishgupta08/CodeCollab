@@ -23,10 +23,11 @@ const getSpaceData = async (req, res) => {
   try {
     const space = await Space.findOne({
       spaceId: req.params.id,
-    }).select("-owner -_id -__v -updatedAt -createdAt");
+    }).select("-_id -__v -updatedAt -createdAt");
     if (!space) {
       throw new Error("No space found with this spaceId!");
     }
+
     res.status(200).send(space);
   } catch (e) {
     res.status(400).send({ error: e.message });
@@ -44,11 +45,19 @@ const createSpaces = async (req, res) => {
       throw new Error("One or more fields missing");
     }
 
+    const spaceData = [
+      {
+        fileName: "Untitled-1",
+        fileData: "",
+        fileLang: "js",
+      },
+    ];
+
     const space = new Space({
       spaceId: req.body.spaceId,
       spaceName: req.body.spaceName,
       owner: req.user._id,
-      spaceData: req.body.spaceData,
+      spaceData,
     });
 
     await space.save();
@@ -144,12 +153,6 @@ const updateActive = async (req, res) => {
   res.status(200).json({ message: "User added to active users" });
 };
 
-const verifySpace = async (req, res) => {
-  try {
-  } catch (e) {}
-  const space = await Space.findOne({ spaceId: req.params.id });
-};
-
 module.exports = {
   getSpaces,
   createSpaces,
@@ -157,5 +160,4 @@ module.exports = {
   deleteSpaces,
   getSpaceData,
   updateActive,
-  verifySpace,
 };

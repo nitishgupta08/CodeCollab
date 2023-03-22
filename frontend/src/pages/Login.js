@@ -1,54 +1,59 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Box, Button, Typography } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../context/UserContext";
-import { CustomTextField } from "../reuseable";
+import { Box, Button, Typography, TextField } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ErrorSnackbar from "../components/ErrorSnackbar";
 import LoginIcon from "@mui/icons-material/Login";
-import useLocalStorage from "../hooks/useLocalStorage";
 import Footer from "../components/Footer";
 import axiosConfig from "../utils/axiosConfig";
-// import LoadingButton from "@mui/lab/LoadingButton";
+import useAuth from "../hooks/useAuth";
+import isEmail from "validator/lib/isEmail";
+import LoadingButton from "@mui/lab/LoadingButton";
 
+const LOGIN_URL = "/users/login";
 function Login() {
+  const { setAuth } = useAuth();
   const [user, setUser] = useState({ email: "", password: "" });
   const [error, setError] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState({ title: "", data: "" });
+  const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
-  const { loggedInUser, setLoggedInUser } = useContext(UserContext);
-  const [localUser, setLocalUser] = useLocalStorage("user", null);
 
-  const emailRegex = /\S+@\S+\.\S+/;
+  useEffect(() => {
+    if (isEmail(user.email) && user.password) {
+      return setDisabled(false);
+    }
+    setDisabled(true);
+  }, [user]);
 
-  const login = () => {
-    if (user.email && user.password) {
-      if (emailRegex.test(user.email)) {
-        axiosConfig
-          .post("/users/login", user)
-          .then((res) => {
-            if (res.status === 200) {
-              setLoggedInUser(JSON.stringify(res.data));
-              setLocalUser(res.data);
-              navigate("/dashboard", {
-                replace: true,
-                state: {
-                  loggedInUser: res.data,
-                },
-              });
-            }
-          })
-          .catch((err) => {
-            setMessage(err.response.data.message);
-            setError(true);
-          });
-      } else {
-        setMessage("Invalid email format");
-        setError(true);
+  const login = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axiosConfig.post(LOGIN_URL, user);
+      if (res.status === 200) {
+        setAuth(res.data);
+        navigate("/dashboard", {
+          replace: true,
+        });
       }
-    } else {
-      setMessage("One or more fields missing.");
+    } catch (err) {
+      if (err?.response?.status === 400) {
+        setMessage({ title: "Error!", data: err.response.data.error });
+      } else {
+        setMessage({ title: "Error!", data: "No server response" });
+      }
       setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKey = async (e) => {
+    if (e.code === "Enter") {
+      await login(e);
     }
   };
 
@@ -57,8 +62,8 @@ function Login() {
       <ErrorSnackbar
         open={error}
         close={setError}
-        message={message}
-        title="Error"
+        data={message.data}
+        title={message.title}
       />
 
       <Box
@@ -72,13 +77,13 @@ function Login() {
       >
         <Box
           sx={{
-            minWidth: "40vw",
-            backgroundColor: "background.paper",
-            borderRadius: 1,
+            minWidth: "30vw",
+            backgroundColor: "grey.900",
+            borderRadius: 4,
             display: "flex",
             flexDirection: "column",
             p: 3,
-            boxShadow: "0px 0px 5px 5px #00E5B5",
+            boxShadow: "0px 0px 5px 5px #42a5f5",
           }}
         >
           <Typography
@@ -88,21 +93,25 @@ function Login() {
             CodeCollab.
           </Typography>
 
-          <CustomTextField
+          <TextField
             autoFocus
+            error={user.email === "" ? false : !isEmail(user.email)}
             name="email"
-            placeholder="Enter email"
+            placeholder="skywalker@deathstar.com"
             sx={{ width: "100%", mb: 1 }}
             value={user.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
+            onKeyUp={!disabled ? handleKey : null}
           />
-          <CustomTextField
+
+          <TextField
             type="password"
             name="password"
-            placeholder="Enter password"
+            placeholder="******"
             sx={{ width: "100%" }}
             value={user.password}
             onChange={(e) => setUser({ ...user, password: e.target.value })}
+            onKeyUp={!disabled ? handleKey : null}
           />
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Button
@@ -113,23 +122,19 @@ function Login() {
               Back
             </Button>
 
-            {/*<LoadingButton*/}
-            {/*  variant="contained"*/}
-            {/*  sx={{ height: "45px", mt: 2 }}*/}
-            {/*  onClick={login}*/}
-            {/*  startIcon={<LoginIcon />}*/}
-            {/*>*/}
-            {/*  Login*/}
-            {/*</LoadingButton>*/}
-
-            <Button
+            <LoadingButton
+              loading={loading}
               variant="contained"
-              sx={{ height: "45px", mt: 2 }}
-              onClick={login}
               startIcon={<LoginIcon />}
+              onClick={login}
+              sx={{
+                height: "45px",
+                mt: 2,
+              }}
+              disabled={disabled}
             >
               Login
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
       </Box>

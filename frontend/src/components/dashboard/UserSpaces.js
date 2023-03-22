@@ -51,7 +51,10 @@ function UserSpaces({
   return (
     <>
       <Backdrop
-        sx={{ color: "#fff", zIndex: 2, backdropFilter: "blur(4px)" }}
+        sx={{
+          zIndex: 2,
+          backdropFilter: "blur(5px)",
+        }}
         open={state.showCreateSpaceBackdrop}
       >
         <CreateSpace
@@ -68,7 +71,7 @@ function UserSpaces({
       </Backdrop>
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: 2, backdropFilter: "blur(4px)" }}
+        sx={{ zIndex: 2, backdropFilter: "blur(5px)" }}
         open={state.showJoinSpaceBackdrop}
       >
         <JoinSpace
@@ -101,7 +104,7 @@ function UserSpaces({
             </Typography>
             <Box>
               <Button
-                variant="contained"
+                variant="outlined"
                 startIcon={<RocketLaunchIcon />}
                 sx={{ mr: 2 }}
                 onClick={() =>

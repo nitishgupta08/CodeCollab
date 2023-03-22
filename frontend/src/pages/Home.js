@@ -1,36 +1,57 @@
-import React, { useState, useRef } from "react";
-import { Box, Typography, Slide, Button } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, TextField, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ErrorSnackbar from "../components/ErrorSnackbar";
-import { CustomTextField } from "../reuseable";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Footer from "../components/Footer";
+import LoadingButton from "@mui/lab/LoadingButton";
+import axiosConfig from "../utils/axiosConfig";
 
-function Home(props) {
-  const spaceIdInput = useRef(null);
-  const usernameInput = useRef(null);
+function Home() {
+  const [spaceId, setSpaceId] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState(false);
+  const [message, setMessage] = useState({ title: "", data: "" });
+  const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleJoin = () => {
-    if (!spaceIdInput.current?.value || !usernameInput.current?.value) {
-      setError(false);
-      return;
+  useEffect(() => {
+    if (name && spaceId) {
+      return setDisabled(false);
     }
+    setDisabled(true);
+  }, [name, spaceId]);
 
-    navigate(`/space/${spaceIdInput.current?.value}`, {
-      state: {
-        spaceId: spaceIdInput.current?.value,
-        username: usernameInput.current?.value,
-        email: null,
-      },
-    });
+  const handleJoin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axiosConfig.get(`/spaces/${spaceId}`);
+      if (res.status === 200) {
+        navigate(`/space/${spaceId}`, {
+          state: {
+            name,
+            email: null,
+          },
+        });
+      }
+    } catch (err) {
+      if (err?.response?.status === 400) {
+        setMessage({ title: "Error!", data: err.response.data.error });
+      } else {
+        setMessage({ title: "Error!", data: "No server response" });
+      }
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleKey = (e) => {
+  const handleKey = async (e) => {
     if (e.code === "Enter") {
-      handleJoin();
+      await handleJoin(e);
     }
   };
 
@@ -39,8 +60,8 @@ function Home(props) {
       <ErrorSnackbar
         open={error}
         close={setError}
-        title="All fields Required"
-        message="One or more fields missing."
+        title={message.title}
+        data={message.data}
       />
 
       <Box
@@ -54,13 +75,13 @@ function Home(props) {
       >
         <Box
           sx={{
-            minWidth: "40vw",
-            backgroundColor: "background.paper",
-            borderRadius: 1,
+            minWidth: "30vw",
+            backgroundColor: "grey.900",
+            borderRadius: 4,
             display: "flex",
             flexDirection: "column",
             p: 3,
-            boxShadow: "0px 0px 5px 5px #00E5B5",
+            boxShadow: "0px 0px 5px 5px #42a5f5",
           }}
         >
           <Typography
@@ -84,32 +105,41 @@ function Home(props) {
             </Typography>
 
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <CustomTextField
+              <TextField
                 autoFocus
                 name="spaceId"
+                value={spaceId}
                 placeholder="Paste Invite ID"
                 sx={{ width: "100%", mb: 1 }}
-                inputRef={spaceIdInput}
+                onChange={(e) => setSpaceId(e.target.value)}
+                onKeyUp={!disabled ? handleKey : null}
               />
 
-              <CustomTextField
+              <TextField
                 name="name"
                 placeholder="Enter name"
+                value={name}
                 sx={{ width: "100%", maxWidth: "100%", mb: 2 }}
-                inputRef={usernameInput}
+                onChange={(e) => setName(e.target.value)}
+                onKeyUp={!disabled ? handleKey : null}
               />
             </Box>
-
-            <Button
+            <LoadingButton
+              loading={loading}
               variant="contained"
-              sx={{ height: "45px", display: "block" }}
               onClick={handleJoin}
+              sx={{
+                height: "45px",
+                display: "block",
+              }}
+              disabled={disabled}
             >
               Join
-            </Button>
+            </LoadingButton>
           </Box>
+          <Divider variant="middle" sx={{ mt: 4, mb: 3 }} />
 
-          <Box sx={{ mt: 2 }}>
+          <Box>
             <Typography
               variant="h2"
               sx={{
@@ -131,7 +161,7 @@ function Home(props) {
                 Login
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
                 sx={{ height: "45px" }}
                 startIcon={<PersonAddIcon />}
                 onClick={() => navigate("/register")}

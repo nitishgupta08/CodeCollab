@@ -1,6 +1,5 @@
-import React, { useContext, useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { Box, Typography, Button, Grid, Tabs, Tab } from "@mui/material";
-import { UserContext } from "../context/UserContext";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -11,6 +10,7 @@ import ErrorSnackbar from "../components/ErrorSnackbar";
 import SuccessSnackbar from "../components/SuccessSnackbar";
 import Profile from "../components/dashboard/Profile";
 import { useAxios } from "../hooks/useAxios";
+import useAuth from "../hooks/useAuth";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 const TabPanel = (props) => {
@@ -45,7 +45,8 @@ function reducer(state, action) {
 }
 
 function Dashboard() {
-  const [loggedInUser, setLoggedInUser] = useLocalStorage("user", null);
+  const { auth, setAuth } = useAuth();
+  const [localUser, setLocalUser] = useLocalStorage("user", null);
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
   const [success, setSuccess] = useState(false);
@@ -54,8 +55,14 @@ function Dashboard() {
   const { response, error: responseError } = useAxios({
     method: "GET",
     url: "/spaces",
-    headers: { Authorization: `Bearer ${loggedInUser.token}` },
+    headers: { Authorization: `Bearer ${auth.token}` },
   });
+
+  useEffect(() => {
+    if (!localUser) {
+      setLocalUser(auth);
+    }
+  }, [localUser]);
 
   useEffect(() => {
     if (responseError !== undefined) {
@@ -73,7 +80,8 @@ function Dashboard() {
   }, [response]);
 
   const handleLogout = () => {
-    setLoggedInUser(null);
+    setAuth(null);
+    localStorage.setItem("user", null);
     navigate("/", { replace: true });
   };
 
@@ -83,7 +91,7 @@ function Dashboard() {
         open={error}
         close={setError}
         title={message.title}
-        message={message.data}
+        data={message.data}
       />
       <SuccessSnackbar
         open={success}
@@ -127,7 +135,7 @@ function Dashboard() {
               justifyContent: "center",
             }}
           >
-            <Profile loggedInUser={loggedInUser} />
+            <Profile loggedInUser={auth} />
             <Box
               sx={{
                 position: "absolute",
@@ -161,20 +169,20 @@ function Dashboard() {
         <Grid
           item
           xs={12}
-          sx={{ minHeight: "70vh", backgroundColor: "background.paper" }}
+          sx={{ minHeight: "70vh", backgroundColor: "grey.900" }}
         >
           <TabPanel value={state.value} index={0}>
             <UserSpaces
               setMessage={setMessage}
               setSuccess={setSuccess}
               setError={setError}
-              loggedInUser={loggedInUser}
+              loggedInUser={auth}
               listSpaces={state.listSpaces}
               dashboardDispatch={dispatch}
             />
           </TabPanel>
           <TabPanel value={state.value} index={1}>
-            <UserSettings loggedInUser={loggedInUser} />
+            <UserSettings loggedInUser={auth} />
           </TabPanel>
         </Grid>
       </Grid>

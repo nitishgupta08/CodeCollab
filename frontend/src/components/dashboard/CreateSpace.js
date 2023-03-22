@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { Box, Button, IconButton, Typography } from "@mui/material";
-import { CustomTextField } from "../../reuseable";
+import { Box, Button, IconButton, Typography, TextField } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import React from "react";
 import axiosConfig from "../../utils/axiosConfig";
@@ -68,8 +67,8 @@ export default function CreateSpace({
     <Box
       sx={{
         minWidth: "30vw",
-        backgroundColor: "background.secondary",
-        borderRadius: 2,
+        backgroundColor: "grey.900",
+        borderRadius: 4,
         display: "flex",
         flexDirection: "column",
         p: 3,
@@ -100,13 +99,13 @@ export default function CreateSpace({
             dispatch({ type: "handleCreateBackdrop", payload: false })
           }
         >
-          <CloseIcon />
+          <CloseIcon sx={{ color: "error.main" }} />
         </IconButton>
       </Box>
 
-      <CustomTextField
+      <TextField
         disabled
-        name="spaceid"
+        name="spaceId"
         placeholder="Paste Invite ID"
         sx={{ width: "100%", mb: 1 }}
         value={spaceId}
@@ -115,7 +114,7 @@ export default function CreateSpace({
         }
       />
 
-      <CustomTextField
+      <TextField
         autoFocus
         name="name"
         placeholder="Enter name"

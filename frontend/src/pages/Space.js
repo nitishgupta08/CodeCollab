@@ -1,22 +1,27 @@
 import { useEffect, useReducer, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useAxios } from "../hooks/useAxios";
-import { Grid } from "@mui/material";
+import {
+  Box,
+  Backdrop,
+  CircularProgress,
+  Typography,
+  Button,
+} from "@mui/material";
 import SpaceHeader from "../components/space/SpaceHeader";
-import { UserContext } from "../context/UserContext";
 import CodeArea from "../components/space/CodeArea";
+import useAuth from "../hooks/useAuth";
+import { socket } from "../scoket";
+import ACTIONS from "../utils/Actions";
 
 const initialState = {
-  spaceData: null,
+  spaceData: [],
   loadingScreen: true,
   spaceName: "",
-  currentFileData: "",
-  activeUsers: null,
+  activeUsers: [],
   editorTheme: "",
-  editorLanguageIndex: 0,
   successSnackbar: false,
   failSnackbar: false,
-  sideTabValue: 0,
   message: { title: "", data: "" },
 };
 
@@ -28,14 +33,8 @@ function reducer(state, action) {
       return { ...state, loadingScreen: false };
     case "updateSpaceName":
       return { ...state, spaceName: action.payload };
-    case "updateSideTab":
-      return { ...state, sideTabValue: action.payload };
     case "updateEditorTheme":
       return { ...state, editorTheme: action.payload };
-    case "updateEditorLanguage":
-      return { ...state, editorLanguageIndex: action.payload };
-    case "updateCurrentFileData":
-      return { ...state, currentFileData: action.payload };
     case "updateSuccess":
       return { ...state, successSnackbar: action.payload };
     case "updateFail":
@@ -50,14 +49,36 @@ function reducer(state, action) {
 }
 
 function Space() {
+  const { auth, setAuth } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
   const location = useLocation();
-  const { loggedInUser } = useContext(UserContext);
 
   const { response, error } = useAxios({
     method: "GET",
-    url: `/spaces/${location.state.spaceId}`,
+    url: `/spaces/${location.pathname.split("/")[2]}`,
   });
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.emit(ACTIONS.JOIN, {
+      spaceId: location.pathname.split("/")[2],
+      name: location.state.name,
+      email: location.state.email,
+    });
+
+    socket.on(ACTIONS.JOINED, (activeUsers) => {
+      dispatch({
+        type: "updateActiveUsers",
+        payload: activeUsers,
+      });
+    });
+  }, []);
 
   useEffect(() => {
     if (error !== undefined) {
@@ -68,21 +89,50 @@ function Space() {
 
     if (response === undefined) return;
 
-    dispatch({ type: "updateSpaceData", payload: response.data });
+    dispatch({ type: "updateSpaceName", payload: response.data.spaceName });
+    dispatch({ type: "updateSpaceData", payload: response.data.spaceData[0] });
     dispatch({ type: "removeLoadingScreen", payload: false });
   }, [response, error]);
 
   return (
     <>
-      <Grid container>
-        <Grid item xs={12} sx={{ height: "10vh" }}>
-          <SpaceHeader loggedInUser={loggedInUser} />
-        </Grid>
+      <Backdrop
+        sx={{
+          backgroundColor: "background.default",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+        }}
+        open={state.loadingScreen}
+      >
+        <CircularProgress size={100} />
+        <Typography
+          variant="h1"
+          sx={{ color: "text.primary", fontSize: 35, fontWeight: 700, mt: 5 }}
+        >
+          Loading Space...
+        </Typography>
+      </Backdrop>
 
-        <Grid item xs={12} sx={{ height: "90vh" }}>
-          <CodeArea />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          backgroundColor: "background.default",
+        }}
+      >
+        <Box sx={{ flex: "0 0 auto", p: 1 }}>
+          <SpaceHeader loggedInUser={auth} />
+        </Box>
+        <Box sx={{ flex: "1 1 auto", p: 1 }}>
+          <CodeArea
+            spaceData={state.spaceData}
+            spaceName={state.spaceName}
+            spaceId={state.spaceId}
+          />
+        </Box>
+      </Box>
     </>
   );
 }

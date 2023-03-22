@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
-import { CustomTextField } from "../../reuseable";
+import { Box, Typography, Button, TextField } from "@mui/material";
 
 function UserSettings({ loggedInUser }) {
   const [newName, setNewName] = useState(loggedInUser.user.name);
@@ -14,7 +13,7 @@ function UserSettings({ loggedInUser }) {
         >
           email.
         </Typography>
-        <CustomTextField
+        <TextField
           disabled
           name="email"
           value={loggedInUser.user.email}
@@ -30,14 +29,13 @@ function UserSettings({ loggedInUser }) {
           name.
         </Typography>
         <Box sx={{ display: "flex" }}>
-          <CustomTextField
+          <TextField
             disabled
             name="name"
             value={loggedInUser.user.name}
             onChange={(e) => setNewName(e.target.value)}
             sx={{ width: "400px", mr: 2 }}
           />
-          )}
         </Box>
       </Box>
 

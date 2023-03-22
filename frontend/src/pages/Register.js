@@ -1,58 +1,70 @@
-import React, { useContext, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../context/UserContext";
-import { CustomTextField } from "../reuseable";
-import ErrorSnackbar from "../components/ErrorSnackbar";
+import { Box, Button, Typography, TextField } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Footer from "../components/Footer";
-import useLocalStorage from "../hooks/useLocalStorage";
+import ErrorSnackbar from "../components/ErrorSnackbar";
 import axiosConfig from "../utils/axiosConfig";
+import isEmail from "validator/lib/isEmail";
+import useAuth from "../hooks/useAuth";
+
+const REGISTER_URL = "/users/register";
 
 function Register() {
   const [user, setUser] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState({ title: "", data: "" });
+  const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const emailRegex = /\S+@\S+\.\S+/;
-  const { setLoggedInUser } = useContext(UserContext);
-  const [localUser, setLocalUser] = useLocalStorage("user", null);
+  const { setAuth } = useAuth();
 
-  const register = () => {
-    if (user.name && user.email && user.password) {
-      if (emailRegex.test(user.email)) {
-        axiosConfig
-          .post("/users/register", user)
-          .then((res) => {
-            if (res.status === 201) {
-              setLoggedInUser(JSON.stringify(res.data));
-              setLocalUser(res.data);
-              navigate("/dashboard", {
-                replace: true,
-              });
-            }
-          })
-          .catch((err) => {
-            setMessage(err.response.data.message);
-            setError(true);
-          });
-      } else {
-        setMessage("Invalid email format");
-        setError(true);
+  useEffect(() => {
+    if (isEmail(user.email) && user.name && user.password) {
+      return setDisabled(false);
+    }
+    setDisabled(true);
+  }, [user]);
+
+  const register = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axiosConfig.post(REGISTER_URL, user);
+      if (res.status === 201) {
+        console.log(res.data);
+        setAuth(res.data);
+        navigate("/dashboard", {
+          replace: true,
+        });
       }
-    } else {
-      setMessage("One or more fields missing.");
+    } catch (err) {
+      if (err?.response?.status === 400) {
+        setMessage({ title: "Error!", data: err.response.data.error });
+      } else {
+        setMessage({ title: "Error!", data: "No server response" });
+      }
       setError(true);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleKey = async (e) => {
+    if (e.code === "Enter") {
+      await register(e);
+    }
+  };
+
   return (
     <>
       <ErrorSnackbar
         open={error}
         close={setError}
-        message={message}
-        title="Error"
+        data={message.data}
+        title={message.title}
       />
       <Box
         sx={{
@@ -65,13 +77,13 @@ function Register() {
       >
         <Box
           sx={{
-            minWidth: "40vw",
-            backgroundColor: "background.paper",
-            borderRadius: 1,
+            minWidth: "30vw",
+            backgroundColor: "grey.900",
+            borderRadius: 4,
             display: "flex",
             flexDirection: "column",
             p: 3,
-            boxShadow: "0px 0px 5px 5px #00E5B5",
+            boxShadow: "0px 0px 5px 5px #42a5f5",
           }}
         >
           <Typography
@@ -81,30 +93,34 @@ function Register() {
             CodeCollab.
           </Typography>
 
-          <CustomTextField
+          <TextField
             autoFocus
+            error={user.email === "" ? false : !isEmail(user.email)}
             name="email"
-            placeholder="Enter email"
+            placeholder="skywalker@deathstar.com"
             sx={{ width: "100%", mb: 1 }}
             value={user.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
+            onKeyUp={!disabled ? handleKey : null}
           />
 
-          <CustomTextField
+          <TextField
             name="name"
-            placeholder="Enter name"
+            placeholder="Luke Skywalker"
             sx={{ width: "100%", mb: 1 }}
             value={user.name}
             onChange={(e) => setUser({ ...user, name: e.target.value })}
+            onKeyUp={!disabled ? handleKey : null}
           />
 
-          <CustomTextField
+          <TextField
             type="password"
             name="password"
-            placeholder="Enter password"
+            placeholder="******"
             sx={{ width: "100%" }}
             value={user.password}
             onChange={(e) => setUser({ ...user, password: e.target.value })}
+            onKeyUp={!disabled ? handleKey : null}
           />
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Button
@@ -114,14 +130,20 @@ function Register() {
             >
               Back
             </Button>
-            <Button
-              variant="contained"
-              sx={{ height: "45px", mt: 2 }}
+
+            <LoadingButton
+              loading={loading}
+              variant="outlined"
               startIcon={<PersonAddIcon />}
               onClick={register}
+              sx={{
+                height: "45px",
+                mt: 2,
+              }}
+              disabled={disabled}
             >
               Register
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
       </Box>
