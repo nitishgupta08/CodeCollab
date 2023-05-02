@@ -24,7 +24,7 @@ app.use(errorHandler);
 const server = http.createServer(app);
 const io = socketio(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
 });
 
