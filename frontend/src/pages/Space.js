@@ -78,6 +78,10 @@ function Space() {
         payload: activeUsers,
       });
     });
+
+    socket.on(ACTIONS.SYNC_CODE, ({ change }) => {
+      dispatch({ type: "updateSpaceData", payload: {...state.spaceData, fileData: change}});
+    });
   }, []);
 
   useEffect(() => {
@@ -129,7 +133,7 @@ function Space() {
           <CodeArea
             spaceData={state.spaceData}
             spaceName={state.spaceName}
-            spaceId={state.spaceId}
+            spaceId={location.pathname.split("/")[2]}
           />
         </Box>
       </Box>

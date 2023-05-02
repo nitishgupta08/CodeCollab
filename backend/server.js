@@ -64,12 +64,6 @@ io.on("connection", (socket) => {
 
   // CODE change
   socket.on(ACTIONS.CODE_CHANGE, async ({ spaceId, change }) => {
-    const res = await Space.findOneAndUpdate(
-      { spaceId },
-      { $set: { "spaceData.$.fileData": change } },
-      { new: true }
-    );
-    console.log(res);
     io.to(spaceId).emit(ACTIONS.SYNC_CODE, { change });
   });
 });
