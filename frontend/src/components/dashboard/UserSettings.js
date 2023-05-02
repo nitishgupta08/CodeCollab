@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Box, Typography, Button, TextField } from "@mui/material";
+import { Box, Typography, TextField } from "@mui/material";
 
 function UserSettings({ loggedInUser }) {
+  // eslint-disable-next-line
   const [newName, setNewName] = useState(loggedInUser.user.name);
 
   return (

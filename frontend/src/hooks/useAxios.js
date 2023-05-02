@@ -19,6 +19,7 @@ export const useAxios = (axiosParams) => {
 
   useEffect(() => {
     fetchData(axiosParams);
+    // eslint-disable-next-line
   }, []);
 
   return { response, error, loading };

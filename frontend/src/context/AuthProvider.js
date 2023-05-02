@@ -1,9 +1,10 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
+  // eslint-disable-next-line
   const [localUser, setLocalUser] = useLocalStorage("user", null);
 
   const [auth, setAuth] = useState(localUser);

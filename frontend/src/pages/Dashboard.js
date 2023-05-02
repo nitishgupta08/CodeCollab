@@ -62,6 +62,7 @@ function Dashboard() {
     if (!localUser) {
       setLocalUser(auth);
     }
+    // eslint-disable-next-line
   }, [localUser]);
 
   useEffect(() => {
@@ -77,6 +78,7 @@ function Dashboard() {
     if (response === undefined) return;
 
     dispatch({ type: "updateListSpaces", payload: response.data });
+    // eslint-disable-next-line
   }, [response]);
 
   const handleLogout = () => {

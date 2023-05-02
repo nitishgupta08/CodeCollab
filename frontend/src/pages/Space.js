@@ -1,13 +1,7 @@
-import { useEffect, useReducer, useContext } from "react";
+import { useEffect, useReducer } from "react";
 import { useLocation } from "react-router-dom";
 import { useAxios } from "../hooks/useAxios";
-import {
-  Box,
-  Backdrop,
-  CircularProgress,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Backdrop, CircularProgress, Typography } from "@mui/material";
 import SpaceHeader from "../components/space/SpaceHeader";
 import CodeArea from "../components/space/CodeArea";
 import useAuth from "../hooks/useAuth";
@@ -49,6 +43,7 @@ function reducer(state, action) {
 }
 
 function Space() {
+  // eslint-disable-next-line
   const { auth, setAuth } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
   const location = useLocation();
@@ -80,8 +75,12 @@ function Space() {
     });
 
     socket.on(ACTIONS.SYNC_CODE, ({ change }) => {
-      dispatch({ type: "updateSpaceData", payload: {...state.spaceData, fileData: change}});
+      dispatch({
+        type: "updateSpaceData",
+        payload: { ...state.spaceData, fileData: change },
+      });
     });
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -96,6 +95,7 @@ function Space() {
     dispatch({ type: "updateSpaceName", payload: response.data.spaceName });
     dispatch({ type: "updateSpaceData", payload: response.data.spaceData[0] });
     dispatch({ type: "removeLoadingScreen", payload: false });
+    // eslint-disable-next-line
   }, [response, error]);
 
   return (

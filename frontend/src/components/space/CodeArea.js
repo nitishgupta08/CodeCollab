@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { Box } from "@mui/material";
 import CodeSettings from "./CodeSettings";
 import Editor from "./Editor";

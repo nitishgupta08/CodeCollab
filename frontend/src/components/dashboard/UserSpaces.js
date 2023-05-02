@@ -2,7 +2,6 @@ import React, { useReducer } from "react";
 import { Box, Typography, Button, Backdrop } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ListSpaces from "./ListSpaces";
-import uniqid from "uniqid";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import CreateSpace from "./CreateSpace";
 import JoinSpace from "./JoinSpace";
@@ -38,15 +37,6 @@ function UserSpaces({
   dashboardDispatch,
 }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  const spaceData = [
-    {
-      id: uniqid(),
-      fileName: "Untitled-1",
-      fileData: "Write your code here",
-      lang: 0,
-    },
-  ];
 
   return (
     <>

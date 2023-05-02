@@ -1,15 +1,5 @@
 import { Box } from "@mui/material";
-import axios from "axios";
-import React, { useState, useEffect, useContext } from "react";
-import { UserContext } from "../../context/UserContext";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate } from "react-router-dom";
-import { CustomTextField } from "../../reuseable";
+import React from "react";
 import LoadingCard from "./LoadingCard";
 import SpaceCard from "./SpaceCard";
 
