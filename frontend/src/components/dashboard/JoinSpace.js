@@ -15,6 +15,7 @@ export default function JoinSpace({
     if (showJoinSpaceBackdrop) {
       dispatch({ type: "updateSpaceId", payload: "" });
     }
+    // eslint-disable-next-line
   }, [showJoinSpaceBackdrop]);
 
   const handleJoin = () => {
