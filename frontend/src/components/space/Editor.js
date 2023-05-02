@@ -53,16 +53,6 @@ export default function Editor({
   }, []);
 
   useEffect(() => {
-    socket.on(ACTIONS.SYNC_CODE, ({ change }) => {
-      console.log(change);
-      editorDispatch({
-        type: "updateFileData",
-        payload: change,
-      });
-    });
-  }, []);
-
-  useEffect(() => {
     editorDispatch({
       type: "updateCursorPosition",
       payload: pos,
