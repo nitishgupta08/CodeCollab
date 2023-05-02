@@ -64,10 +64,12 @@ io.on("connection", (socket) => {
 
   // CODE change
   socket.on(ACTIONS.CODE_CHANGE, async ({ spaceId, change }) => {
-    const space = await Space.findOne({ spaceId });
-    space.spaceData[0].fileData = change;
-    space.save();
-    io.to(spaceId).emit(ACTIONS.SYNC_CODE, { change });
+    // const space = await Space.findOne({ spaceId });
+    // space.spaceData[0].fileData = change;
+    // space.save();
+    // io.to(spaceId).emit(ACTIONS.SYNC_CODE, { change });
+    socket.broadcast.to(spaceId).emit(ACTIONS.SYNC_CODE, { change });
+
   });
 });
 
