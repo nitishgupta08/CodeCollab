@@ -1,4 +1,4 @@
-[//]: # (![Logo]&#40;/images/logo.png&#41;)
+![Logo](/images/logo.png)
 
 # CodeCollab
 

@@ -65,6 +65,11 @@ function Space() {
   });
 
   useEffect(() => {
+    document.title =
+      state.spaceName.length === 0 ? "Loading..." : state.spaceName;
+  }, [state.spaceName]);
+
+  useEffect(() => {
     socket.connect();
     return () => {
       socket.disconnect();
