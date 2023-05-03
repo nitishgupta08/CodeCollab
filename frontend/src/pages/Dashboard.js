@@ -1,13 +1,21 @@
 import React, { useState, useEffect, useReducer } from "react";
-import { Box, Typography, Button, Grid, Tabs, Tab } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Tabs,
+  Tab,
+  Alert,
+  AlertTitle,
+  Snackbar,
+} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import UserSpaces from "../components/dashboard/UserSpaces";
 import UserSettings from "../components/dashboard/UserSettings";
-import ErrorSnackbar from "../components/ErrorSnackbar";
-import SuccessSnackbar from "../components/SuccessSnackbar";
 import Profile from "../components/dashboard/Profile";
 import { useAxios } from "../hooks/useAxios";
 import useAuth from "../hooks/useAuth";
@@ -31,6 +39,11 @@ const TabPanel = (props) => {
 const initialState = {
   value: 0,
   listSpace: undefined,
+  originalSpace: null,
+  spaceId: "",
+  spaceName: "",
+  showCreateSpaceBackdrop: false,
+  showJoinSpaceBackdrop: false,
 };
 
 function reducer(state, action) {
@@ -39,6 +52,16 @@ function reducer(state, action) {
       return { ...state, value: action.payload };
     case "updateListSpaces":
       return { ...state, listSpaces: action.payload };
+    case "updateOriginalSpaces":
+      return { ...state, originalSpace: action.payload };
+    case "updateSpaceId":
+      return { ...state, spaceId: action.payload };
+    case "updateSpaceName":
+      return { ...state, spaceName: action.payload };
+    case "handleCreateBackdrop":
+      return { ...state, showCreateSpaceBackdrop: action.payload };
+    case "handleJoinBackdrop":
+      return { ...state, showJoinSpaceBackdrop: action.payload };
     default:
       throw new Error();
   }
@@ -62,7 +85,7 @@ function Dashboard() {
     if (!localUser) {
       setLocalUser(auth);
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localUser]);
 
   useEffect(() => {
@@ -78,7 +101,9 @@ function Dashboard() {
     if (response === undefined) return;
 
     dispatch({ type: "updateListSpaces", payload: response.data });
-    // eslint-disable-next-line
+    dispatch({ type: "updateOriginalSpaces", payload: response.data });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response]);
 
   const handleLogout = () => {
@@ -89,25 +114,36 @@ function Dashboard() {
 
   return (
     <>
-      <ErrorSnackbar
+      <Snackbar
         open={error}
-        close={setError}
-        title={message.title}
-        data={message.data}
-      />
-      <SuccessSnackbar
+        onClose={() => setError(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={3000}
+      >
+        <Alert variant="filled" severity="error" sx={{ width: "100%" }}>
+          <AlertTitle>{message.title}</AlertTitle>
+          {message.data}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
         open={success}
-        close={setSuccess}
-        title={message.title}
-        message={message.data}
-      />
+        onClose={() => setSuccess(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={2500}
+      >
+        <Alert variant="filled" severity="success" sx={{ width: "100%" }}>
+          <AlertTitle>{message.title}</AlertTitle>
+          {message.data}
+        </Alert>
+      </Snackbar>
 
       <Box
         sx={{
           position: "fixed",
           width: "100vw",
           display: "flex",
-          zIndex: 1,
+          zIndex: 3,
           justifyContent: "space-between",
         }}
       >
@@ -126,15 +162,20 @@ function Dashboard() {
           Logout
         </Button>
       </Box>
-      <Grid container sx={{ minHeight: "100vh" }}>
+      <Grid
+        container
+        sx={{ minHeight: "100vh", backgroundColor: "background.default" }}
+      >
         <Grid item xs={12} sx={{ height: "30vh" }}>
           <Box
             sx={{
               height: "inherit",
               backgroundColor: "background.default",
-              position: "relative",
+              position: "fixed",
               display: "flex",
               justifyContent: "center",
+              width: "100vw",
+              zIndex: 2,
             }}
           >
             <Profile loggedInUser={auth} />
@@ -180,11 +221,16 @@ function Dashboard() {
               setError={setError}
               loggedInUser={auth}
               listSpaces={state.listSpaces}
-              dashboardDispatch={dispatch}
+              dispatch={dispatch}
+              originalSpace={state.originalSpace}
+              showCreateSpaceBackdrop={state.showCreateSpaceBackdrop}
+              showJoinSpaceBackdrop={state.showJoinSpaceBackdrop}
+              spaceId={state.spaceId}
+              spaceName={state.spaceName}
             />
           </TabPanel>
           <TabPanel value={state.value} index={1}>
-            <UserSettings loggedInUser={auth} />
+            <UserSettings loggedInUser={auth} setLoggedInUser={setAuth} />
           </TabPanel>
         </Grid>
       </Grid>

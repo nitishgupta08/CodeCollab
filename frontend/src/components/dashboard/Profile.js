@@ -37,9 +37,20 @@ export default function Profile({ loggedInUser }) {
         <Typography
           variant="h1"
           sx={{
+            fontSize: 20,
+            fontWeight: 700,
+            mt: 1,
+            color: "text.primary",
+          }}
+        >
+          {loggedInUser.user?.email}
+        </Typography>
+        <Typography
+          variant="h1"
+          sx={{
             fontSize: 15,
             fontWeight: 400,
-            mt: 2,
+            mt: 3,
             color: "text.primary",
           }}
         >

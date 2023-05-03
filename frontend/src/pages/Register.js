@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Typography, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  TextField,
+  Alert,
+  AlertTitle,
+  Snackbar,
+} from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import Footer from "../components/Footer";
-import ErrorSnackbar from "../components/ErrorSnackbar";
 import axiosConfig from "../utils/axiosConfig";
 import isEmail from "validator/lib/isEmail";
 import useAuth from "../hooks/useAuth";
@@ -60,12 +66,17 @@ function Register() {
 
   return (
     <>
-      <ErrorSnackbar
+      <Snackbar
         open={error}
-        close={setError}
-        data={message.data}
-        title={message.title}
-      />
+        onClose={() => setError(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={3000}
+      >
+        <Alert variant="filled" severity="error" sx={{ width: "100%" }}>
+          <AlertTitle>{message.title}</AlertTitle>
+          {message.data}
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           backgroundColor: "background.default",
@@ -78,8 +89,8 @@ function Register() {
         <Box
           sx={{
             minWidth: "30vw",
-            backgroundColor: "grey.900",
-            borderRadius: 4,
+            backgroundColor: "background.paper",
+            borderRadius: 2,
             display: "flex",
             flexDirection: "column",
             p: 3,
@@ -147,7 +158,6 @@ function Register() {
           </Box>
         </Box>
       </Box>
-      <Footer />
     </>
   );
 }

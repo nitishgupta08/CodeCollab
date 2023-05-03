@@ -16,14 +16,14 @@ export default function CreateSpace({
   loggedInUser,
   setSuccess,
   showCreateSpaceBackdrop,
-  dashboardDispatch,
 }) {
   useEffect(() => {
     if (showCreateSpaceBackdrop) {
       const id = uuidv4();
       dispatch({ type: "updateSpaceId", payload: id });
     }
-    // eslint-disable-next-line
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCreateSpaceBackdrop]);
 
   const handleCreate = () => {
@@ -43,7 +43,8 @@ export default function CreateSpace({
       )
       .then((res) => {
         if (res.status === 200) {
-          dashboardDispatch({ type: "updateListSpaces", payload: res.data });
+          dispatch({ type: "updateListSpaces", payload: res.data });
+          dispatch({ type: "updateOriginalSpaces", payload: res.data });
           dispatch({ type: "handleCreateBackdrop", payload: false });
           dispatch({ type: "updateSpaceName", payload: "" });
 
@@ -68,8 +69,8 @@ export default function CreateSpace({
     <Box
       sx={{
         minWidth: "30vw",
-        backgroundColor: "grey.900",
-        borderRadius: 4,
+        backgroundColor: "background.paper",
+        borderRadius: 2,
         display: "flex",
         flexDirection: "column",
         p: 3,
@@ -127,24 +128,22 @@ export default function CreateSpace({
       />
 
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex" }}>
-          <Button
-            variant="contained"
-            sx={{ height: "43px", mr: 2 }}
-            onClick={handleCreate}
-          >
-            Create
-          </Button>
+        <Button
+          variant="contained"
+          sx={{ height: "43px", mr: 2 }}
+          onClick={handleCreate}
+        >
+          Create
+        </Button>
 
-          <Button
-            variant="contained"
-            sx={{ height: "43px" }}
-            onClick={handleCopy}
-            startIcon={<ContentCopyIcon />}
-          >
-            Space Id
-          </Button>
-        </Box>
+        <Button
+          variant="outlined"
+          sx={{ height: "43px" }}
+          onClick={handleCopy}
+          startIcon={<ContentCopyIcon />}
+        >
+          Space Id
+        </Button>
       </Box>
     </Box>
   );

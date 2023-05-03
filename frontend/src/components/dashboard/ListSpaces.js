@@ -9,11 +9,18 @@ function ListSpaces({
   setError,
   loggedInUser,
   listSpaces: listSpace,
-  dashboardDispatch,
+  dispatch,
 }) {
   return (
     <>
-      <Box sx={{ pl: 5, pr: 5 }}>
+      <Box
+        sx={{
+          pl: 5,
+          pr: 5,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         {listSpace !== undefined ? (
           listSpace.length === 0 ? (
             <>
@@ -41,7 +48,7 @@ function ListSpaces({
                     setMessage={setMessage}
                     setSuccess={setSuccess}
                     setError={setError}
-                    dashboardDispatch={dashboardDispatch}
+                    dispatch={dispatch}
                   />
                 );
               })}

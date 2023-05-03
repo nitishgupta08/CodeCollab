@@ -1,32 +1,19 @@
-import React, { useReducer } from "react";
-import { Box, Typography, Button, Backdrop } from "@mui/material";
+import React from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Backdrop,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ListSpaces from "./ListSpaces";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import CreateSpace from "./CreateSpace";
+import SearchIcon from "@mui/icons-material/Search";
 import JoinSpace from "./JoinSpace";
-
-const initialState = {
-  spaceId: "",
-  spaceName: "",
-  showCreateSpaceBackdrop: false,
-  showJoinSpaceBackdrop: false,
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case "updateSpaceId":
-      return { ...state, spaceId: action.payload };
-    case "updateSpaceName":
-      return { ...state, spaceName: action.payload };
-    case "handleCreateBackdrop":
-      return { ...state, showCreateSpaceBackdrop: action.payload };
-    case "handleJoinBackdrop":
-      return { ...state, showJoinSpaceBackdrop: action.payload };
-    default:
-      throw new Error();
-  }
-}
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 
 function UserSpaces({
   setMessage,
@@ -34,9 +21,26 @@ function UserSpaces({
   setError,
   loggedInUser,
   listSpaces,
-  dashboardDispatch,
+  originalSpace,
+  dispatch,
+  showCreateSpaceBackdrop,
+  showJoinSpaceBackdrop,
+  spaceId,
+  spaceName,
 }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  function searchQuery(searchTerm) {
+    if (searchTerm !== "") {
+      const filteredSpaces = originalSpace.filter((space) => {
+        return (
+          space.spaceId.includes(searchTerm) ||
+          space.spaceName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      });
+      dispatch({ type: "updateListSpaces", payload: filteredSpaces });
+    } else {
+      dispatch({ type: "updateListSpaces", payload: originalSpace });
+    }
+  }
 
   return (
     <>
@@ -45,34 +49,33 @@ function UserSpaces({
           zIndex: 2,
           backdropFilter: "blur(5px)",
         }}
-        open={state.showCreateSpaceBackdrop}
+        open={showCreateSpaceBackdrop}
       >
         <CreateSpace
-          spaceId={state.spaceId}
-          spaceName={state.spaceName}
+          spaceId={spaceId}
+          spaceName={spaceName}
           setError={setError}
           setSuccess={setSuccess}
           setMessage={setMessage}
           loggedInUser={loggedInUser}
           dispatch={dispatch}
-          dashboardDispatch={dashboardDispatch}
-          showCreateSpaceBackdrop={state.showCreateSpaceBackdrop}
+          showCreateSpaceBackdrop={showCreateSpaceBackdrop}
         />
       </Backdrop>
 
       <Backdrop
         sx={{ zIndex: 2, backdropFilter: "blur(5px)" }}
-        open={state.showJoinSpaceBackdrop}
+        open={showJoinSpaceBackdrop}
       >
         <JoinSpace
-          spaceId={state.spaceId}
+          spaceId={spaceId}
           loggedInUser={loggedInUser}
           dispatch={dispatch}
-          showJoinSpaceBackdrop={state.showJoinSpaceBackdrop}
+          showJoinSpaceBackdrop={showJoinSpaceBackdrop}
         />
       </Backdrop>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Box sx={{ minWidth: "60vw", minHeight: "70vh", mb: 10 }}>
+        <Box sx={{ minWidth: "90vw", minHeight: "70vh", mb: 10 }}>
           <Box
             sx={{
               p: 2,
@@ -92,6 +95,20 @@ function UserSpaces({
             >
               Your spaces.
             </Typography>
+
+            <OutlinedInput
+              disabled={!listSpaces}
+              size="small"
+              sx={{ minWidth: "30%" }}
+              onChange={(e) => searchQuery(e.target.value)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton edge="end">
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
             <Box>
               <Button
                 variant="outlined"
@@ -121,7 +138,7 @@ function UserSpaces({
             setError={setError}
             loggedInUser={loggedInUser}
             listSpaces={listSpaces}
-            dashboardDispatch={dashboardDispatch}
+            dispatch={dispatch}
           />
         </Box>
       </Box>

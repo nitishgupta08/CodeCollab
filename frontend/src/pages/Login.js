@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Typography, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  TextField,
+  Alert,
+  AlertTitle,
+  Snackbar,
+} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ErrorSnackbar from "../components/ErrorSnackbar";
 import LoginIcon from "@mui/icons-material/Login";
-import Footer from "../components/Footer";
 import axiosConfig from "../utils/axiosConfig";
 import useAuth from "../hooks/useAuth";
 import isEmail from "validator/lib/isEmail";
@@ -59,12 +65,17 @@ function Login() {
 
   return (
     <>
-      <ErrorSnackbar
+      <Snackbar
         open={error}
-        close={setError}
-        data={message.data}
-        title={message.title}
-      />
+        onClose={() => setError(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={3000}
+      >
+        <Alert variant="filled" severity="error" sx={{ width: "100%" }}>
+          <AlertTitle>{message.title}</AlertTitle>
+          {message.data}
+        </Alert>
+      </Snackbar>
 
       <Box
         sx={{
@@ -78,8 +89,8 @@ function Login() {
         <Box
           sx={{
             minWidth: "30vw",
-            backgroundColor: "grey.900",
-            borderRadius: 4,
+            backgroundColor: "background.paper",
+            borderRadius: 2,
             display: "flex",
             flexDirection: "column",
             p: 3,
@@ -138,7 +149,6 @@ function Login() {
           </Box>
         </Box>
       </Box>
-      <Footer />
     </>
   );
 }
