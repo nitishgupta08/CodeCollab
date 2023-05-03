@@ -11,7 +11,7 @@
   },
   "scripts": {
     "server:dev": "nodemon server.js",
-    "server:pod": "node server.js"
+    "server:prod": "node server.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
