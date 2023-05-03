@@ -9,29 +9,9 @@ const User = require("../models/userSchema");
 const getSpaces = async (req, res) => {
   //Find returns a cursor(empty array or always truthy)
   const spaces = await Space.find({ owner: req.user._id }).select(
-    "spaceId spaceName createdAt -_id"
+    "spaceId spaceName createdAt"
   );
   res.status(200).send(spaces);
-};
-
-/*
- * @desc Get data of a particular space
- * @route GET /api/spaces/:id
- * @access Private
- * */
-const getSpaceData = async (req, res) => {
-  try {
-    const space = await Space.findOne({
-      spaceId: req.params.id,
-    }).select("-_id -__v -updatedAt -createdAt");
-    if (!space) {
-      throw new Error("No space found with this spaceId!");
-    }
-
-    res.status(200).send(space);
-  } catch (e) {
-    res.status(400).send({ error: e.message });
-  }
 };
 
 /*
@@ -73,26 +53,38 @@ const createSpaces = async (req, res) => {
 };
 
 /*
- * @desc Update spaces
- * @route PUT /api/spaces/:id
+ * @desc Get data of a particular space
+ * @route GET /api/spaces/:id
  * @access Private
  * */
-const updateSpaces = async (req, res) => {
+const getSpaceData = async (req, res) => {
   try {
     const space = await Space.findOne({
-      owner: req.user._id,
       spaceId: req.params.id,
-    });
+    }).select("-_id -__v -updatedAt -createdAt");
     if (!space) {
       throw new Error("No space found with this spaceId!");
     }
 
+    res.status(200).send(space);
+  } catch (e) {
+    res.status(400).send({ error: e.message });
+  }
+};
+
+/*
+ * @desc Update spaces
+ * @route PUT /api/spaces/:id
+ * @access Public
+ * */
+const updateSpaces = async (req, res) => {
+  try {
     const updatedSpace = await Space.findOneAndUpdate(
       { spaceId: req.params.id },
-      req.body,
+      { $set: req.body },
       { new: true }
     ).select("-owner -_id -__v -updatedAt");
-    res.status(200).json(updatedSpace);
+    res.status(201).json("Saved!");
   } catch (e) {
     res.status(400).send({ error: e.message });
   }
@@ -126,7 +118,7 @@ const deleteSpaces = async (req, res) => {
 };
 
 /*
- * @desc update Activeusers in particular space
+ * @desc update Active users in particular space
  * @route GET /api/spaces/updateActive/:id
  * @access Public
  * */

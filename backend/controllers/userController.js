@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/userSchema");
 
@@ -63,8 +62,54 @@ const getUser = async (req, res) => {
   res.status(200).json(req.user);
 };
 
+/*
+ * @desc Update user data
+ * @route PUT/users/updateUser
+ * @access Private
+ * */
+const updateUser = async (req, res) => {
+  const newDetails = req.body;
+
+  try {
+    await User.updateOne(req.user, { $set: newDetails });
+    res.send({ data: "Success!", title: "Details updated" });
+  } catch (e) {
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+};
+
+/*
+ * @desc Update password
+ * @route PUT/users/change-password
+ * @access Private
+ * */
+const updatePassword = async (req, res) => {
+  const passwords = req.body;
+
+  try {
+    const user = await User.findById(req.user._id);
+    console.log(user);
+
+    const isMatch = await bcrypt.compare(
+      passwords.currentPassword,
+      user.password
+    );
+    if (!isMatch) {
+      throw new Error("Current password is incorrect");
+    }
+    user.password = passwords.newPassword;
+    await user.save();
+
+    res.status(201).send({ title: "Success!", data: "Password changed" });
+  } catch (e) {
+    res.status(400).send({ title: "Error!", data: e.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUser,
+  updateUser,
+  updatePassword,
 };

@@ -14,7 +14,7 @@ const auth = require("../middleware/authMiddleware");
 router.get("/", auth, getSpaces);
 router.post("/", auth, createSpaces);
 router.get("/:id", getSpaceData);
-router.put("/:id", auth, updateSpaces);
+router.put("/:id", updateSpaces);
 router.delete("/:id", auth, deleteSpaces);
 router.put("/updateActive/:id", updateActive);
 

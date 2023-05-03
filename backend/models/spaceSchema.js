@@ -22,7 +22,6 @@ const spaceSchema = mongoose.Schema(
         email: String,
       },
     ],
-
     spaceData: [
       {
         fileName: String,
@@ -43,7 +42,7 @@ spaceSchema.methods.publicSpaceData = function () {
     spaceId: space.spaceId,
     spaceName: space.spaceName,
     spaceData: space.spaceData,
-    createdAtL: space.createdAt,
+    createdAt: space.createdAt,
   };
 };
 
