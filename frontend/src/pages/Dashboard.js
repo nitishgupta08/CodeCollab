@@ -82,6 +82,10 @@ function Dashboard() {
   });
 
   useEffect(() => {
+    document.title = "Dashboard";
+  }, []);
+
+  useEffect(() => {
     if (!localUser) {
       setLocalUser(auth);
     }

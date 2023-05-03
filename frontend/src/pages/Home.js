@@ -25,6 +25,10 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "CodeCollab";
+  }, []);
+
+  useEffect(() => {
     if (name && spaceId) {
       return setDisabled(false);
     }
