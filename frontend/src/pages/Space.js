@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useContext } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAxios } from "../hooks/useAxios";
 import {
@@ -6,7 +6,9 @@ import {
   Backdrop,
   CircularProgress,
   Typography,
-  Button,
+  Snackbar,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
 import SpaceHeader from "../components/space/SpaceHeader";
 import CodeArea from "../components/space/CodeArea";
@@ -16,6 +18,7 @@ import ACTIONS from "../utils/Actions";
 
 const initialState = {
   spaceData: [],
+  currentData: null,
   loadingScreen: true,
   spaceName: "",
   activeUsers: [],
@@ -29,6 +32,8 @@ function reducer(state, action) {
   switch (action.type) {
     case "updateSpaceData":
       return { ...state, spaceData: action.payload };
+    case "updateCurrentData":
+      return { ...state, currentData: action.payload };
     case "removeLoadingScreen":
       return { ...state, loadingScreen: false };
     case "updateSpaceName":
@@ -49,8 +54,9 @@ function reducer(state, action) {
 }
 
 function Space() {
-  const { auth, setAuth } = useAuth();
+  const { auth } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [loadError, setLoadError] = useState(false);
   const location = useLocation();
 
   const { response, error } = useAxios({
@@ -80,22 +86,38 @@ function Space() {
     });
 
     socket.on(ACTIONS.SYNC_CODE, ({ change }) => {
-      dispatch({ type: "updateSpaceData", payload: {...state.spaceData, fileData: change}});
+      dispatch({
+        type: "updateSpaceData",
+        payload: { ...state.spaceData, fileData: change },
+      });
     });
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     if (error !== undefined) {
-      // Show feedback to user
-      console.log(error.response.data);
+      dispatch({
+        type: "updateMessage",
+        payload: {
+          title: "Cannot connect to server at the moment!",
+          data: "Try again later",
+        },
+      });
+      setLoadError(true);
       return;
     }
 
     if (response === undefined) return;
 
     dispatch({ type: "updateSpaceName", payload: response.data.spaceName });
-    dispatch({ type: "updateSpaceData", payload: response.data.spaceData[0] });
+    dispatch({ type: "updateSpaceData", payload: response.data.spaceData });
+    dispatch({
+      type: "updateCurrentData",
+      payload: response.data.spaceData[0],
+    });
     dispatch({ type: "removeLoadingScreen", payload: false });
+
+    // eslint-disable-next-line
   }, [response, error]);
 
   return (
@@ -117,6 +139,18 @@ function Space() {
           Loading Space...
         </Typography>
       </Backdrop>
+
+      <Snackbar
+        open={loadError}
+        onClose={() => setLoadError(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={3000}
+      >
+        <Alert variant="filled" severity="error" sx={{ width: "100%" }}>
+          <AlertTitle>{state.message.title}</AlertTitle>
+          {state.message.data}
+        </Alert>
+      </Snackbar>
 
       <Box
         sx={{

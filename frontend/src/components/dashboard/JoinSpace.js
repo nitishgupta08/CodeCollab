@@ -15,6 +15,7 @@ export default function JoinSpace({
     if (showJoinSpaceBackdrop) {
       dispatch({ type: "updateSpaceId", payload: "" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showJoinSpaceBackdrop]);
 
   const handleJoin = () => {
@@ -32,8 +33,8 @@ export default function JoinSpace({
     <Box
       sx={{
         width: "30vw",
-        backgroundColor: "grey.900",
-        borderRadius: 4,
+        backgroundColor: "background.paper",
+        borderRadius: 2,
         display: "flex",
         flexDirection: "column",
         p: 3,

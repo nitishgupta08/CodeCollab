@@ -6,6 +6,7 @@ import {
   CardContent,
   IconButton,
   Typography,
+  Button,
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
@@ -20,10 +21,12 @@ export default function SpaceCard({
   setMessage,
   setSuccess,
   setError,
-  dashboardDispatch,
+  dispatch,
 }) {
   const date = new Date(item.createdAt);
   const navigate = useNavigate();
+
+  const [confirm, setConfirm] = useState(false);
 
   const handleDelete = () => {
     axiosConfig
@@ -32,12 +35,14 @@ export default function SpaceCard({
       })
       .then((res) => {
         if (res.status === 201) {
-          dashboardDispatch({ type: "updateListSpaces", payload: res.data });
+          dispatch({ type: "updateListSpaces", payload: res.data });
+          dispatch({ type: "updateOriginalSpaces", payload: res.data });
           setMessage({
             title: "Space deleted",
             data: `${item.spaceName} deleted`,
           });
           setSuccess(true);
+          setConfirm(false);
         }
       })
       .catch((err) => {
@@ -77,8 +82,9 @@ export default function SpaceCard({
         alignItems: "center",
         p: 1,
         boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.87)",
-        backgroundColor: "grey.900",
-        borderRadius: 4,
+        backgroundColor: "background.paper",
+        borderRadius: 2,
+        minWidth: "70vw",
       }}
     >
       <CardContent>
@@ -101,20 +107,44 @@ export default function SpaceCard({
         </Typography>
       </CardContent>
       <CardActions>
-        <IconButton sx={{ color: "text.primary" }} onClick={handleEdit}>
-          <EditIcon />
-        </IconButton>
-        <IconButton sx={{ color: "error.main" }} onClick={handleDelete}>
-          <DeleteIcon />
-        </IconButton>
+        {confirm ? (
+          <>
+            <Button
+              variant="contained"
+              color="error"
+              sx={{ height: "45px", mr: 2 }}
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{ height: "45px" }}
+              onClick={() => setConfirm(false)}
+            >
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <>
+            <IconButton sx={{ color: "text.primary" }} onClick={handleCopy}>
+              <ContentCopyIcon />
+            </IconButton>
+            <IconButton sx={{ color: "text.primary" }} onClick={handleEdit}>
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              sx={{ color: "error.main" }}
+              onClick={() => setConfirm(true)}
+            >
+              <DeleteIcon />
+            </IconButton>
 
-        <IconButton sx={{ color: "text.primary" }} onClick={handleCopy}>
-          <ContentCopyIcon />
-        </IconButton>
-
-        <IconButton sx={{ color: "success.main" }} onClick={goToSpace}>
-          <RocketLaunchIcon />
-        </IconButton>
+            <IconButton sx={{ color: "success.main" }} onClick={goToSpace}>
+              <RocketLaunchIcon />
+            </IconButton>
+          </>
+        )}
       </CardActions>
     </Card>
   );

@@ -50,6 +50,7 @@ export default function Editor({
       spaceId,
       change: viewUpdate.state.toJSON().doc,
     });
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function Editor({
       type: "updateCursorPosition",
       payload: pos,
     });
+    // eslint-disable-next-line
   }, [pos]);
 
   return (

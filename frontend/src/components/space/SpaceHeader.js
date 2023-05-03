@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Button, Typography, IconButton } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate } from "react-router-dom";
-import ActiveUsers from "./ActiveUsers";
 
 function SpaceHeader({ loggedInUser }) {
   const navigate = useNavigate();

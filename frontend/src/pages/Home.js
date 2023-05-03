@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, TextField, Divider } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Divider,
+  Snackbar,
+  Alert,
+  AlertTitle,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import ErrorSnackbar from "../components/ErrorSnackbar";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import Footer from "../components/Footer";
 import LoadingButton from "@mui/lab/LoadingButton";
 import axiosConfig from "../utils/axiosConfig";
 
@@ -57,12 +64,17 @@ function Home() {
 
   return (
     <>
-      <ErrorSnackbar
+      <Snackbar
         open={error}
-        close={setError}
-        title={message.title}
-        data={message.data}
-      />
+        onClose={() => setError(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={3000}
+      >
+        <Alert variant="filled" severity="error" sx={{ width: "100%" }}>
+          <AlertTitle>{message.title}</AlertTitle>
+          {message.data}
+        </Alert>
+      </Snackbar>
 
       <Box
         sx={{
@@ -76,8 +88,8 @@ function Home() {
         <Box
           sx={{
             minWidth: "30vw",
-            backgroundColor: "grey.900",
-            borderRadius: 4,
+            backgroundColor: "background.paper",
+            borderRadius: 2,
             display: "flex",
             flexDirection: "column",
             p: 3,
@@ -172,8 +184,6 @@ function Home() {
           </Box>
         </Box>
       </Box>
-
-      <Footer />
     </>
   );
 }

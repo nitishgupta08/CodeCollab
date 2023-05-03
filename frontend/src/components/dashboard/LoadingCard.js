@@ -1,4 +1,4 @@
-import { Box, Card, CardActions, CardContent, Skeleton } from "@mui/material";
+import { Card, CardActions, CardContent, Skeleton } from "@mui/material";
 
 export default function LoadingCard() {
   return (
@@ -12,6 +12,7 @@ export default function LoadingCard() {
         alignItems: "center",
         p: 1,
         boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.3)",
+        minWidth: "70vw",
       }}
     >
       <CardContent>
@@ -38,10 +39,8 @@ export default function LoadingCard() {
         <Skeleton animation="wave" variant="circular" width={40} height={40} />
         <Skeleton animation="wave" variant="circular" width={40} height={40} />
         <Skeleton animation="wave" variant="circular" width={40} height={40} />
+        <Skeleton animation="wave" variant="circular" width={40} height={40} />
       </CardActions>
-      <Box>
-        <Skeleton variant="circular" width={40} height={40} />
-      </Box>
     </Card>
   );
 }

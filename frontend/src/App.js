@@ -5,11 +5,7 @@ import Space from "./pages/Space";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import RequireAuth from "./components/RequireAuth";
-import PersistLogin from "./components/PersistLogin";
-import useLocalStorage from "./hooks/useLocalStorage";
 import useAuth from "./hooks/useAuth";
-import { useEffect } from "react";
 
 function App() {
   const { auth } = useAuth();

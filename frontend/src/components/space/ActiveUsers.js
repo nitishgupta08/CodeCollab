@@ -1,6 +1,5 @@
 import React from "react";
 import { Avatar, AvatarGroup, Box, Divider, Typography } from "@mui/material";
-import uniqolor from "uniqolor";
 import { HtmlTooltip } from "../../reuseable";
 
 export default function ActiveUsers({ activeUsers }) {
