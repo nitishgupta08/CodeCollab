@@ -29,7 +29,7 @@ const createSpaces = async (req, res) => {
       {
         fileName: "Untitled-1",
         fileData: "",
-        fileLang: "js",
+        fileLang: "javascript",
       },
     ];
 

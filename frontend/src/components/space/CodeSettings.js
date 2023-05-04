@@ -17,18 +17,13 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import { useDispatch, useSelector } from "react-redux";
 
-export default function CodeSettings({
-  language,
-  fileName,
-  cursorPosition,
-  dispatch,
-  theme,
-  fontSize,
-  spaceName,
-}) {
+export default function CodeSettings() {
   const [edit, setEdit] = useState(false);
   const [editName, setEditName] = useState("");
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state.spaceReducer);
 
   return (
     <Box
@@ -52,7 +47,7 @@ export default function CodeSettings({
           variant="h2"
           sx={{ fontSize: 20, fontWeight: 700, color: "text.primary" }}
         >
-          {spaceName}
+          {state.spaceName}
         </Typography>
         <NavigateNextIcon fontSize="small" sx={{ color: "text.primary" }} />
         {edit ? (
@@ -68,7 +63,7 @@ export default function CodeSettings({
             variant="h2"
             sx={{ fontSize: 20, fontWeight: 700, color: "text.primary" }}
           >
-            {fileName}
+            {state.currentData?.fileName}
           </Typography>
         )}
 
@@ -77,7 +72,10 @@ export default function CodeSettings({
             <IconButton
               sx={{ ml: 2 }}
               onClick={() => {
-                dispatch({ type: "updateFileName", payload: editName });
+                dispatch({
+                  type: "updateCurrentData",
+                  payload: { ...state.currentData, fileName: editName },
+                });
                 setEdit(false);
               }}
             >
@@ -113,30 +111,36 @@ export default function CodeSettings({
             opacity: 0.7,
           }}
         >
-          {cursorPosition}
+          {state.cursorPosition}
         </Typography>
 
-        <SelectLanguage language={language} dispatch={dispatch} />
-
+        <SelectLanguage language={state.language} dispatch={dispatch} />
         <Divider orientation="vertical" flexItem sx={{ opacity: 0.7 }} />
-        <AdjustFontSize fontSize={fontSize} dispatch={dispatch} />
-        <SelectTheme theme={theme} dispatch={dispatch} />
+        <AdjustFontSize fontSize={state.fontSize} dispatch={dispatch} />
+        <SelectTheme theme={state.theme} dispatch={dispatch} />
       </Box>
     </Box>
   );
 }
 
 const SelectLanguage = ({ language, dispatch }) => {
+  const state = useSelector((state) => state.spaceReducer);
+
   return (
     <FormControl sx={{ minWidth: 120, mr: 2 }} size="small">
       <Select
         value={language}
-        onChange={(e) =>
-          dispatch({ type: "updateLanguage", payload: e.target.value })
-        }
+        onChange={(e) => {
+          dispatch({ type: "updateLanguage", payload: e.target.value });
+          dispatch({
+            type: "updateCurrentData",
+            payload: { ...state.currentData, fileLang: e.target.value },
+          });
+        }}
         displayEmpty
       >
         <MenuItem value={"cpp"}>C++</MenuItem>
+        <MenuItem value={"java"}>Java</MenuItem>
         <MenuItem value={"javascript"}>Javascript</MenuItem>
         <MenuItem value={"python"}>Python</MenuItem>
       </Select>

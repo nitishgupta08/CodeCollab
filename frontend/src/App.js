@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import useAuth from "./hooks/useAuth";
 
+
 function App() {
   const { auth } = useAuth();
 

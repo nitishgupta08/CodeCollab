@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAxios } from "../hooks/useAxios";
 import {
@@ -15,49 +15,19 @@ import CodeArea from "../components/space/CodeArea";
 import useAuth from "../hooks/useAuth";
 import { socket } from "../scoket";
 import ACTIONS from "../utils/Actions";
-
-const initialState = {
-  spaceData: [],
-  currentData: null,
-  loadingScreen: true,
-  spaceName: "",
-  activeUsers: [],
-  editorTheme: "",
-  successSnackbar: false,
-  failSnackbar: false,
-  message: { title: "", data: "" },
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case "updateSpaceData":
-      return { ...state, spaceData: action.payload };
-    case "updateCurrentData":
-      return { ...state, currentData: action.payload };
-    case "removeLoadingScreen":
-      return { ...state, loadingScreen: false };
-    case "updateSpaceName":
-      return { ...state, spaceName: action.payload };
-    case "updateEditorTheme":
-      return { ...state, editorTheme: action.payload };
-    case "updateSuccess":
-      return { ...state, successSnackbar: action.payload };
-    case "updateFail":
-      return { ...state, failSnackbar: action.payload };
-    case "updateMessage":
-      return { ...state, message: action.payload };
-    case "updateActiveUsers":
-      return { ...state, activeUsers: action.payload };
-    default:
-      throw new Error();
-  }
-}
+import { useDispatch, useSelector } from "react-redux";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 function Space() {
   const { auth } = useAuth();
-  const [state, dispatch] = useReducer(reducer, initialState);
   const [loadError, setLoadError] = useState(false);
   const location = useLocation();
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state.spaceReducer);
+
+  // eslint-disable-next-line
+  const [localUser, setLocalUser] = useLocalStorage("user", null);
+  const [codeChange, setCodeChange] = useState("");
 
   const { response, error } = useAxios({
     method: "GET",
@@ -91,15 +61,27 @@ function Space() {
     });
 
     socket.on(ACTIONS.SYNC_CODE, ({ change }) => {
-      dispatch({
-        type: "updateSpaceData",
-        payload: { ...state.spaceData, fileData: change },
-      });
+      setCodeChange(change);
     });
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
+    if (codeChange.length > 0) {
+      dispatch({
+        type: "updateCurrentData",
+        payload: { ...state.currentData, fileData: codeChange },
+      });
+    }
+
+    // eslint-disable-next-line
+  }, [codeChange]);
+
+  useEffect(() => {
+    dispatch({
+      type: "updateTheme",
+      payload: localUser ? localUser.user.theme : state.theme,
+    });
     if (error !== undefined) {
       dispatch({
         type: "updateMessage",
@@ -120,10 +102,28 @@ function Space() {
       type: "updateCurrentData",
       payload: response.data.spaceData[0],
     });
+    dispatch({
+      type: "updateLanguage",
+      payload: response.data.spaceData[0].fileLang,
+    });
     dispatch({ type: "removeLoadingScreen", payload: false });
 
     // eslint-disable-next-line
   }, [response, error]);
+
+  useEffect(() => {
+    if (state.currentData) {
+      const ind = state.spaceData.findIndex(
+        (item) => item._id === state.currentData._id
+      );
+      const newSpaceData = state.spaceData;
+      newSpaceData[ind] = state.currentData;
+
+      dispatch({ type: "updateSpaceData", payload: newSpaceData });
+    }
+
+    // eslint-disable-next-line
+  }, [state.currentData]);
 
   return (
     <>
@@ -169,11 +169,7 @@ function Space() {
           <SpaceHeader loggedInUser={auth} />
         </Box>
         <Box sx={{ flex: "1 1 auto", p: 1 }}>
-          <CodeArea
-            spaceData={state.spaceData}
-            spaceName={state.spaceName}
-            spaceId={location.pathname.split("/")[2]}
-          />
+          <CodeArea spaceId={location.pathname.split("/")[2]} />
         </Box>
       </Box>
     </>

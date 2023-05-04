@@ -172,6 +172,7 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
                   onChange={(e) => setNewLanguage(e.target.value)}
                 >
                   <MenuItem value={"cpp"}>C++</MenuItem>
+                  <MenuItem value={"java"}>Java</MenuItem>
                   <MenuItem value={"javascript"}>Javascript</MenuItem>
                   <MenuItem value={"python"}>Python</MenuItem>
                 </Select>
