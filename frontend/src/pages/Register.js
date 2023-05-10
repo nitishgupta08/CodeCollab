@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   Alert,
   AlertTitle,
   Snackbar,
+  IconButton,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -15,6 +16,10 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import axiosConfig from "../utils/axiosConfig";
 import isEmail from "validator/lib/isEmail";
 import useAuth from "../hooks/useAuth";
+import { ColorModeContext } from "../context/ColorModeContext";
+import { useTheme } from "@mui/material/styles";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 
 const REGISTER_URL = "/users/register";
 
@@ -26,6 +31,8 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { setAuth } = useAuth();
+  const colorMode = useContext(ColorModeContext);
+  const theme = useTheme();
 
   useEffect(() => {
     if (isEmail(user.email) && user.name && user.password) {
@@ -97,12 +104,33 @@ function Register() {
             boxShadow: "0px 0px 5px 5px #42a5f5",
           }}
         >
-          <Typography
-            variant="h1"
-            sx={{ fontSize: 50, fontWeight: 700, mb: 3, color: "text.primary" }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
           >
-            CodeCollab.
-          </Typography>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: 50,
+                fontWeight: 700,
+                mb: 3,
+                color: "text.primary",
+              }}
+            >
+              CodeCollab.
+            </Typography>
+
+            <IconButton onClick={colorMode.toggleColorMode}>
+              {theme.palette.mode === "light" ? (
+                <DarkModeIcon sx={{ fontSize: 40 }} />
+              ) : (
+                <LightModeIcon sx={{ fontSize: 40 }} />
+              )}
+            </IconButton>
+          </Box>
 
           <TextField
             autoFocus

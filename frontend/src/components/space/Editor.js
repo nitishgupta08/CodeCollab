@@ -43,7 +43,7 @@ export default function Editor({ spaceId }) {
   const state = useSelector((state) => state.spaceReducer);
   const [pos, setPos] = useState("1:1");
   const [codeChange, setCodeChange] = useState("");
-  console.log(state.currentData);
+
   const onChange = useCallback((value, viewUpdate) => {
     setCodeChange(viewUpdate.state.toJSON().doc);
     socket.emit(ACTIONS.CODE_CHANGE, {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -14,6 +14,11 @@ import { useDispatch, useSelector } from "react-redux";
 import axiosConfig from "../../utils/axiosConfig";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { copySpaceId } from "../../utils/copySpaceId";
+// import { socket } from "../../scoket";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { ColorModeContext } from "../../context/ColorModeContext";
+import { useTheme } from "@mui/material/styles";
 
 function SpaceHeader({ loggedInUser }) {
   const navigate = useNavigate();
@@ -22,6 +27,8 @@ function SpaceHeader({ loggedInUser }) {
   const [loadError, setLoadError] = useState(false);
   const [success, setSuccess] = useState(false);
   const location = useLocation();
+  const colorMode = useContext(ColorModeContext);
+  const theme = useTheme();
 
   const handleSave = async () => {
     try {
@@ -102,16 +109,29 @@ function SpaceHeader({ loggedInUser }) {
               <SaveIcon />
             </IconButton>
           )}
+          <Box>
+            <IconButton
+              onClick={colorMode.toggleColorMode}
+              sx={{ color: "text.primary" }}
+            >
+              {theme.palette.mode === "light" ? (
+                <DarkModeIcon />
+              ) : (
+                <LightModeIcon />
+              )}
+            </IconButton>
 
-          <Button
-            variant="contained"
-            sx={{ ml: 1 }}
-            onClick={() => {
-              loggedInUser ? navigate("/dashboard") : navigate("/");
-            }}
-          >
-            Leave Space
-          </Button>
+            <Button
+              variant="contained"
+              sx={{ ml: 1, mr: 1 }}
+              onClick={() => {
+                dispatch({ type: "resetSpaceState" });
+                loggedInUser ? navigate("/dashboard") : navigate("/");
+              }}
+            >
+              Leave Space
+            </Button>
+          </Box>
         </Box>
       </Box>
     </>

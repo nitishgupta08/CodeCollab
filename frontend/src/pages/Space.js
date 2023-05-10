@@ -21,6 +21,7 @@ import useLocalStorage from "../hooks/useLocalStorage";
 function Space() {
   const { auth } = useAuth();
   const [loadError, setLoadError] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState(true);
   const location = useLocation();
   const dispatch = useDispatch();
   const state = useSelector((state) => state.spaceReducer);
@@ -63,6 +64,11 @@ function Space() {
     socket.on(ACTIONS.SYNC_CODE, ({ change }) => {
       setCodeChange(change);
     });
+
+    socket.on(ACTIONS.SYNC_FILE_METADATA, ({ fileLang, fileName }) => {
+      console.log({ fileLang, fileName });
+    });
+
     // eslint-disable-next-line
   }, []);
 
@@ -106,7 +112,7 @@ function Space() {
       type: "updateLanguage",
       payload: response.data.spaceData[0].fileLang,
     });
-    dispatch({ type: "removeLoadingScreen", payload: false });
+    setLoadingScreen(false);
 
     // eslint-disable-next-line
   }, [response, error]);
@@ -134,7 +140,7 @@ function Space() {
           display: "flex",
           flexDirection: "column",
         }}
-        open={state.loadingScreen}
+        open={loadingScreen}
       >
         <CircularProgress size={100} />
         <Typography

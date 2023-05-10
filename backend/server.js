@@ -63,13 +63,14 @@ io.on("connection", (socket) => {
   });
 
   // CODE change
-  socket.on(ACTIONS.CODE_CHANGE, async ({ spaceId, change }) => {
-    // const space = await Space.findOne({ spaceId });
-    // space.spaceData[0].fileData = change;
-    // space.save();
-    // io.to(spaceId).emit(ACTIONS.SYNC_CODE, { change });
+  socket.on(ACTIONS.CODE_CHANGE, ({ spaceId, change }) => {
     socket.broadcast.to(spaceId).emit(ACTIONS.SYNC_CODE, { change });
+  });
 
+  socket.on(ACTIONS.FILE_METADATA_CHANGE, ({ spaceId, fileLang, fileName }) => {
+    socket.broadcast
+      .to(spaceId)
+      .emit(ACTIONS.SYNC_FILE_METADATA, { fileName, fileLang });
   });
 });
 

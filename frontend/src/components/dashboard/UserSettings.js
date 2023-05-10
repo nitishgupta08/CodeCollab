@@ -117,7 +117,8 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
       <Card
         sx={{
           p: 1,
-          boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.87)",
+          boxShadow:
+            "0px 0px 2.9px rgba(0, 0, 0, 0.07),0px 0px 6.7px rgba(0, 0, 0, 0.052),0px 0px 12.1px rgba(0, 0, 0, 0.044),0px 0px 20.1px rgba(0, 0, 0, 0.038), 0px 0px 33.1px rgba(0, 0, 0, 0.032),0px 0px 57.8px rgba(0, 0, 0, 0.026),0px 0px 125px rgba(0, 0, 0, 0.018)",
           backgroundColor: "background.paper",
           borderRadius: 2,
           mt: 5,
@@ -237,7 +238,7 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
             <>
               <Button
                 variant="contained"
-                color="secondary"
+                color="warning"
                 onClick={handleSave}
                 sx={{ mr: 2, ml: 1 }}
               >
@@ -327,7 +328,8 @@ const PasswordChange = ({ loggedInUser }) => {
       <Card
         sx={{
           p: 1,
-          boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.87)",
+          boxShadow:
+            "0px 0px 2.9px rgba(0, 0, 0, 0.07),0px 0px 6.7px rgba(0, 0, 0, 0.052),0px 0px 12.1px rgba(0, 0, 0, 0.044),0px 0px 20.1px rgba(0, 0, 0, 0.038), 0px 0px 33.1px rgba(0, 0, 0, 0.032),0px 0px 57.8px rgba(0, 0, 0, 0.026),0px 0px 125px rgba(0, 0, 0, 0.018)",
           backgroundColor: "background.paper",
           borderRadius: 2,
           mt: 5,

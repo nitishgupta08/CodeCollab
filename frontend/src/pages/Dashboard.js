@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer, useContext } from "react";
 import {
   Box,
   Typography,
@@ -9,6 +9,7 @@ import {
   Alert,
   AlertTitle,
   Snackbar,
+  IconButton,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
@@ -20,6 +21,10 @@ import Profile from "../components/dashboard/Profile";
 import { useAxios } from "../hooks/useAxios";
 import useAuth from "../hooks/useAuth";
 import useLocalStorage from "../hooks/useLocalStorage";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { ColorModeContext } from "../context/ColorModeContext";
+import { useTheme } from "@mui/material/styles";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -75,6 +80,8 @@ function Dashboard() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState({ title: "", data: "" });
+  const colorMode = useContext(ColorModeContext);
+  const theme = useTheme();
   const { response, error: responseError } = useAxios({
     method: "GET",
     url: "/spaces",
@@ -157,14 +164,23 @@ function Dashboard() {
         >
           CodeCollab.
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ m: 3 }}
-          startIcon={<LogoutIcon />}
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
+        <Box>
+          <IconButton onClick={colorMode.toggleColorMode}>
+            {theme.palette.mode === "light" ? (
+              <DarkModeIcon sx={{ fontSize: 30 }} />
+            ) : (
+              <LightModeIcon sx={{ fontSize: 30 }} />
+            )}
+          </IconButton>
+          <Button
+            variant="contained"
+            sx={{ m: 3 }}
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </Box>
       </Box>
       <Grid
         container
@@ -174,12 +190,14 @@ function Dashboard() {
           <Box
             sx={{
               height: "inherit",
-              backgroundColor: "background.default",
+              backgroundColor: "background.paper",
               position: "fixed",
               display: "flex",
               justifyContent: "center",
               width: "100vw",
               zIndex: 2,
+              boxShadow:
+                "0px 0px 15.7px rgba(0, 0, 0, 0.1),0px 0px 125px rgba(0, 0, 0, 0.05)",
             }}
           >
             <Profile loggedInUser={auth} />
@@ -216,7 +234,7 @@ function Dashboard() {
         <Grid
           item
           xs={12}
-          sx={{ minHeight: "70vh", backgroundColor: "grey.900" }}
+          sx={{ minHeight: "70vh", backgroundColor: "background.default" }}
         >
           <TabPanel value={state.value} index={0}>
             <UserSpaces
