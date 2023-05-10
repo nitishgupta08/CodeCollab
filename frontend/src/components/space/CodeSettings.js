@@ -36,16 +36,6 @@ export default function CodeSettings() {
     if (state.currentData) setNewLanguage(state.currentData?.fileLang);
   }, [state.currentData]);
 
-  useEffect(() => {
-    console.log({ editName, newLanguage });
-    socket.emit(ACTIONS.FILE_METADATA_CHANGE, {
-      spaceId: `${location.pathname.split("/")[2]}`,
-      fileLang: newLanguage,
-      fileName: editName,
-    });
-    // eslint-disable-next-line
-  }, [editName, newLanguage]);
-
   return (
     <Box
       sx={{
@@ -97,6 +87,11 @@ export default function CodeSettings() {
             <IconButton
               sx={{ ml: 2 }}
               onClick={() => {
+                socket.emit(ACTIONS.FILE_METADATA_CHANGE, {
+                  spaceId: `${location.pathname.split("/")[2]}`,
+                  fileLang: newLanguage,
+                  fileName: editName,
+                });
                 dispatch({
                   type: "updateCurrentData",
                   payload: { ...state.currentData, fileName: editName },
@@ -143,6 +138,8 @@ export default function CodeSettings() {
           language={state.language}
           dispatch={dispatch}
           setNewLanguage={setNewLanguage}
+          editName={editName}
+          location={location}
         />
         <Divider orientation="vertical" flexItem sx={{ opacity: 0.7 }} />
         <AdjustFontSize fontSize={state.fontSize} dispatch={dispatch} />
@@ -152,7 +149,13 @@ export default function CodeSettings() {
   );
 }
 
-const SelectLanguage = ({ language, dispatch, setNewLanguage }) => {
+const SelectLanguage = ({
+  language,
+  dispatch,
+  setNewLanguage,
+  editName,
+  location,
+}) => {
   const state = useSelector((state) => state.spaceReducer);
 
   return (
@@ -161,6 +164,11 @@ const SelectLanguage = ({ language, dispatch, setNewLanguage }) => {
         value={language}
         onChange={(e) => {
           setNewLanguage(e.target.value);
+          socket.emit(ACTIONS.FILE_METADATA_CHANGE, {
+            spaceId: `${location.pathname.split("/")[2]}`,
+            fileLang: e.target.value,
+            fileName: editName,
+          });
           dispatch({ type: "updateLanguage", payload: e.target.value });
           dispatch({
             type: "updateCurrentData",

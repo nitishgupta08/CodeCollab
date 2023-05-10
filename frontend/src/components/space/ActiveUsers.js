@@ -1,44 +1,54 @@
 import React from "react";
 import { Avatar, AvatarGroup, Box, Divider, Typography } from "@mui/material";
-import { HtmlTooltip } from "../../reuseable";
+import { HtmlTooltip } from "../MUICustom/HtmlTooltip";
 
 export default function ActiveUsers({ activeUsers }) {
-  console.log(activeUsers);
   return (
     <HtmlTooltip
+      sx={{ overflow: "scroll" }}
       title={
-        <React.Fragment>
+        <>
           {activeUsers.length > 0 &&
-            activeUsers.map((user, id) => {
-              return user.email ? (
-                <Box sx={{ mb: 1 }} key={id}>
-                  <Typography
-                    color="text.primary"
-                    sx={{ fontSize: 20, fontWeight: 700 }}
+            activeUsers.map((user, index, id) => {
+              return (
+                <>
+                  <Box
+                    sx={{
+                      mt: 1,
+                      mb: 1,
+                      mr: 1,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                    key={id}
                   >
-                    {user.name}
-                  </Typography>
-                  <Typography color="text.primary" sx={{ opacity: 0.7 }}>
-                    can edit this space.
-                  </Typography>
-                  <Divider sx={{ backgroundColor: "text.primary" }} />
-                </Box>
-              ) : (
-                <Box sx={{ mb: 1 }} key={id}>
-                  <Typography
-                    color="text.primary"
-                    sx={{ fontSize: 20, fontWeight: 700 }}
-                  >
-                    {user.name}
-                  </Typography>
-                  <Typography color="text.primary" sx={{ opacity: 0.7 }}>
-                    can only view this space.
-                  </Typography>
-                  <Divider sx={{ backgroundColor: "text.primary" }} />
-                </Box>
+                    <Box
+                      component="img"
+                      src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${user.name}?size=32`}
+                      alt="avatar"
+                      sx={{
+                        height: "40px",
+                        width: "40px",
+                        borderRadius: 2,
+                      }}
+                    />
+                    <Typography
+                      color="text.primary"
+                      sx={{ fontSize: 15, fontWeight: 700, ml: 1 }}
+                    >
+                      {user.name}
+                    </Typography>
+                  </Box>
+                  {index !== activeUsers.length - 1 && (
+                    <Divider
+                      sx={{ backgroundColor: "text.secondary", opacity: "0.3" }}
+                    />
+                  )}
+                </>
               );
             })}
-        </React.Fragment>
+        </>
       }
     >
       <AvatarGroup max={6}>
@@ -47,10 +57,8 @@ export default function ActiveUsers({ activeUsers }) {
             return (
               <Avatar
                 key={id}
-                // sx={{ backgroundColor: uniqolor(user.name).color }}
-              >
-                {user.name[0]}
-              </Avatar>
+                src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${user.name}?size=32`}
+              />
             );
           })}
       </AvatarGroup>

@@ -47,7 +47,6 @@ function Register() {
     try {
       const res = await axiosConfig.post(REGISTER_URL, user);
       if (res.status === 201) {
-        console.log(res.data);
         setAuth(res.data);
         navigate("/dashboard", {
           replace: true,
