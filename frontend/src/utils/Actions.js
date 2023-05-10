@@ -7,6 +7,8 @@ const ACTIONS = {
   LEAVE: "leave",
   SPACEDATA_CHANGE: "spaceData-change",
   LEFT: "left",
+  FILE_METADATA_CHANGE: "file-metadata-change",
+  SYNC_FILE_METADATA: "sync-file-metadata",
 };
 
 module.exports = ACTIONS;

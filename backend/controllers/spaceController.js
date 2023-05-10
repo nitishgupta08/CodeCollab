@@ -29,7 +29,7 @@ const createSpaces = async (req, res) => {
       {
         fileName: "Untitled-1",
         fileData: "",
-        fileLang: "js",
+        fileLang: "javascript",
       },
     ];
 
@@ -79,12 +79,27 @@ const getSpaceData = async (req, res) => {
  * */
 const updateSpaces = async (req, res) => {
   try {
-    const updatedSpace = await Space.findOneAndUpdate(
-      { spaceId: req.params.id },
-      { $set: req.body },
-      { new: true }
-    ).select("-owner -_id -__v -updatedAt");
-    res.status(201).json("Saved!");
+    if (req.body.field === "name") {
+      const space = await Space.findOne({ spaceId: req.params.id });
+      space.spaceName = req.body.name;
+      await space.save();
+
+      const owner = space.owner;
+
+      const spaces = await Space.find({ owner: owner }).select(
+        "spaceId spaceName createdAt"
+      );
+
+      res.status(201).send(spaces);
+    } else {
+      await Space.findOneAndUpdate(
+        { spaceId: req.params.id },
+        { $set: req.body },
+        { new: true }
+      ).select("-owner -_id -__v -updatedAt");
+
+      res.status(201).json("Saved!");
+    }
   } catch (e) {
     res.status(400).send({ error: e.message });
   }

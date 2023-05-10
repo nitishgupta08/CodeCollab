@@ -46,7 +46,7 @@ function UserSpaces({
     <>
       <Backdrop
         sx={{
-          zIndex: 2,
+          zIndex: 5,
           backdropFilter: "blur(5px)",
         }}
         open={showCreateSpaceBackdrop}
@@ -64,7 +64,7 @@ function UserSpaces({
       </Backdrop>
 
       <Backdrop
-        sx={{ zIndex: 2, backdropFilter: "blur(5px)" }}
+        sx={{ zIndex: 5, backdropFilter: "blur(5px)" }}
         open={showJoinSpaceBackdrop}
       >
         <JoinSpace

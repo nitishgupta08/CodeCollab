@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Typography,
@@ -8,12 +8,17 @@ import {
   Snackbar,
   Alert,
   AlertTitle,
+  IconButton,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LoadingButton from "@mui/lab/LoadingButton";
 import axiosConfig from "../utils/axiosConfig";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import { useTheme } from "@mui/material/styles";
+import { ColorModeContext } from "../context/ColorModeContext";
 
 function Home() {
   const [spaceId, setSpaceId] = useState("");
@@ -23,6 +28,8 @@ function Home() {
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const colorMode = useContext(ColorModeContext);
+  const theme = useTheme();
 
   useEffect(() => {
     document.title = "CodeCollab";
@@ -100,12 +107,34 @@ function Home() {
             boxShadow: "0px 0px 5px 5px #42a5f5",
           }}
         >
-          <Typography
-            variant="h1"
-            sx={{ fontSize: 50, fontWeight: 700, mb: 3, color: "text.primary" }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
           >
-            CodeCollab.
-          </Typography>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: 50,
+                fontWeight: 700,
+                mb: 3,
+                color: "text.primary",
+              }}
+            >
+              CodeCollab.
+            </Typography>
+
+            <IconButton onClick={colorMode.toggleColorMode}>
+              {theme.palette.mode === "light" ? (
+                <DarkModeIcon sx={{ fontSize: 40 }} />
+              ) : (
+                <LightModeIcon sx={{ fontSize: 40 }} />
+              )}
+            </IconButton>
+          </Box>
+
           <Box>
             <Typography
               variant="h2"
