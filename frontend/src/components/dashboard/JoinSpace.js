@@ -22,8 +22,8 @@ export default function JoinSpace({
     navigate(`/space/${spaceId}`, {
       state: {
         spaceId,
-        name: loggedInUser.name,
-        email: loggedInUser.email,
+        name: loggedInUser.user.name,
+        email: loggedInUser.user.email,
       },
     });
     dispatch({ type: "handleJoinBackdrop", payload: false });

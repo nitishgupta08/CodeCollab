@@ -66,7 +66,18 @@ function Space() {
     });
 
     socket.on(ACTIONS.SYNC_FILE_METADATA, ({ fileLang, fileName }) => {
-      console.log({ fileLang, fileName });
+      dispatch({
+        type: "updateCurrentData",
+        payload: { ...state.currentData, fileLang, fileName },
+      });
+      dispatch({ type: "updateLanguage", payload: fileLang });
+    });
+
+    socket.on(ACTIONS.LEFT, ({ activeUsers, name }) => {
+      dispatch({
+        type: "updateActiveUsers",
+        payload: activeUsers,
+      });
     });
 
     // eslint-disable-next-line
@@ -104,6 +115,8 @@ function Space() {
 
     dispatch({ type: "updateSpaceName", payload: response.data.spaceName });
     dispatch({ type: "updateSpaceData", payload: response.data.spaceData });
+    dispatch({ type: "updateActiveUsers", payload: response.data.activeUsers });
+
     dispatch({
       type: "updateCurrentData",
       payload: response.data.spaceData[0],

@@ -49,7 +49,6 @@ export default function SpaceCard({
         }
       })
       .catch((err) => {
-        console.log(err);
         setMessage({
           title: "Cannot delete space",
           data: "Please try again later.",
@@ -93,7 +92,6 @@ export default function SpaceCard({
         }
       })
       .catch((err) => {
-        console.log(err);
         setMessage({
           title: "Cannot delete space",
           data: "Please try again later.",

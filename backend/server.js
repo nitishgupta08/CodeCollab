@@ -48,15 +48,18 @@ io.on("connection", (socket) => {
   });
 
   //Users leaves space
-  socket.on(ACTIONS.LEAVE, async ({ spaceId, leavingUser }) => {
+  socket.on(ACTIONS.LEAVE, async ({ spaceId, name, email }) => {
     try {
-      socket.leave(spaceId);
       const res = await Space.findOneAndUpdate(
         { spaceId },
-        { $pull: { activeUsers: leavingUser } }
+        { $pull: { activeUsers: { name, email } } },
+        { new: true }
       );
 
-      io.to(spaceId).emit(ACTIONS.LEFT, res.activeUsers);
+      socket.broadcast
+        .to(spaceId)
+        .emit(ACTIONS.LEFT, { activeUsers: res.activeUsers, name });
+      socket.leave(spaceId);
     } catch (e) {
       console.log(e);
     }
@@ -67,98 +70,21 @@ io.on("connection", (socket) => {
     socket.broadcast.to(spaceId).emit(ACTIONS.SYNC_CODE, { change });
   });
 
-  socket.on(ACTIONS.FILE_METADATA_CHANGE, ({ spaceId, fileLang, fileName }) => {
-    socket.broadcast
-      .to(spaceId)
-      .emit(ACTIONS.SYNC_FILE_METADATA, { fileName, fileLang });
-  });
+  socket.on(
+    ACTIONS.FILE_METADATA_CHANGE,
+    async ({ spaceId, fileLang, fileName }) => {
+      const res = await Space.findOne({ spaceId });
+      res.spaceData[0].fileLang = fileLang;
+      res.spaceData[0].fileName = fileName;
+      await res.save();
+
+      socket.broadcast
+        .to(spaceId)
+        .emit(ACTIONS.SYNC_FILE_METADATA, { fileName, fileLang });
+    }
+  );
 });
 
 server.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
-
-// const getAllConnectedClients = (spaceId) => {
-//   return Array.from(io.sockets.adapter.rooms.get(spaceId) || []).map(
-//     (socketId) => {
-//       return {
-//         socketId,
-//         userData: userSocketMap[socketId],
-//       };
-//     }
-//   );
-// };
-//
-// io.on("connection", (socket) => {
-//   console.log("Socket.connected", socket.id);
-//
-//   socket.on(ACTIONS.JOIN, async ({ spaceId, name, email }) => {
-//     userSocketMap[socket.id] = { name, email };
-//     socket.join(spaceId);
-//     const clients = getAllConnectedClients(spaceId);
-//     await Spaces.findOneAndUpdate(
-//       { spaceId: spaceId },
-//       { activeUsers: clients },
-//       { new: true }
-//     );
-//     clients.forEach(({ socketId }) => {
-//       io.to(socketId).emit(ACTIONS.JOINED, {
-//         clients,
-//         name,
-//         email,
-//         socketId: socket.id,
-//       });
-//     });
-//   });
-//
-//   socket.on("disconnecting", async () => {
-//     const spaces = [...socket.rooms];
-//     spaces.forEach((spaceId) => {
-//       socket.to(spaceId).emit(ACTIONS.DISCONNECTED, {
-//         socketId: socket.id,
-//         userData: userSocketMap[socket.id],
-//       });
-//     });
-//     delete userSocketMap[socket.id];
-//     socket.leave();
-//   });
-//
-//   socket.on(
-//     ACTIONS.SPACEDATA_CHANGE,
-//     async ({ spaceData, type, name, spaceId }) => {
-//       await Spaces.findOneAndUpdate(
-//         { spaceId: spaceId },
-//         { spaceData: spaceData },
-//         { new: true }
-//       );
-//       const clients = getAllConnectedClients(spaceId);
-//       clients.forEach(({ socketId }) => {
-//         if (type === 1) {
-//           io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
-//             message: `${name} has added a new file.`,
-//             spaceData,
-//             name,
-//           });
-//         } else if (type === 0) {
-//           io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
-//             message: `${name} has edited a file name`,
-//             spaceData,
-//             name,
-//           });
-//         } else {
-//           io.to(socketId).emit(ACTIONS.SPACEDATA_CHANGE, {
-//             message: `${name} has deleted a file`,
-//             spaceData,
-//             name,
-//           });
-//         }
-//       });
-//     }
-//   );
-//
-//   socket.on(ACTIONS.CODE_CHANGE, ({ spaceId, code, name }) => {
-//     socket.in(spaceId).emit(ACTIONS.CODE_CHANGE, {
-//       code,
-//     });
-//   });
-// });

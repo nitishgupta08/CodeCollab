@@ -287,7 +287,6 @@ const PasswordChange = ({ loggedInUser }) => {
       setMessage({ title: res.data.title, data: res.data.data });
       setSuccess(true);
     } catch (e) {
-      console.log(e.response.data);
       setMessage({
         title: e.response.data.title,
         data: e.response.data.data,

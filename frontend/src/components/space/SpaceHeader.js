@@ -14,11 +14,13 @@ import { useDispatch, useSelector } from "react-redux";
 import axiosConfig from "../../utils/axiosConfig";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { copySpaceId } from "../../utils/copySpaceId";
-// import { socket } from "../../scoket";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { ColorModeContext } from "../../context/ColorModeContext";
 import { useTheme } from "@mui/material/styles";
+import ActiveUsers from "./ActiveUsers";
+import { socket } from "../../scoket";
+import ACTIONS from "../../utils/Actions";
 
 function SpaceHeader({ loggedInUser }) {
   const navigate = useNavigate();
@@ -97,7 +99,7 @@ function SpaceHeader({ loggedInUser }) {
           CodeCollab.
         </Typography>
 
-        {/*<ActiveUsers activeUsers={activeUsers} />*/}
+        <ActiveUsers activeUsers={state.activeUsers} />
 
         <Box sx={{ display: "flex" }}>
           <IconButton sx={{ color: "text.primary" }} onClick={handleCopy}>
@@ -123,8 +125,13 @@ function SpaceHeader({ loggedInUser }) {
 
             <Button
               variant="contained"
-              sx={{ ml: 1, mr: 1 }}
+              sx={{ ml: 1 }}
               onClick={() => {
+                socket.emit(ACTIONS.LEAVE, {
+                  spaceId: location.pathname.split("/")[2],
+                  name: location.state.name,
+                  email: location.state.email,
+                });
                 dispatch({ type: "resetSpaceState" });
                 loggedInUser ? navigate("/dashboard") : navigate("/");
               }}

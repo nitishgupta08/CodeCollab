@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 
 export default function Profile({ loggedInUser }) {
   const date = new Date(loggedInUser.user?.createdAt);
+
   return (
     <Box
       sx={{
@@ -14,7 +15,7 @@ export default function Profile({ loggedInUser }) {
     >
       <Box
         component="img"
-        src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${loggedInUser.name}?size=32`}
+        src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${loggedInUser.user?.name}?size=32`}
         alt="avatar"
         sx={{
           height: "150px",
