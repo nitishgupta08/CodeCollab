@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const colors = require("colors");
+const socketio = require("socket.io");
 const ACTIONS = require("./Actions");
 const dotenv = require("dotenv").config();
 const http = require("http");
@@ -10,19 +11,22 @@ const Space = require("./models/spaceSchema");
 connectDB();
 
 const port = process.env.PORT || 5000;
-console.log(`Frontend at: ${process.env.FRONTEND_URI}`);
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-app.options(process.env.FRONTEND_URI, cors());
+app.options("*", cors());
 app.use("/spaces", require("./routes/spaceRoutes"));
 app.use("/users", require("./routes/userRoutes"));
 app.use(errorHandler);
 
 const server = http.createServer(app);
-const io = require("socket.io")(server);
+const io = socketio(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
 io.on("connection", (socket) => {
   console.log(`${socket.id} connected`);
