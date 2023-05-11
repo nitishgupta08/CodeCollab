@@ -10,24 +10,19 @@ const Space = require("./models/spaceSchema");
 connectDB();
 
 const port = process.env.PORT || 5000;
+console.log(`Frontend at: ${process.env.FRONTEND_URI}`);
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-app.options("*", cors());
+app.options(process.env.FRONTEND_URI, cors());
 app.use("/spaces", require("./routes/spaceRoutes"));
 app.use("/users", require("./routes/userRoutes"));
 app.use(errorHandler);
 
 const server = http.createServer(app);
-const options = {
-  cors: true,
-  origin: process.env.FRONTEND_URI,
-};
-console.log(`Frontend at: ${process.env.FRONTEND_URI}`);
-
-const io = require("socket.io")(server, options);
+const io = require("socket.io")(server);
 
 io.on("connection", (socket) => {
   console.log(`${socket.id} connected`);
