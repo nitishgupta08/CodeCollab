@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const colors = require("colors");
-const socketio = require("socket.io");
 const ACTIONS = require("./Actions");
 const dotenv = require("dotenv").config();
 const http = require("http");
@@ -22,11 +21,13 @@ app.use("/users", require("./routes/userRoutes"));
 app.use(errorHandler);
 
 const server = http.createServer(app);
-const io = socketio(server, {
-  cors: {
-    origin: "*",
-  },
-});
+const options = {
+  cors: true,
+  origin: process.env.FRONTEND_URI,
+};
+console.log(`Frontend at: ${process.env.FRONTEND_URI}`);
+
+const io = require("socket.io")(server, options);
 
 io.on("connection", (socket) => {
   console.log(`${socket.id} connected`);
