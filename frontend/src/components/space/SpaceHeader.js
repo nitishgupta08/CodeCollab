@@ -37,12 +37,20 @@ function SpaceHeader({ loggedInUser }) {
       await axiosConfig.put(`/spaces/${location.pathname.split("/")[2]}`, {
         spaceData: state.spaceData,
       });
+      setSuccess(true);
+      dispatch({
+        type: "updateMessage",
+        payload: {
+          title: "Saved!",
+          data: "This space data is now up to date",
+        },
+      });
     } catch (e) {
       setLoadError(true);
       dispatch({
         type: "updateMessage",
         payload: {
-          title: "Cannot save project data at the moment!",
+          title: "Cannot save space data at the moment!",
           data: "Try again later!",
         },
       });

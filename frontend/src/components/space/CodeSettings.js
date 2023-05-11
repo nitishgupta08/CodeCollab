@@ -21,8 +21,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { socket } from "../../scoket";
 import ACTIONS from "../../utils/Actions";
+import useAuth from "../../hooks/useAuth";
 
 export default function CodeSettings() {
+  const { auth } = useAuth();
   const [edit, setEdit] = useState(false);
   const dispatch = useDispatch();
   const state = useSelector((state) => state.spaceReducer);
@@ -106,11 +108,13 @@ export default function CodeSettings() {
             </IconButton>
           </Box>
         ) : (
-          <IconButton sx={{ ml: 1 }} onClick={() => setEdit(true)}>
-            <EditIcon
-              sx={{ color: "text.primary", opacity: 0.7, fontSize: 15 }}
-            />
-          </IconButton>
+          auth && (
+            <IconButton sx={{ ml: 1 }} onClick={() => setEdit(true)}>
+              <EditIcon
+                sx={{ color: "text.primary", opacity: 0.7, fontSize: 15 }}
+              />
+            </IconButton>
+          )
         )}
       </Box>
 
@@ -140,6 +144,7 @@ export default function CodeSettings() {
           setNewLanguage={setNewLanguage}
           editName={editName}
           location={location}
+          auth={auth}
         />
         <Divider orientation="vertical" flexItem sx={{ opacity: 0.7 }} />
         <AdjustFontSize fontSize={state.fontSize} dispatch={dispatch} />
@@ -155,12 +160,14 @@ const SelectLanguage = ({
   setNewLanguage,
   editName,
   location,
+  auth,
 }) => {
   const state = useSelector((state) => state.spaceReducer);
 
   return (
     <FormControl sx={{ minWidth: 120, mr: 2 }} size="small">
       <Select
+        disabled={!auth}
         value={language}
         onChange={(e) => {
           setNewLanguage(e.target.value);

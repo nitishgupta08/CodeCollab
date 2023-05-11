@@ -5,7 +5,7 @@ import { HtmlTooltip } from "../MUICustom/HtmlTooltip";
 export default function ActiveUsers({ activeUsers }) {
   return (
     <HtmlTooltip
-      sx={{ overflow: "scroll" }}
+      sx={{ overflow: "scroll", maxHeight: "15vw" }}
       title={
         <>
           {activeUsers.length > 0 &&
