@@ -9,7 +9,7 @@ export default function ActiveUsers({ activeUsers }) {
       title={
         <>
           {activeUsers.length > 0 &&
-            activeUsers.map((user, index, id) => {
+            activeUsers.map((user, index) => {
               return (
                 <>
                   <Box
@@ -21,7 +21,7 @@ export default function ActiveUsers({ activeUsers }) {
                       justifyContent: "space-between",
                       alignItems: "center",
                     }}
-                    key={id}
+                    key={user._id}
                   >
                     <Box
                       component="img"
@@ -56,7 +56,7 @@ export default function ActiveUsers({ activeUsers }) {
           activeUsers.map((user, id) => {
             return (
               <Avatar
-                key={id}
+                key={user._id}
                 src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${user.name}?size=32`}
               />
             );
