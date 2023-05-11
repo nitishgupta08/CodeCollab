@@ -15,9 +15,8 @@ console.log(`Frontend at: ${process.env.FRONTEND_URI}`);
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({
-  origin: 'https://code-collab-pi.vercel.app'
-}));
+app.use(cors());
+app.options("*", cors());
 app.use("/spaces", require("./routes/spaceRoutes"));
 app.use("/users", require("./routes/userRoutes"));
 app.use(errorHandler);
