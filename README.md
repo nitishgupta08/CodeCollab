@@ -76,7 +76,7 @@ Clone the project
 
 ## Roadmap
 
-- Add support to create, delete files in a project.
+- Fix editor issue when two users type at the same time. If you find a way to do this in codemirrorV6, please raise an ```issue``` and let me know.
 
 - More languages support
 
