@@ -4,6 +4,7 @@ const colors = require("colors");
 const socketio = require("socket.io");
 const jwt = require("jsonwebtoken");
 const openApiSpec = require("./openapi.json");
+const backendPackage = require("./package.json");
 const ACTIONS = require("./Actions");
 require("dotenv").config();
 const http = require("http");
@@ -14,6 +15,16 @@ const User = require("./models/userSchema");
 connectDB();
 
 const port = process.env.PORT || 5000;
+const versionedOpenApiSpec = {
+  ...openApiSpec,
+  info: {
+    ...openApiSpec.info,
+    version:
+      backendPackage.version ||
+      (openApiSpec.info && openApiSpec.info.version) ||
+      "unknown",
+  },
+};
 
 const app = express();
 app.use(express.json());
@@ -23,6 +34,7 @@ app.get("/", (req, res) => {
   res.status(200).json({
     service: "CodeCollab Backend API",
     status: "ok",
+    version: backendPackage.version || "unknown",
     docs: "/docs",
     openapi: "/openapi.json",
     routes: {
@@ -34,7 +46,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/openapi.json", (req, res) => {
-  res.json(openApiSpec);
+  res.json(versionedOpenApiSpec);
 });
 
 app.get("/docs", (req, res) => {

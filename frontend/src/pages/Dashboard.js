@@ -26,6 +26,7 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { ColorModeContext } from "../context/ColorModeContext";
 import { useTheme } from "@mui/material/styles";
+import pkg from "../../package.json";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -173,6 +174,21 @@ function Dashboard() {
           CodeCollab.
         </Typography>
         <Stack direction="row" alignItems="center">
+          <Typography
+            variant="caption"
+            sx={{
+              mr: 1,
+              px: 1.1,
+              py: 0.35,
+              borderRadius: 1.5,
+              border: "1px solid",
+              borderColor: "divider",
+              color: "text.secondary",
+              backgroundColor: "background.paper",
+            }}
+          >
+            v{pkg.version}
+          </Typography>
           <IconButton onClick={colorMode.toggleColorMode}>
             {theme.palette.mode === "light" ? (
               <DarkModeIcon sx={{ fontSize: 30 }} />
@@ -241,7 +257,10 @@ function Dashboard() {
             </Box>
           </Box>
         </Grid>
-        <Grid size={12} sx={{ minHeight: "70vh", backgroundColor: "background.default" }}>
+        <Grid
+          size={12}
+          sx={{ minHeight: "70vh", backgroundColor: "background.default" }}
+        >
           <TabPanel value={state.value} index={0}>
             <UserSpaces
               setMessage={setMessage}

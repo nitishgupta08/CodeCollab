@@ -13,6 +13,7 @@ CodeCollab is a MERN-based web app where multiple users can work in the same cod
 - Real-time code collaboration powered by Socket.IO.
 - Shareable space IDs for inviting collaborators.
 - Authenticated dashboard to create, join, rename, and delete spaces.
+- Version visibility: app version is shown in Dashboard and Settings.
 - Guest mode: users without an account can open a space and join as read-only viewer.
 - Role-aware permissions for editing code and file metadata.
 - User settings for name, preferred language/theme, and password updates.
@@ -107,6 +108,7 @@ Create a `.env` file in each app directory.
 - Backend landing endpoint: `http://localhost:5000/` (service status + quick links)
 - Open Swagger UI at `http://localhost:5000/docs`
 - Raw OpenAPI spec is available at `http://localhost:5000/openapi.json`
+- Backend root response includes `version` from `backend/package.json`.
 
 ### Swagger Quickstart (`/docs`)
 

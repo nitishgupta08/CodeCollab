@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import axiosConfig from "../../utils/axiosConfig";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import pkg from "../../../package.json";
 
 function UserSettings({ loggedInUser, setLoggedInUser }) {
   return (
@@ -59,7 +60,7 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
         },
         {
           headers: { Authorization: `Bearer ${loggedInUser.token}` },
-        }
+        },
       );
       setLocalUser({
         ...localUser,
@@ -288,7 +289,7 @@ const PasswordChange = ({ loggedInUser }) => {
         },
         {
           headers: { Authorization: `Bearer ${loggedInUser.token}` },
-        }
+        },
       );
       setMessage({ title: res.data.title, data: res.data.data });
       setSuccess(true);

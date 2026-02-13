@@ -22,6 +22,7 @@ import { useTheme } from "@mui/material/styles";
 import ActiveUsers from "./ActiveUsers";
 import { socket } from "../../scoket";
 import ACTIONS from "../../utils/Actions";
+import pkg from "../../../package.json";
 
 function SpaceHeader({ loggedInUser }) {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ function SpaceHeader({ loggedInUser }) {
           headers: loggedInUser?.token
             ? { Authorization: `Bearer ${loggedInUser.token}` }
             : undefined,
-        }
+        },
       );
       setSuccess(true);
       dispatch({
@@ -126,6 +127,22 @@ function SpaceHeader({ loggedInUser }) {
         <ActiveUsers activeUsers={state.activeUsers} />
 
         <Stack direction="row" alignItems="center" spacing={0.5}>
+          <Typography
+            variant="caption"
+            sx={{
+              mr: 0.5,
+              px: 1.1,
+              py: 0.35,
+              borderRadius: 1.5,
+              border: "1px solid",
+              borderColor: "divider",
+              color: "text.secondary",
+              backgroundColor: "background.paper",
+            }}
+          >
+            v{pkg.version}
+          </Typography>
+
           <IconButton sx={{ color: "text.primary" }} onClick={handleCopy}>
             <ContentCopyIcon />
           </IconButton>
