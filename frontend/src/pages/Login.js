@@ -9,13 +9,15 @@ import {
   AlertTitle,
   Snackbar,
   IconButton,
+  Container,
+  Stack,
+  Paper,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LoginIcon from "@mui/icons-material/Login";
 import axiosConfig from "../utils/axiosConfig";
 import useAuth from "../hooks/useAuth";
 import isEmail from "validator/lib/isEmail";
-import LoadingButton from "@mui/lab/LoadingButton";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { ColorModeContext } from "../context/ColorModeContext";
@@ -87,95 +89,84 @@ function Login() {
       <Box
         sx={{
           backgroundColor: "background.default",
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
-          justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <Box
+        <Container maxWidth="sm">
+          <Paper
           sx={{
-            minWidth: "30vw",
             backgroundColor: "background.paper",
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            p: 3,
+            p: { xs: 2.5, sm: 3 },
             boxShadow: "0px 0px 5px 5px #42a5f5",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            <Typography
-              variant="h1"
+          <Stack spacing={2}>
+            <Box
               sx={{
-                fontSize: 50,
-                fontWeight: 700,
-                mb: 3,
-                color: "text.primary",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
               }}
             >
-              CodeCollab.
-            </Typography>
+              <Typography
+                variant="h1"
+                sx={{
+                  fontSize: { xs: 40, sm: 50 },
+                  fontWeight: 700,
+                  color: "text.primary",
+                }}
+              >
+                CodeCollab.
+              </Typography>
 
-            <IconButton onClick={colorMode.toggleColorMode}>
-              {theme.palette.mode === "light" ? (
-                <DarkModeIcon sx={{ fontSize: 40 }} />
-              ) : (
-                <LightModeIcon sx={{ fontSize: 40 }} />
-              )}
-            </IconButton>
-          </Box>
+              <IconButton onClick={colorMode.toggleColorMode}>
+                {theme.palette.mode === "light" ? (
+                  <DarkModeIcon sx={{ fontSize: 40 }} />
+                ) : (
+                  <LightModeIcon sx={{ fontSize: 40 }} />
+                )}
+              </IconButton>
+            </Box>
 
-          <TextField
-            autoFocus
-            error={user.email === "" ? false : !isEmail(user.email)}
-            name="email"
-            placeholder="skywalker@deathstar.com"
-            sx={{ width: "100%", mb: 1 }}
-            value={user.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
-            onKeyUp={!disabled ? handleKey : null}
-          />
+            <TextField
+              autoFocus
+              error={user.email === "" ? false : !isEmail(user.email)}
+              name="email"
+              placeholder="skywalker@deathstar.com"
+              value={user.email}
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              onKeyUp={!disabled ? handleKey : null}
+            />
 
-          <TextField
-            type="password"
-            name="password"
-            placeholder="******"
-            sx={{ width: "100%" }}
-            value={user.password}
-            onChange={(e) => setUser({ ...user, password: e.target.value })}
-            onKeyUp={!disabled ? handleKey : null}
-          />
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Button
-              sx={{ height: "45px", mt: 2 }}
-              onClick={() => navigate("/")}
-              startIcon={<ArrowBackIcon />}
-            >
-              Back
-            </Button>
+            <TextField
+              type="password"
+              name="password"
+              placeholder="******"
+              value={user.password}
+              onChange={(e) => setUser({ ...user, password: e.target.value })}
+              onKeyUp={!disabled ? handleKey : null}
+            />
 
-            <LoadingButton
-              loading={loading}
-              variant="contained"
-              startIcon={<LoginIcon />}
-              onClick={login}
-              sx={{
-                height: "45px",
-                mt: 2,
-              }}
-              disabled={disabled}
-            >
-              Login
-            </LoadingButton>
-          </Box>
-        </Box>
+            <Stack direction="row" justifyContent="space-between" sx={{ mt: 1 }}>
+              <Button onClick={() => navigate("/")} startIcon={<ArrowBackIcon />}>
+                Back
+              </Button>
+
+              <Button
+                loading={loading}
+                variant="contained"
+                startIcon={<LoginIcon />}
+                onClick={login}
+                disabled={disabled}
+              >
+                Login
+              </Button>
+            </Stack>
+          </Stack>
+        </Paper>
+        </Container>
       </Box>
     </>
   );

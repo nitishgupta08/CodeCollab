@@ -21,7 +21,7 @@ export default function ActiveUsers({ activeUsers }) {
                       justifyContent: "space-between",
                       alignItems: "center",
                     }}
-                    key={user._id}
+                    key={user.email || `${user.name}-${index}`}
                   >
                     <Box
                       component="img"
@@ -53,10 +53,10 @@ export default function ActiveUsers({ activeUsers }) {
     >
       <AvatarGroup max={6}>
         {activeUsers.length > 0 &&
-          activeUsers.map((user, id) => {
+          activeUsers.map((user, index) => {
             return (
               <Avatar
-                key={user._id}
+                key={user.email || `${user.name}-${index}`}
                 src={`https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${user.name}?size=32`}
               />
             );

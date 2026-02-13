@@ -33,7 +33,9 @@ const userSchema = mongoose.Schema(
 
 userSchema.methods.generateToken = async function () {
   const user = this;
-  return jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
+  return jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 userSchema.methods.publicUser = function () {
@@ -63,14 +65,13 @@ userSchema.statics.findByCredentials = async (email, password) => {
   return user;
 };
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
   const user = this;
 
   if (user.isModified("password")) {
     const salt = await bcrypt.genSalt(8);
     user.password = await bcrypt.hash(user.password, salt);
   }
-  next();
 });
 
 const User = mongoose.model("User", userSchema);

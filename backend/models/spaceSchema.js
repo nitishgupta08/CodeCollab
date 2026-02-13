@@ -16,6 +16,20 @@ const spaceSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    members: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: "User",
+        },
+        role: {
+          type: String,
+          enum: ["owner", "editor", "viewer"],
+          default: "editor",
+        },
+      },
+    ],
     activeUsers: [
       {
         name: String,
