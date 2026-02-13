@@ -1,5 +1,17 @@
 import { useEffect } from "react";
-import { Box, Button, IconButton, Typography, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  useMediaQuery,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import React from "react";
 import axiosConfig from "../../utils/axiosConfig";
@@ -15,16 +27,19 @@ export default function CreateSpace({
   setMessage,
   loggedInUser,
   setSuccess,
-  showCreateSpaceBackdrop,
+  open,
 }) {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   useEffect(() => {
-    if (showCreateSpaceBackdrop) {
+    if (open) {
       const id = uuidv4();
       dispatch({ type: "updateSpaceId", payload: id });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showCreateSpaceBackdrop]);
+  }, [open]);
 
   const handleCreate = () => {
     if (!spaceName) {
@@ -66,22 +81,15 @@ export default function CreateSpace({
   };
 
   return (
-    <Box
-      sx={{
-        minWidth: "30vw",
-        backgroundColor: "background.paper",
-        borderRadius: 2,
-        display: "flex",
-        flexDirection: "column",
-        p: 3,
-      }}
+    <Dialog
+      open={open}
+      onClose={() => dispatch({ type: "handleCreateBackdrop", payload: false })}
+      fullScreen={fullScreen}
+      fullWidth
+      maxWidth="sm"
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+      <DialogTitle
+        sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1 }}
       >
         <Typography
           variant="h2"
@@ -96,41 +104,43 @@ export default function CreateSpace({
         </Typography>
 
         <IconButton
-          sx={{ color: "primary.main", mb: 4 }}
+          sx={{ color: "primary.main" }}
           onClick={() =>
             dispatch({ type: "handleCreateBackdrop", payload: false })
           }
         >
           <CloseIcon sx={{ color: "error.main" }} />
         </IconButton>
-      </Box>
+      </DialogTitle>
 
-      <TextField
-        disabled
-        name="spaceId"
-        placeholder="Paste Invite ID"
-        sx={{ width: "100%", mb: 1 }}
-        value={spaceId}
-        onChange={(e) =>
-          dispatch({ type: "updateSpaceId", payload: e.target.value })
-        }
-      />
+      <DialogContent sx={{ pt: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+          <TextField
+            disabled
+            name="spaceId"
+            placeholder="Paste Invite ID"
+            value={spaceId}
+            onChange={(e) =>
+              dispatch({ type: "updateSpaceId", payload: e.target.value })
+            }
+          />
 
-      <TextField
-        autoFocus
-        name="name"
-        placeholder="Enter name"
-        sx={{ width: "100%", mb: 2 }}
-        value={spaceName}
-        onChange={(e) =>
-          dispatch({ type: "updateSpaceName", payload: e.target.value })
-        }
-      />
+          <TextField
+            autoFocus
+            name="name"
+            placeholder="Enter name"
+            value={spaceName}
+            onChange={(e) =>
+              dispatch({ type: "updateSpaceName", payload: e.target.value })
+            }
+          />
+        </Box>
+      </DialogContent>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+      <DialogActions sx={{ px: 3, pb: 3 }}>
         <Button
           variant="contained"
-          sx={{ height: "43px", mr: 2 }}
+          sx={{ mr: 1 }}
           onClick={handleCreate}
         >
           Create
@@ -144,7 +154,7 @@ export default function CreateSpace({
         >
           Space Id
         </Button>
-      </Box>
-    </Box>
+      </DialogActions>
+    </Dialog>
   );
 }

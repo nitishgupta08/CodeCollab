@@ -3,10 +3,10 @@ import {
   Box,
   Typography,
   Button,
-  Backdrop,
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Stack,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ListSpaces from "./ListSpaces";
@@ -44,46 +44,34 @@ function UserSpaces({
 
   return (
     <>
-      <Backdrop
-        sx={{
-          zIndex: 5,
-          backdropFilter: "blur(5px)",
-        }}
+      <CreateSpace
+        spaceId={spaceId}
+        spaceName={spaceName}
+        setError={setError}
+        setSuccess={setSuccess}
+        setMessage={setMessage}
+        loggedInUser={loggedInUser}
+        dispatch={dispatch}
         open={showCreateSpaceBackdrop}
-      >
-        <CreateSpace
-          spaceId={spaceId}
-          spaceName={spaceName}
-          setError={setError}
-          setSuccess={setSuccess}
-          setMessage={setMessage}
-          loggedInUser={loggedInUser}
-          dispatch={dispatch}
-          showCreateSpaceBackdrop={showCreateSpaceBackdrop}
-        />
-      </Backdrop>
+      />
 
-      <Backdrop
-        sx={{ zIndex: 5, backdropFilter: "blur(5px)" }}
+      <JoinSpace
+        spaceId={spaceId}
+        loggedInUser={loggedInUser}
+        dispatch={dispatch}
         open={showJoinSpaceBackdrop}
-      >
-        <JoinSpace
-          spaceId={spaceId}
-          loggedInUser={loggedInUser}
-          dispatch={dispatch}
-          showJoinSpaceBackdrop={showJoinSpaceBackdrop}
-        />
-      </Backdrop>
+      />
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Box sx={{ minWidth: "90vw", minHeight: "70vh", mb: 10 }}>
-          <Box
+        <Box sx={{ width: "100%", maxWidth: "1200px", minHeight: "70vh", mb: 10, px: 2 }}>
+          <Stack
             sx={{
               p: 2,
               pt: 5,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
             }}
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            justifyContent="space-between"
+            alignItems={{ xs: "stretch", md: "center" }}
           >
             <Typography
               sx={{
@@ -99,7 +87,7 @@ function UserSpaces({
             <OutlinedInput
               disabled={!listSpaces}
               size="small"
-              sx={{ minWidth: "30%" }}
+              sx={{ minWidth: { xs: "100%", md: "30%" } }}
               onChange={(e) => searchQuery(e.target.value)}
               endAdornment={
                 <InputAdornment position="end">
@@ -109,11 +97,10 @@ function UserSpaces({
                 </InputAdornment>
               }
             />
-            <Box>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
               <Button
                 variant="outlined"
                 startIcon={<RocketLaunchIcon />}
-                sx={{ mr: 2 }}
                 onClick={() =>
                   dispatch({ type: "handleJoinBackdrop", payload: true })
                 }
@@ -129,8 +116,8 @@ function UserSpaces({
               >
                 Create a new space
               </Button>
-            </Box>
-          </Box>
+            </Stack>
+          </Stack>
 
           <ListSpaces
             setMessage={setMessage}

@@ -7,6 +7,7 @@ import {
   Alert,
   AlertTitle,
   Snackbar,
+  Stack,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -34,9 +35,17 @@ function SpaceHeader({ loggedInUser }) {
 
   const handleSave = async () => {
     try {
-      await axiosConfig.put(`/spaces/${location.pathname.split("/")[2]}`, {
-        spaceData: state.spaceData,
-      });
+      await axiosConfig.put(
+        `/spaces/${location.pathname.split("/")[2]}`,
+        {
+          spaceData: state.spaceData,
+        },
+        {
+          headers: loggedInUser?.token
+            ? { Authorization: `Bearer ${loggedInUser.token}` }
+            : undefined,
+        }
+      );
       setSuccess(true);
       dispatch({
         type: "updateMessage",
@@ -95,31 +104,39 @@ function SpaceHeader({ loggedInUser }) {
       <Box
         sx={{
           display: "flex",
+          flexWrap: "wrap",
+          gap: 1,
           justifyContent: "space-between",
+          alignItems: "center",
           pl: 1,
           pr: 1,
         }}
       >
         <Typography
           variant="h1"
-          sx={{ color: "text.primary", fontSize: 35, fontWeight: 700 }}
+          sx={{
+            color: "text.primary",
+            fontSize: { xs: 30, sm: 35 },
+            fontWeight: 700,
+          }}
         >
           CodeCollab.
         </Typography>
 
         <ActiveUsers activeUsers={state.activeUsers} />
 
-        <Box sx={{ display: "flex" }}>
+        <Stack direction="row" alignItems="center" spacing={0.5}>
           <IconButton sx={{ color: "text.primary" }} onClick={handleCopy}>
             <ContentCopyIcon />
           </IconButton>
 
-          {loggedInUser && (
+          {state.canEdit && (
             <IconButton onClick={handleSave} sx={{ color: "text.primary" }}>
               <SaveIcon />
             </IconButton>
           )}
-          <Box>
+
+          <Stack direction="row" alignItems="center" spacing={1}>
             <IconButton
               onClick={colorMode.toggleColorMode}
               sx={{ color: "text.primary" }}
@@ -133,21 +150,18 @@ function SpaceHeader({ loggedInUser }) {
 
             <Button
               variant="contained"
-              sx={{ ml: 1 }}
               onClick={() => {
                 socket.emit(ACTIONS.LEAVE, {
                   spaceId: location.pathname.split("/")[2],
-                  name: location.state.name,
-                  email: location.state.email,
                 });
                 dispatch({ type: "resetSpaceState" });
-                loggedInUser ? navigate("/dashboard") : navigate("/");
+                loggedInUser?.token ? navigate("/dashboard") : navigate("/");
               }}
             >
               Leave Space
             </Button>
-          </Box>
-        </Box>
+          </Stack>
+        </Stack>
       </Box>
     </>
   );

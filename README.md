@@ -1,93 +1,144 @@
-![Logo](/images/logo.png)
+![CodeCollab Logo](/images/logo.png)
 
 # CodeCollab
 
-This is a collaborative coding website made in MERN stack.
+Collaborative coding spaces with real-time sync, shareable invite IDs, and role-aware editing.
+
+## What CodeCollab Does
+
+CodeCollab is a MERN-based web app where multiple users can work in the same code space. It supports authenticated workspace management and guest read-only access for shared space links.
+
+## Key Features
+
+- Real-time code collaboration powered by Socket.IO.
+- Shareable space IDs for inviting collaborators.
+- Authenticated dashboard to create, join, rename, and delete spaces.
+- Guest mode: users without an account can open a space and join as read-only viewer.
+- Role-aware permissions for editing code and file metadata.
+- User settings for name, preferred language/theme, and password updates.
+- Multiple language options in editor workflow (for example: JavaScript, Python, Java, C++).
+
+## How to Use
+
+1. Open CodeCollab and either:
+   - Join an existing space with a space ID and display name, or
+   - Sign up / log in to create and manage your own spaces.
+2. Share the space ID with collaborators.
+3. Collaborators join the same space and edits sync live.
+4. Permissions apply by role:
+   - `owner`: full control (rename/delete/edit/manage space data)
+   - `editor`: edit code and file metadata
+   - `viewer/guest`: read-only
+
+## Local Setup
+
+### 1) Clone the repository
+
+```bash
+git clone git@github.com:nitishgupta08/CodeCollab.git
+cd CodeCollab
+```
+
+### 2) Backend setup
+
+```bash
+cd backend
+npm install
+npm run server:dev
+```
+
+Backend production run:
+
+```bash
+npm run server:prod
+```
+
+### 3) Frontend setup
+
+Open a new terminal:
+
+```bash
+cd frontend
+npm install
+npm run start
+```
+
+Frontend additional commands:
+
+```bash
+npm run build
+npm run test
+npm run preview
+```
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file in
+Create a `.env` file in each app directory.
 
-- `backend`
+### `backend/.env`
 
-    - `MONGO_SERVER_URI`
+- `MONGO_SERVER_URI`
+- `JWT_SECRET`
+- `PORT`
 
-    - `JWT_SECRET`
+### `frontend/.env`
 
-    - `PORT`
+- `VITE_BACKEND_URL`
+- `REACT_APP_BACKEND_URL` (supported as fallback)
 
-- `frontend`
+## Available Scripts
 
-    - `REACT_APP_BACKEND_URL`
+### Backend (`/backend/package.json`)
 
-## Run Locally
+- `npm run server:dev` - start backend with `nodemon`
+- `npm run server:prod` - start backend with Node.js
 
-Clone the project
+### Frontend (`/frontend/package.json`)
 
-```bash
-  git clone https://github.com/nitishgupta08/CodeForges.git
-```
+- `npm run start` - start Vite dev server
+- `npm run build` - create production build
+- `npm run test` - run Vitest tests
+- `npm run preview` - preview production build locally
 
-- Run frontend
+## API and Realtime Summary
 
-  Go to the frontend project directory
+### Interactive API Docs
 
-  ```bash
-  cd frontend
-  ```
+- Backend landing endpoint: `http://localhost:5000/` (service status + quick links)
+- Open Swagger UI at `http://localhost:5000/docs`
+- Raw OpenAPI spec is available at `http://localhost:5000/openapi.json`
 
-  Install frontend dependencies
+### Swagger Quickstart (`/docs`)
 
-  ```bash
-  npm install
-  ```
+1. Start backend: `cd backend && npm run server:dev`
+2. Open `http://localhost:5000/docs`
+3. Run `POST /users/register` or `POST /users/login` and copy `token` from response.
+4. Click **Authorize** in Swagger UI.
+5. Paste: `Bearer <your_token>`
+6. Test protected endpoints such as `GET /users/me`, `GET /spaces`, or `PUT /spaces/{id}`.
 
-  Start frontend
+### Realtime (Socket.IO)
 
-  ```bash
-  npm run start
-  ```
-
-- Run backend
-
-  Go to the backend project directory
-
-  ```bash
-  cd backend
-  ```
-
-  Install backend dependencies
-
-  ```bash
-  npm install
-  ```
-
-  Start the server
-
-  ```bash
-  npm run server:dev
-  ```
+- Clients join a space room and receive active-user updates.
+- Code sync events propagate in real time.
+- File metadata (name/language) sync is permission-aware.
+- Viewer/guest sessions are read-only; edit events require owner/editor permissions.
 
 ## Tech Stack
 
-**Client:** React, MaterialUI, Codemirror
-
-**Server:** Node, Express
-
-## Roadmap
-
-- Fix editor issue when two users type at the same time. If you find a way to do this in codemirrorV6, please raise an ```issue``` and let me know.
-
-- More languages support
+- Frontend: React, Vite, Material UI, Redux, CodeMirror
+- Backend: Node.js, Express, MongoDB, Mongoose
+- Realtime: Socket.IO
+- Auth: JWT
 
 ## Contributing
 
-Contributions are always welcome!
+Contributions are welcome. Please open an issue or submit a pull request with clear context and reproduction steps where applicable.
 
-See `contributing.md` for ways to get started.
+## Code of Conduct
 
-Please adhere to this project's `code of conduct`.
+Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](LICENSE)

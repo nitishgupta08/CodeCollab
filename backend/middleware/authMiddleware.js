@@ -17,7 +17,7 @@ const auth = async (req, res, next) => {
             throw new Error("No Authorization provided")
         }
     }catch (e) {
-        res.status(400).send({'error': e.message})
+        res.status(401).send({'error': e.message})
     }
 
 }

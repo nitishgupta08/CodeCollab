@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import React from "react";
 import LoadingCard from "./LoadingCard";
 import SpaceCard from "./SpaceCard";
@@ -15,30 +15,30 @@ function ListSpaces({
     <>
       <Box
         sx={{
-          pl: 5,
-          pr: 5,
+          px: { xs: 1, sm: 3, md: 5 },
           display: "flex",
           justifyContent: "center",
+          width: "100%",
         }}
       >
         {listSpace !== undefined ? (
           listSpace.length === 0 ? (
-            <>
+            <Stack sx={{ width: "100%", alignItems: "center" }}>
               <Box
                 component="img"
                 sx={{
-                  height: 500,
+                  height: { xs: 280, sm: 500 },
                   display: "block",
                   ml: "auto",
                   mr: "auto",
-                  width: "50%",
+                  width: { xs: "90%", sm: "50%" },
                 }}
                 alt="No spaces found"
                 src="/no_data.png"
               />
-            </>
+            </Stack>
           ) : (
-            <Box>
+            <Stack spacing={1.5} sx={{ width: "100%", maxWidth: "1100px" }}>
               {listSpace.map((item, id) => {
                 return (
                   <SpaceCard
@@ -52,10 +52,14 @@ function ListSpaces({
                   />
                 );
               })}
-            </Box>
+            </Stack>
           )
         ) : (
-          <LoadingCard />
+          <Stack sx={{ width: "100%", maxWidth: "1100px" }}>
+            {[0, 1, 2].map((item) => (
+              <LoadingCard key={item} />
+            ))}
+          </Stack>
         )}
       </Box>
     </>

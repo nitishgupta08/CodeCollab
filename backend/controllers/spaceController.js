@@ -1,22 +1,73 @@
 const Space = require("../models/spaceSchema");
-const User = require("../models/userSchema");
+
+const SPACE_LIST_FIELDS = "spaceId spaceName createdAt";
+
+const getSpaceRole = (space, userId) => {
+  if (space.owner.toString() === userId.toString()) {
+    return "owner";
+  }
+
+  const membership = (space.members || []).find(
+    (entry) => entry.user.toString() === userId.toString()
+  );
+
+  return membership?.role || null;
+};
+
+const requireSpaceAccess = async (spaceId, userId) => {
+  const space = await Space.findOne({ spaceId });
+
+  if (!space) {
+    const error = new Error("No space found with this spaceId!");
+    error.status = 404;
+    throw error;
+  }
+
+  const role = getSpaceRole(space, userId);
+  if (!role) {
+    const error = new Error("Not authorized to access this space");
+    error.status = 403;
+    throw error;
+  }
+
+  return { space, role };
+};
+
+const validateSpaceData = (spaceData) => {
+  if (!Array.isArray(spaceData) || spaceData.length === 0) {
+    throw new Error("spaceData must be a non-empty array");
+  }
+
+  const isValid = spaceData.every((item) => {
+    return (
+      item &&
+      typeof item.fileName === "string" &&
+      typeof item.fileData === "string" &&
+      typeof item.fileLang === "string"
+    );
+  });
+
+  if (!isValid) {
+    throw new Error("Invalid spaceData payload");
+  }
+};
 
 /*
  * @desc GET spaces
- * @route GET /api/spaces
+ * @route GET /spaces
  * @access Private
  * */
 const getSpaces = async (req, res) => {
-  //Find returns a cursor(empty array or always truthy)
-  const spaces = await Space.find({ owner: req.user._id }).select(
-    "spaceId spaceName createdAt"
-  );
+  const spaces = await Space.find({
+    $or: [{ owner: req.user._id }, { "members.user": req.user._id }],
+  }).select(SPACE_LIST_FIELDS);
+
   res.status(200).send(spaces);
 };
 
 /*
  * @desc Create spaces
- * @route POST /api/spaces
+ * @route POST /spaces
  * @access Private
  * */
 const createSpaces = async (req, res) => {
@@ -37,14 +88,15 @@ const createSpaces = async (req, res) => {
       spaceId: req.body.spaceId,
       spaceName: req.body.spaceName,
       owner: req.user._id,
+      members: [{ user: req.user._id, role: "owner" }],
       spaceData,
     });
 
     await space.save();
 
-    const spaces = await Space.find({ owner: req.user._id }).select(
-      "spaceId spaceName createdAt"
-    );
+    const spaces = await Space.find({
+      $or: [{ owner: req.user._id }, { "members.user": req.user._id }],
+    }).select(SPACE_LIST_FIELDS);
 
     res.status(200).send(spaces);
   } catch (e) {
@@ -53,61 +105,113 @@ const createSpaces = async (req, res) => {
 };
 
 /*
- * @desc Get data of a particular space
- * @route GET /api/spaces/:id
+ * @desc Join a space by id
+ * @route POST /spaces/:id/join
  * @access Private
  * */
-const getSpaceData = async (req, res) => {
+const joinSpace = async (req, res) => {
   try {
-    const space = await Space.findOne({
-      spaceId: req.params.id,
-    }).select("-_id -__v -updatedAt -createdAt");
+    const space = await Space.findOne({ spaceId: req.params.id });
+
     if (!space) {
       throw new Error("No space found with this spaceId!");
     }
 
-    res.status(200).send(space);
+    const role = getSpaceRole(space, req.user._id);
+    if (!role) {
+      space.members.push({ user: req.user._id, role: "editor" });
+      await space.save();
+    }
+
+    res.status(200).send({ data: "Joined space" });
   } catch (e) {
     res.status(400).send({ error: e.message });
+  }
+};
+
+/*
+ * @desc Get data of a particular space
+ * @route GET /spaces/:id
+ * @access Private
+ * */
+const getSpaceData = async (req, res) => {
+  try {
+    const space = await Space.findOne({ spaceId: req.params.id });
+    if (!space) {
+      throw new Error("No space found with this spaceId!");
+    }
+
+    const role = req.user ? getSpaceRole(space, req.user._id) : null;
+    const canEdit = role === "owner" || role === "editor";
+
+    res.status(200).send({
+      spaceId: space.spaceId,
+      spaceName: space.spaceName,
+      spaceData: space.spaceData,
+      activeUsers: space.activeUsers,
+      canEdit,
+    });
+  } catch (e) {
+    res.status(e.status || 400).send({ error: e.message });
   }
 };
 
 /*
  * @desc Update spaces
- * @route PUT /api/spaces/:id
- * @access Public
+ * @route PUT /spaces/:id
+ * @access Private
  * */
 const updateSpaces = async (req, res) => {
   try {
+    const { space, role } = await requireSpaceAccess(req.params.id, req.user._id);
+
+    if (role === "viewer") {
+      return res.status(403).send({ error: "Viewers cannot update spaces" });
+    }
+
     if (req.body.field === "name") {
-      const space = await Space.findOne({ spaceId: req.params.id });
+      if (role !== "owner") {
+        return res.status(403).send({ error: "Only owner can rename space" });
+      }
+
+      if (!req.body.name || typeof req.body.name !== "string") {
+        return res.status(400).send({ error: "Invalid space name" });
+      }
+
       space.spaceName = req.body.name;
       await space.save();
 
-      const owner = space.owner;
+      const spaces = await Space.find({
+        $or: [{ owner: req.user._id }, { "members.user": req.user._id }],
+      }).select(SPACE_LIST_FIELDS);
 
-      const spaces = await Space.find({ owner: owner }).select(
-        "spaceId spaceName createdAt"
-      );
-
-      res.status(201).send(spaces);
-    } else {
-      await Space.findOneAndUpdate(
-        { spaceId: req.params.id },
-        { $set: req.body },
-        { new: true }
-      ).select("-owner -_id -__v -updatedAt");
-
-      res.status(201).json("Saved!");
+      return res.status(201).send(spaces);
     }
+
+    const payloadKeys = Object.keys(req.body);
+    const allowedKeys = ["spaceData"];
+
+    const hasOnlyAllowedKeys = payloadKeys.every((key) => allowedKeys.includes(key));
+    if (!hasOnlyAllowedKeys) {
+      return res.status(400).send({ error: "Invalid update payload" });
+    }
+
+    if (req.body.spaceData !== undefined) {
+      validateSpaceData(req.body.spaceData);
+      space.spaceData = req.body.spaceData;
+    }
+
+    await space.save();
+
+    res.status(201).json("Saved!");
   } catch (e) {
-    res.status(400).send({ error: e.message });
+    res.status(e.status || 400).send({ error: e.message });
   }
 };
 
 /*
  * @desc Delete spaces
- * @route DELETE /api/spaces/:id
+ * @route DELETE /spaces/:id
  * @access Private
  * */
 const deleteSpaces = async (req, res) => {
@@ -120,11 +224,11 @@ const deleteSpaces = async (req, res) => {
       throw new Error("No space found with this spaceId!");
     }
 
-    await space.remove();
+    await space.deleteOne();
 
-    const spaces = await Space.find({ owner: req.user._id }).select(
-      "spaceId spaceName createdAt"
-    );
+    const spaces = await Space.find({
+      $or: [{ owner: req.user._id }, { "members.user": req.user._id }],
+    }).select(SPACE_LIST_FIELDS);
 
     res.status(201).send(spaces);
   } catch (e) {
@@ -132,39 +236,11 @@ const deleteSpaces = async (req, res) => {
   }
 };
 
-/*
- * @desc update Active users in particular space
- * @route GET /api/spaces/updateActive/:id
- * @access Public
- * */
-const updateActive = async (req, res) => {
-  const space = await UserSpaces.findOne({ spaceId: req.params.id });
-
-  if (!space) {
-    req.status(400);
-    throw new Error("NO space found.");
-  }
-
-  req.body.incoming
-    ? await UserSpaces.findOneAndUpdate(
-        { spaceId: req.params.id },
-        { $push: { activeUsers: req.body } },
-        { new: true }
-      )
-    : await UserSpaces.findOneAndUpdate(
-        { spaceId: req.params.id },
-        { $pullAll: { activeUsers: req.body } },
-        { new: true }
-      );
-
-  res.status(200).json({ message: "User added to active users" });
-};
-
 module.exports = {
   getSpaces,
   createSpaces,
+  joinSpace,
   updateSpaces,
   deleteSpaces,
   getSpaceData,
-  updateActive,
 };

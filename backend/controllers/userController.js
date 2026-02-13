@@ -69,9 +69,18 @@ const getUser = async (req, res) => {
  * */
 const updateUser = async (req, res) => {
   const newDetails = req.body;
+  const allowedFields = ["name", "language", "theme"];
+  const payloadKeys = Object.keys(newDetails);
+  const hasOnlyAllowedFields = payloadKeys.every((field) =>
+    allowedFields.includes(field)
+  );
 
   try {
-    await User.updateOne(req.user, { $set: newDetails });
+    if (!hasOnlyAllowedFields) {
+      return res.status(400).send({ error: "Invalid update payload" });
+    }
+
+    await User.updateOne({ _id: req.user._id }, { $set: newDetails });
     res.send({ data: "Success!", title: "Details updated" });
   } catch (e) {
     res.status(500).send({ error: "Internal Server Error" });
@@ -88,7 +97,6 @@ const updatePassword = async (req, res) => {
 
   try {
     const user = await User.findById(req.user._id);
-    console.log(user);
 
     const isMatch = await bcrypt.compare(
       passwords.currentPassword,

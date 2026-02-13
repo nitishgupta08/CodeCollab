@@ -1,0 +1,849 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CodeCollab API",
+    "version": "1.0.0",
+    "description": "REST API for CodeCollab user auth, space management, and collaboration data."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users"
+    },
+    {
+      "name": "Spaces"
+    }
+  ],
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "example": {
+                "name": "Nitish Gupta",
+                "email": "nitish@example.com",
+                "password": "StrongPass123!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Login an existing user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "example": {
+                "email": "nitish@example.com",
+                "password": "StrongPass123!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get authenticated user profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/update": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update profile preferences",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              },
+              "example": {
+                "name": "Nitish Gupta",
+                "language": "javascript",
+                "theme": "dracula"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/change-password": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change user password",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              },
+              "example": {
+                "currentPassword": "StrongPass123!",
+                "newPassword": "NewStrongPass456!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Password changed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/spaces": {
+      "get": {
+        "tags": [
+          "Spaces"
+        ],
+        "summary": "Get spaces visible to the authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of spaces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpaceListItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Spaces"
+        ],
+        "summary": "Create a new space",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSpaceRequest"
+              },
+              "example": {
+                "spaceId": "9f8d1f7c-7ad2-4f9b-8a1c-1f3f88db5f4f",
+                "spaceName": "Interview Prep"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created space and returned list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpaceListItem"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/spaces/{id}": {
+      "get": {
+        "tags": [
+          "Spaces"
+        ],
+        "summary": "Get space data by space ID (supports optional auth for viewer access)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpaceIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSpaceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Spaces"
+        ],
+        "summary": "Update space name or space data",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpaceIdParam"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/RenameSpaceRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/UpdateSpaceDataRequest"
+                  }
+                ]
+              },
+              "examples": {
+                "renameSpace": {
+                  "summary": "Rename space (owner only)",
+                  "value": {
+                    "field": "name",
+                    "name": "Renamed Space"
+                  }
+                },
+                "saveSpaceData": {
+                  "summary": "Save editor data",
+                  "value": {
+                    "spaceData": [
+                      {
+                        "fileName": "main.js",
+                        "fileData": "console.log('hello from collab')",
+                        "fileLang": "javascript"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "example": "Saved!"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SpaceListItem"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Spaces"
+        ],
+        "summary": "Delete a space (owner only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpaceIdParam"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Deleted and returned updated list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpaceListItem"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/spaces/{id}/join": {
+      "post": {
+        "tags": [
+          "Spaces"
+        ],
+        "summary": "Join a space by ID as authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpaceIdParam"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "example": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Joined",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string",
+                      "example": "Joined space"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "SpaceIdParam": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "9f8d1f7c-7ad2-4f9b-8a1c-1f3f88db5f4f"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "error": "Invalid payload"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Authentication required or invalid token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "error": "Not authorized"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Authenticated but not allowed for this action",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "error": "Only owner can rename space"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "65f4b5521b3f4b4f5e3a4a91"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nitish Gupta"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "nitish@example.com"
+          },
+          "language": {
+            "type": "string",
+            "example": "javascript"
+          },
+          "theme": {
+            "type": "string",
+            "example": "dracula"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PublicUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Nitish Gupta"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "nitish@example.com"
+          },
+          "language": {
+            "type": "string",
+            "example": "javascript"
+          },
+          "theme": {
+            "type": "string",
+            "example": "dracula"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/PublicUser"
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Success!"
+          },
+          "data": {
+            "type": "string",
+            "example": "Details updated"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Invalid payload"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "cpp",
+              "java",
+              "javascript",
+              "python"
+            ]
+          },
+          "theme": {
+            "type": "string"
+          }
+        }
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "properties": {
+          "currentPassword": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSpaceRequest": {
+        "type": "object",
+        "required": [
+          "spaceId",
+          "spaceName"
+        ],
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "example": "9f8d1f7c-7ad2-4f9b-8a1c-1f3f88db5f4f"
+          },
+          "spaceName": {
+            "type": "string",
+            "example": "Interview Prep"
+          }
+        }
+      },
+      "RenameSpaceRequest": {
+        "type": "object",
+        "required": [
+          "field",
+          "name"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "name"
+            ]
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "SpaceDataItem": {
+        "type": "object",
+        "required": [
+          "fileName",
+          "fileData",
+          "fileLang"
+        ],
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "example": "main.js"
+          },
+          "fileData": {
+            "type": "string",
+            "example": "console.log('hello from collab')"
+          },
+          "fileLang": {
+            "type": "string",
+            "example": "javascript"
+          }
+        }
+      },
+      "UpdateSpaceDataRequest": {
+        "type": "object",
+        "required": [
+          "spaceData"
+        ],
+        "properties": {
+          "spaceData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpaceDataItem"
+            }
+          }
+        }
+      },
+      "SpaceListItem": {
+        "type": "object",
+        "properties": {
+          "spaceId": {
+            "type": "string"
+          },
+          "spaceName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ActiveUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Nitish Gupta"
+          },
+          "email": {
+            "type": "string",
+            "example": "nitish@example.com"
+          }
+        }
+      },
+      "GetSpaceResponse": {
+        "type": "object",
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "example": "9f8d1f7c-7ad2-4f9b-8a1c-1f3f88db5f4f"
+          },
+          "spaceName": {
+            "type": "string",
+            "example": "Interview Prep"
+          },
+          "spaceData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpaceDataItem"
+            }
+          },
+          "activeUsers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActiveUser"
+            }
+          },
+          "canEdit": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

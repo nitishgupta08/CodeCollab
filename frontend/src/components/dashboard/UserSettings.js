@@ -12,22 +12,29 @@ import {
   Card,
   CardContent,
   CardActions,
+  Grid,
+  Stack,
   Alert,
   AlertTitle,
   Snackbar,
 } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
 import axiosConfig from "../../utils/axiosConfig";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
 function UserSettings({ loggedInUser, setLoggedInUser }) {
   return (
-    <Box sx={{ display: "flex", justifyContent: "center" }}>
-      <Preferences
-        loggedInUser={loggedInUser}
-        setLoggedInUser={setLoggedInUser}
-      />
-      <PasswordChange loggedInUser={loggedInUser} />
+    <Box sx={{ display: "flex", justifyContent: "center", px: 2 }}>
+      <Grid container spacing={3} sx={{ width: "100%", maxWidth: "980px" }}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Preferences
+            loggedInUser={loggedInUser}
+            setLoggedInUser={setLoggedInUser}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <PasswordChange loggedInUser={loggedInUser} />
+        </Grid>
+      </Grid>
     </Box>
   );
 }
@@ -120,14 +127,13 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
           boxShadow:
             "0px 0px 2.9px rgba(0, 0, 0, 0.07),0px 0px 6.7px rgba(0, 0, 0, 0.052),0px 0px 12.1px rgba(0, 0, 0, 0.044),0px 0px 20.1px rgba(0, 0, 0, 0.038), 0px 0px 33.1px rgba(0, 0, 0, 0.032),0px 0px 57.8px rgba(0, 0, 0, 0.026),0px 0px 125px rgba(0, 0, 0, 0.018)",
           backgroundColor: "background.paper",
-          borderRadius: 2,
           mt: 5,
-          width: "400px",
+          width: "100%",
         }}
       >
         <CardContent>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Box sx={{ mb: 5 }}>
+          <Stack spacing={5}>
+            <Box>
               <Typography
                 variant="h2"
                 sx={{
@@ -150,7 +156,7 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
               </Box>
             </Box>
 
-            <Box sx={{ mb: 5 }}>
+            <Box>
               <Typography
                 variant="h2"
                 sx={{
@@ -180,7 +186,7 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
               </FormControl>
             </Box>
 
-            <Box sx={{ mb: 5 }}>
+            <Box>
               <Typography
                 variant="h2"
                 sx={{
@@ -231,7 +237,7 @@ const Preferences = ({ loggedInUser, setLoggedInUser }) => {
                 </Select>
               </FormControl>
             </Box>
-          </Box>
+          </Stack>
         </CardContent>
         <CardActions>
           {edit ? (
@@ -330,10 +336,8 @@ const PasswordChange = ({ loggedInUser }) => {
           boxShadow:
             "0px 0px 2.9px rgba(0, 0, 0, 0.07),0px 0px 6.7px rgba(0, 0, 0, 0.052),0px 0px 12.1px rgba(0, 0, 0, 0.044),0px 0px 20.1px rgba(0, 0, 0, 0.038), 0px 0px 33.1px rgba(0, 0, 0, 0.032),0px 0px 57.8px rgba(0, 0, 0, 0.026),0px 0px 125px rgba(0, 0, 0, 0.018)",
           backgroundColor: "background.paper",
-          borderRadius: 2,
           mt: 5,
-          ml: 3,
-          width: "400px",
+          width: "100%",
         }}
       >
         <CardContent>
@@ -381,7 +385,7 @@ const PasswordChange = ({ loggedInUser }) => {
           </Box>
         </CardContent>
         <CardActions>
-          <LoadingButton
+          <Button
             loading={loading}
             variant="contained"
             onClick={handlePassword}
@@ -394,7 +398,7 @@ const PasswordChange = ({ loggedInUser }) => {
             sx={{ ml: 1 }}
           >
             Update
-          </LoadingButton>
+          </Button>
         </CardActions>
       </Card>
     </>

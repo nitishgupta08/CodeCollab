@@ -8,6 +8,8 @@ import {
   Typography,
   Button,
   TextField,
+  Stack,
+  Box,
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
@@ -75,10 +77,16 @@ export default function SpaceCard({
 
   const handleEdit = () => {
     axiosConfig
-      .put(`/spaces/${item.spaceId}`, {
-        field: "name",
-        name: spaceName,
-      })
+      .put(
+        `/spaces/${item.spaceId}`,
+        {
+          field: "name",
+          name: spaceName,
+        },
+        {
+          headers: { Authorization: `Bearer ${loggedInUser.token}` },
+        }
+      )
       .then((res) => {
         if (res.status === 201) {
           dispatch({ type: "updateListSpaces", payload: res.data });
@@ -104,28 +112,29 @@ export default function SpaceCard({
     <Card
       sx={{
         mb: 2,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        p: 1,
+        p: 1.5,
         boxShadow:
           "0px 2.3px 4.5px rgba(0, 0, 0, 0.07),0px 6.3px 12.5px rgba(0, 0, 0, 0.046),0px 15.1px 30.1px rgba(0, 0, 0, 0.035),0px 50px 100px rgba(0, 0, 0, 0.024)",
         backgroundColor: "background.paper",
-        borderRadius: 2,
-        minWidth: "70vw",
+        width: "100%",
       }}
     >
-      <CardContent>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        justifyContent="space-between"
+        alignItems={{ xs: "flex-start", md: "center" }}
+        spacing={1}
+      >
+      <CardContent sx={{ pb: "16px !important" }}>
         {editSpace ? (
           <TextField
             autoFocus
             name="name"
-            // sx={{ width: "100%", mb: 1 }}
             value={spaceName}
             onChange={(e) => setSpaceName(e.target.value)}
           />
         ) : (
-          <>
+          <Box>
             <Typography
               variant="h4"
               sx={{
@@ -151,15 +160,15 @@ export default function SpaceCard({
             </Typography>
 
             <Typography
-              variant="p"
+              variant="body2"
               sx={{ fontSize: 11, color: "text.primary" }}
             >
               Created at: {date.toDateString()} {date.toLocaleTimeString()}
             </Typography>
-          </>
+          </Box>
         )}
       </CardContent>
-      <CardActions>
+      <CardActions sx={{ alignSelf: { xs: "stretch", md: "auto" } }}>
         {confirm ? (
           <>
             <Button
@@ -220,6 +229,7 @@ export default function SpaceCard({
           </>
         )}
       </CardActions>
+      </Stack>
     </Card>
   );
 }

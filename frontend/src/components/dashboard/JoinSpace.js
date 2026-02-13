@@ -1,51 +1,71 @@
-import { Box, Button, IconButton, Typography, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  useMediaQuery,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect } from "react";
+import axiosConfig from "../../utils/axiosConfig";
 
 export default function JoinSpace({
   spaceId,
   dispatch,
   loggedInUser,
-  showJoinSpaceBackdrop,
+  open,
 }) {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    if (showJoinSpaceBackdrop) {
+    if (open) {
       dispatch({ type: "updateSpaceId", payload: "" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showJoinSpaceBackdrop]);
+  }, [open]);
 
-  const handleJoin = () => {
-    navigate(`/space/${spaceId}`, {
-      state: {
-        spaceId,
-        name: loggedInUser.user.name,
-        email: loggedInUser.user.email,
-      },
-    });
-    dispatch({ type: "handleJoinBackdrop", payload: false });
+  const handleJoin = async () => {
+    try {
+      await axiosConfig.post(
+        `/spaces/${spaceId}/join`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${loggedInUser.token}` },
+        }
+      );
+
+      navigate(`/space/${spaceId}`, {
+        state: {
+          spaceId,
+          name: loggedInUser.user.name,
+          email: loggedInUser.user.email,
+        },
+      });
+      dispatch({ type: "handleJoinBackdrop", payload: false });
+    } catch (e) {
+      // handled in target page through API/socket errors
+    }
   };
 
   return (
-    <Box
-      sx={{
-        width: "30vw",
-        backgroundColor: "background.paper",
-        borderRadius: 2,
-        display: "flex",
-        flexDirection: "column",
-        p: 3,
-      }}
+    <Dialog
+      open={open}
+      onClose={() => dispatch({ type: "handleJoinBackdrop", payload: false })}
+      fullScreen={fullScreen}
+      fullWidth
+      maxWidth="sm"
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+      <DialogTitle
+        sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", pb: 1 }}
       >
         <Typography
           variant="h2"
@@ -60,36 +80,31 @@ export default function JoinSpace({
         </Typography>
 
         <IconButton
-          sx={{ color: "primary.main", mb: 4 }}
+          sx={{ color: "primary.main" }}
           onClick={() =>
             dispatch({ type: "handleJoinBackdrop", payload: false })
           }
         >
           <CloseIcon sx={{ color: "error.main" }} />
         </IconButton>
-      </Box>
+      </DialogTitle>
 
-      <TextField
-        name="spaceId"
-        placeholder="Paste Invite ID"
-        sx={{ width: "100%", mb: 2 }}
-        value={spaceId}
-        onChange={(e) =>
-          dispatch({ type: "updateSpaceId", payload: e.target.value })
-        }
-      />
+      <DialogContent sx={{ pt: 1 }}>
+        <TextField
+          name="spaceId"
+          placeholder="Paste Invite ID"
+          value={spaceId}
+          onChange={(e) =>
+            dispatch({ type: "updateSpaceId", payload: e.target.value })
+          }
+        />
+      </DialogContent>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-        <Box sx={{ display: "flex" }}>
-          <Button
-            variant="contained"
-            sx={{ height: "43px", mr: 2 }}
-            onClick={handleJoin}
-          >
-            Join
-          </Button>
-        </Box>
-      </Box>
-    </Box>
+      <DialogActions sx={{ px: 3, pb: 3 }}>
+        <Button variant="contained" onClick={handleJoin}>
+          Join
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

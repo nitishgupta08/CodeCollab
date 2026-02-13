@@ -4,6 +4,7 @@ import {
   Typography,
   Button,
   Grid,
+  Stack,
   Tabs,
   Tab,
   Alert,
@@ -156,15 +157,22 @@ function Dashboard() {
           display: "flex",
           zIndex: 3,
           justifyContent: "space-between",
+          alignItems: "center",
+          px: 1,
         }}
       >
         <Typography
           variant="h1"
-          sx={{ fontSize: 50, fontWeight: 700, p: 1, color: "text.primary" }}
+          sx={{
+            fontSize: { xs: 38, sm: 50 },
+            fontWeight: 700,
+            py: 1,
+            color: "text.primary",
+          }}
         >
           CodeCollab.
         </Typography>
-        <Box>
+        <Stack direction="row" alignItems="center">
           <IconButton onClick={colorMode.toggleColorMode}>
             {theme.palette.mode === "light" ? (
               <DarkModeIcon sx={{ fontSize: 30 }} />
@@ -180,13 +188,13 @@ function Dashboard() {
           >
             Logout
           </Button>
-        </Box>
+        </Stack>
       </Box>
       <Grid
         container
         sx={{ minHeight: "100vh", backgroundColor: "background.default" }}
       >
-        <Grid item xs={12} sx={{ height: "30vh" }}>
+        <Grid size={12} sx={{ height: "30vh" }}>
           <Box
             sx={{
               height: "inherit",
@@ -214,6 +222,8 @@ function Dashboard() {
                 onChange={(event, value) =>
                   dispatch({ type: "updateValue", payload: value })
                 }
+                variant="scrollable"
+                allowScrollButtonsMobile
               >
                 <Tab
                   icon={<WorkspacesIcon />}
@@ -231,11 +241,7 @@ function Dashboard() {
             </Box>
           </Box>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          sx={{ minHeight: "70vh", backgroundColor: "background.default" }}
-        >
+        <Grid size={12} sx={{ minHeight: "70vh", backgroundColor: "background.default" }}>
           <TabPanel value={state.value} index={0}>
             <UserSpaces
               setMessage={setMessage}
